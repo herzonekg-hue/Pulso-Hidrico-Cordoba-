@@ -1,0 +1,1420 @@
+<title>AQUASALUD NORTE</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+
+<style>
+/* ============================================================
+   AQUASALUD NORTE — Panel de Inteligencia Hídrico-Sanitaria
+   AGS Norte de Córdoba · 2026
+   Layout: dashboard de 4 capas con navegación lateral sticky
+   ============================================================ */
+
+:root {
+  /* Paleta identidad: agua profunda, dehesa, coral alerta */
+  --azul-abismo:   #0E3B43;
+  --agua:          #1F7A8C;
+  --agua-claro:    #2a9db5;
+  --ocre-dehesa:   #B9853A;
+  --verde-junco:   #3E6B2F;
+  --coral:         #C8553D;
+
+  /* Tokens de superficie */
+  --bg:            #F0F5F7;
+  --bg-card:       #FFFFFF;
+  --bg-nav:        #0E3B43;
+  --border:        #D0DDE2;
+  --border-subtle: #E4EDF1;
+
+  /* Texto */
+  --fg:            #0D1F24;
+  --fg-muted:      #4A6670;
+  --fg-light:      #7A9BA6;
+  --fg-nav:        rgba(255,255,255,0.75);
+  --fg-nav-active: #FFFFFF;
+
+  /* Semáforo */
+  --verde:         #2E7D32;
+  --verde-bg:      #E8F5E9;
+  --rojo:          #C62828;
+  --rojo-bg:       #FFEBEE;
+  --gris:          #546E7A;
+  --gris-bg:       #ECEFF1;
+  --naranja:       #E65100;
+  --naranja-bg:    #FFF3E0;
+
+  /* Tipografía */
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* Espaciado */
+  --radius:   10px;
+  --radius-sm: 6px;
+  --shadow:   0 1px 4px rgba(14,59,67,0.08), 0 4px 16px rgba(14,59,67,0.06);
+  --shadow-sm: 0 1px 3px rgba(14,59,67,0.10);
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:            #0A1F24;
+    --bg-card:       #122830;
+    --bg-nav:        #061318;
+    --border:        #1E3D47;
+    --border-subtle: #163038;
+    --fg:            #E0EEF2;
+    --fg-muted:      #7BAAB8;
+    --fg-light:      #4A7A8A;
+    --fg-nav:        rgba(255,255,255,0.65);
+    --verde-bg:      #1A3320;
+    --rojo-bg:       #331010;
+    --gris-bg:       #1A2830;
+    --naranja-bg:    #2A1800;
+    --shadow:        0 1px 4px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.25);
+    --shadow-sm:     0 1px 3px rgba(0,0,0,0.3);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:            #0A1F24;
+  --bg-card:       #122830;
+  --bg-nav:        #061318;
+  --border:        #1E3D47;
+  --border-subtle: #163038;
+  --fg:            #E0EEF2;
+  --fg-muted:      #7BAAB8;
+  --fg-light:      #4A7A8A;
+  --fg-nav:        rgba(255,255,255,0.65);
+  --verde-bg:      #1A3320;
+  --rojo-bg:       #331010;
+  --gris-bg:       #1A2830;
+  --naranja-bg:    #2A1800;
+  --shadow:        0 1px 4px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.25);
+  --shadow-sm:     0 1px 3px rgba(0,0,0,0.3);
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--fg);
+  background: var(--bg);
+}
+
+/* ---- Layout shell ---- */
+.app {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100%;
+}
+
+/* ---- Topbar ---- */
+.topbar {
+  grid-column: 1 / -1;
+  background: var(--azul-abismo);
+  color: #fff;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.topbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+}
+.topbar-logo svg { flex-shrink: 0; }
+.topbar-logo .sub {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.6;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-top: 1px;
+}
+.topbar-spacer { flex: 1; }
+.topbar-meta {
+  font-size: 11.5px;
+  opacity: 0.6;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+.topbar-badge {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  background: var(--agua);
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+}
+
+/* ---- Sidebar ---- */
+.sidebar {
+  background: var(--bg-nav);
+  padding: 20px 0 32px;
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.1) transparent;
+}
+
+.sidebar-section-label {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  padding: 16px 20px 6px;
+  font-family: var(--font-display);
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 20px;
+  color: var(--fg-nav);
+  font-size: 13px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  border-left: 3px solid transparent;
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.nav-item:hover { color: var(--fg-nav-active); background: rgba(255,255,255,0.05); }
+.nav-item.active {
+  color: var(--fg-nav-active);
+  background: rgba(255,255,255,0.08);
+  border-left-color: var(--agua-claro);
+}
+.nav-item .nav-icon { font-size: 16px; min-width: 20px; text-align: center; }
+.nav-item .nav-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.12);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+.nav-item .nav-badge.alerta { background: var(--coral); color: #fff; }
+
+.sidebar-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin: 10px 20px;
+}
+
+.sidebar-footer {
+  padding: 12px 20px 0;
+  color: rgba(255,255,255,0.3);
+  font-size: 10.5px;
+  line-height: 1.6;
+}
+
+/* ---- Main content ---- */
+.main {
+  min-width: 0;
+  padding: 28px;
+  padding-left: max(28px, env(safe-area-inset-left, 0px));
+  padding-right: max(28px, env(safe-area-inset-right, 0px));
+}
+
+/* ---- Sections (tabs) ---- */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ---- Section header ---- */
+.section-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--fg);
+  margin: 0;
+  line-height: 1.2;
+}
+.section-title .capa-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--agua);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 4px;
+}
+.section-meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.status-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  letter-spacing: 0.3px;
+}
+.status-pill.live { background: var(--verde-bg); color: var(--verde); }
+.status-pill.sample { background: var(--naranja-bg); color: var(--naranja); }
+.status-pill.pending { background: var(--gris-bg); color: var(--gris); }
+.status-pill::before { content: "●"; font-size: 8px; }
+
+/* ---- KPI row ---- */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+.kpi-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  box-shadow: var(--shadow-sm);
+}
+.kpi-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+}
+.kpi-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.kpi-value.verde { color: var(--verde); }
+.kpi-value.rojo  { color: var(--rojo); }
+.kpi-value.gris  { color: var(--gris); }
+.kpi-value.agua  { color: var(--agua); }
+.kpi-unit {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--fg-muted);
+  margin-left: 2px;
+}
+.kpi-sub {
+  font-size: 11px;
+  color: var(--fg-light);
+  margin-top: 4px;
+}
+
+/* ---- Cards ---- */
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+}
+.card-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg);
+  margin: 0 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title .icon { font-size: 16px; }
+
+/* ---- SINAC municipios grid ---- */
+.muni-search {
+  width: 100%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--fg);
+  margin-bottom: 16px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.muni-search:focus { border-color: var(--agua); }
+.muni-search::placeholder { color: var(--fg-light); }
+
+.muni-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+}
+
+.muni-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.muni-card:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+  border-color: var(--agua);
+}
+.muni-semaforo {
+  font-size: 22px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.muni-info { min-width: 0; }
+.muni-nombre {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.muni-estado {
+  font-size: 11px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+}
+.muni-estado.verde { color: var(--verde); }
+.muni-estado.rojo  { color: var(--rojo); }
+.muni-estado.gris  { color: var(--gris); }
+
+/* ---- Alerta banner ---- */
+.alerta-banner {
+  background: var(--rojo-bg);
+  border: 1px solid rgba(198,40,40,0.25);
+  border-left: 4px solid var(--rojo);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.alerta-banner .alerta-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+.alerta-banner .alerta-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 13.5px;
+  color: var(--rojo);
+  margin-bottom: 3px;
+}
+.alerta-banner .alerta-body { font-size: 12.5px; color: var(--fg-muted); line-height: 1.5; }
+
+/* ---- SAIH charts area ---- */
+.chart-area {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+}
+
+.saih-embalse-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 600px) {
+  .saih-embalse-row { grid-template-columns: 1fr; }
+  .app { grid-template-columns: 1fr; }
+  .sidebar { position: static; height: auto; }
+}
+
+.embalse-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+.embalse-nombre {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+.embalse-codigo {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--fg-light);
+  margin-bottom: 12px;
+}
+.nivel-bar-wrap {
+  height: 10px;
+  background: var(--border-subtle);
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 8px;
+}
+.nivel-bar {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+.nivel-bar.alto  { background: var(--verde-junco); }
+.nivel-bar.medio { background: var(--agua); }
+.nivel-bar.bajo  { background: var(--coral); }
+
+.nivel-stats {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+.nivel-pct {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--fg);
+  margin-bottom: 2px;
+}
+
+/* ---- Sparkline SVG ---- */
+.sparkline-wrap { overflow-x: auto; margin-top: 12px; }
+.sparkline-title {
+  font-size: 11px;
+  color: var(--fg-muted);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+/* ---- SIRA table ---- */
+.sira-table-wrap { overflow-x: auto; }
+.sira-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+.sira-table th {
+  font-family: var(--font-display);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  padding: 8px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.sira-table td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--fg);
+  vertical-align: middle;
+}
+.sira-table tr:last-child td { border-bottom: none; }
+.sira-table tr:hover td { background: rgba(31,122,140,0.04); }
+.param-badge {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-family: var(--font-mono);
+}
+.param-ok   { background: var(--verde-bg); color: var(--verde); }
+.param-warn { background: var(--naranja-bg); color: var(--naranja); }
+.param-bad  { background: var(--rojo-bg); color: var(--rojo); }
+
+/* ---- Data timestamp row ---- */
+.data-ts {
+  font-size: 11px;
+  color: var(--fg-light);
+  font-family: var(--font-mono);
+  padding: 10px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---- AEMET weather grid ---- */
+.weather-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.weather-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.weather-icon { font-size: 28px; margin-bottom: 6px; }
+.weather-label {
+  font-size: 10.5px;
+  color: var(--fg-muted);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-family: var(--font-display);
+  margin-bottom: 4px;
+}
+.weather-val {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--fg);
+  letter-spacing: -0.3px;
+  font-variant-numeric: tabular-nums;
+}
+.weather-val .unit { font-size: 12px; font-weight: 400; color: var(--fg-muted); }
+
+/* ---- Sentinel / capa 4 ---- */
+.sentinel-placeholder {
+  background: var(--bg-card);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 40px 24px;
+  text-align: center;
+  color: var(--fg-muted);
+}
+.sentinel-placeholder .icon { font-size: 36px; margin-bottom: 12px; }
+.sentinel-placeholder h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: var(--fg);
+}
+.sentinel-placeholder p { font-size: 13px; line-height: 1.6; max-width: 420px; margin: 0 auto; }
+
+/* ---- Perfil toggle ---- */
+.perfil-toggle {
+  display: flex;
+  gap: 4px;
+  background: var(--border-subtle);
+  border-radius: 8px;
+  padding: 3px;
+}
+.perfil-btn {
+  font-family: var(--font-display);
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--fg-muted);
+  background: none;
+}
+.perfil-btn.active { background: var(--bg-card); color: var(--fg); box-shadow: var(--shadow-sm); }
+
+/* ---- Tecnico extras ---- */
+.tecnico-only { display: none; }
+body.perfil-tecnico .tecnico-only { display: block; }
+body.perfil-tecnico .ciudadano-only { display: none; }
+
+/* ---- Nota legal ---- */
+.nota-legal {
+  background: var(--gris-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 11.5px;
+  color: var(--fg-muted);
+  line-height: 1.5;
+  margin-top: 20px;
+}
+.nota-legal strong { color: var(--fg); }
+
+/* ---- Detail modal ---- */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px;
+  max-width: 500px;
+  width: 100%;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+  position: relative;
+  animation: modalIn 0.2s ease;
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(12px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+.modal-close {
+  position: absolute;
+  top: 16px; right: 16px;
+  background: var(--border-subtle);
+  border: none; border-radius: 50%;
+  width: 28px; height: 28px;
+  font-size: 14px; cursor: pointer;
+  color: var(--fg-muted);
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: var(--border); }
+.modal-semaforo { font-size: 48px; text-align: center; margin-bottom: 8px; }
+.modal-muni {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.modal-estado {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+.modal-estado.verde { color: var(--verde); }
+.modal-estado.rojo  { color: var(--rojo); }
+.modal-estado.gris  { color: var(--gris); }
+.modal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 12.5px;
+}
+.modal-row:last-of-type { border-bottom: none; }
+.modal-row .label { color: var(--fg-muted); font-weight: 500; min-width: 120px; }
+.modal-row .value { color: var(--fg); text-align: right; }
+.modal-resolucion {
+  background: var(--rojo-bg);
+  border: 1px solid rgba(198,40,40,0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--rojo);
+  font-weight: 500;
+}
+</style>
+
+<!-- App shell -->
+<div class="app">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar-logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+        <path d="M14 3C14 3 5 10 5 17a9 9 0 0018 0C23 10 14 3 14 3z" fill="#1F7A8C" opacity="0.9"/>
+        <path d="M14 7C14 7 8 12.5 8 17a6 6 0 0012 0C20 12.5 14 7 14 7z" fill="white" opacity="0.25"/>
+        <path d="M10 17.5q2-2 4 0t4 0" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+      </svg>
+      <div>
+        AQUASALUD NORTE
+        <span class="sub">AGS Norte de Córdoba · Panel I+D+i</span>
+      </div>
+    </div>
+    <div class="topbar-spacer"></div>
+    <div class="topbar-meta" id="ts-global">—</div>
+    <div class="perfil-toggle" style="margin-left:12px">
+      <button class="perfil-btn active" onclick="setPerfil('ciudadana',this)">Ciudadana</button>
+      <button class="perfil-btn"       onclick="setPerfil('tecnica',this)">Técnica</button>
+    </div>
+  </header>
+
+  <!-- Sidebar nav -->
+  <nav class="sidebar">
+    <div class="sidebar-section-label">Capas activas</div>
+    <button class="nav-item active" onclick="showSection('sinac',this)">
+      <span class="nav-icon">🚰</span> Calidad Agua
+      <span class="nav-badge alerta" id="nb-alerta">0</span>
+    </button>
+    <button class="nav-item" onclick="showSection('saih',this)">
+      <span class="nav-icon">🌊</span> Embalses SAIH
+      <span class="nav-badge" id="nb-embalses">2</span>
+    </button>
+    <button class="nav-item" onclick="showSection('sira',this)">
+      <span class="nav-icon">🧪</span> SIRA Guadiana
+      <span class="nav-badge">2</span>
+    </button>
+    <button class="nav-item" onclick="showSection('aemet',this)">
+      <span class="nav-icon">🌧️</span> Meteorología
+    </button>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-section-label">Próximamente</div>
+    <button class="nav-item" onclick="showSection('sentinel',this)">
+      <span class="nav-icon">🛰️</span> Sentinel-2
+      <span class="nav-badge">Beta</span>
+    </button>
+
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-footer">
+      Bloque I+D+i<br>
+      Jefe de Bloque: A. González<br>
+      <br>
+      Datos: SINAC · SAIH CHG<br>
+      SIRA CHG · AEMET
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- ===== CAPA 3: SINAC ===== -->
+    <section class="section active" id="sec-sinac">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="capa-label">Capa 3 · SINAC</span>
+          Calidad del Agua Potable
+        </div>
+        <div class="section-meta">
+          <span class="status-pill sample" id="sinac-status-pill">Datos de ejemplo</span>
+          <span class="data-ts" id="sinac-ts">—</span>
+        </div>
+      </div>
+
+      <!-- Alerta resoluciones -->
+      <div class="alerta-banner" id="sinac-alertas-banner" style="display:none">
+        <div class="alerta-icon">🔴</div>
+        <div>
+          <div class="alerta-title" id="alertas-title">Resoluciones de no aptitud vigentes</div>
+          <div class="alerta-body" id="alertas-body">—</div>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">Municipios</div>
+          <div class="kpi-value agua">27</div>
+          <div class="kpi-sub">AGS Norte de Córdoba</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Aptas</div>
+          <div class="kpi-value verde" id="kpi-verde">—</div>
+          <div class="kpi-sub">agua apta consumo</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Alertas</div>
+          <div class="kpi-value rojo" id="kpi-rojo">—</div>
+          <div class="kpi-sub">no apta / resolución</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Sin datos</div>
+          <div class="kpi-value gris" id="kpi-gris">—</div>
+          <div class="kpi-sub">pendiente scraper</div>
+        </div>
+      </div>
+
+      <!-- Buscador -->
+      <input class="muni-search" type="search" placeholder="Buscar municipio…" oninput="filtrarMunicipios(this.value)">
+
+      <!-- Grid municipios -->
+      <div class="muni-grid" id="muni-grid"></div>
+
+      <div class="nota-legal ciudadano-only">
+        <strong>Fuente:</strong> SINAC — Sistema de Información Nacional de Agua de Consumo. Ministerio de Sanidad. Consulta ciudadana. Los datos se actualizan cada 12 horas. Ante cualquier duda sobre la calidad del agua consulte con su Ayuntamiento o con el AGS Norte de Córdoba.
+      </div>
+      <div class="nota-legal tecnico-only">
+        <strong>Nota técnica:</strong> Semáforo con lógica inamovible: Resolución de no aptitud vigente = ROJO siempre, independientemente de la calificación de los análisis. Scraper Playwright sobre acceso ciudadano SINAC. Actualización automática 06:00 y 18:00 (scheduler_sinac.sh). Para activar datos reales, ejecutar <code style="font-family:var(--font-mono);font-size:10.5px">python3 scraper_sinac.py --municipios "Pozoblanco" --visible --pausa 5</code> y verificar selectores.
+      </div>
+    </section>
+
+    <!-- ===== CAPA 1: SAIH ===== -->
+    <section class="section" id="sec-saih">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="capa-label">Capa 1 · SAIH Guadalquivir</span>
+          Embalses AGS Norte de Córdoba
+        </div>
+        <div class="section-meta">
+          <span class="status-pill live">En vivo · cada 15 min</span>
+        </div>
+      </div>
+
+      <div class="saih-embalse-row">
+        <div class="embalse-card">
+          <div class="embalse-nombre">La Colada</div>
+          <div class="embalse-codigo">E2-40 · CHG-SAIH</div>
+          <div class="nivel-pct" id="colada-pct">—</div>
+          <div class="nivel-bar-wrap">
+            <div class="nivel-bar medio" id="colada-bar" style="width:0%"></div>
+          </div>
+          <div class="nivel-stats">
+            <span id="colada-vol">— hm³</span>
+            <span>Capacidad: 4,20 hm³</span>
+          </div>
+          <div class="data-ts" id="colada-ts">🕐 —</div>
+        </div>
+        <div class="embalse-card">
+          <div class="embalse-nombre">Puente Nuevo</div>
+          <div class="embalse-codigo">E-02 · CHG-SAIH</div>
+          <div class="nivel-pct" id="pnuevo-pct">—</div>
+          <div class="nivel-bar-wrap">
+            <div class="nivel-bar alto" id="pnuevo-bar" style="width:0%"></div>
+          </div>
+          <div class="nivel-stats">
+            <span id="pnuevo-vol">— hm³</span>
+            <span>Capacidad: 56,0 hm³</span>
+          </div>
+          <div class="data-ts" id="pnuevo-ts">🕐 —</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">📈</span> Evolución — últimas 48h (simulado)</div>
+        <div class="sparkline-title">Nivel La Colada (hm³)</div>
+        <div class="sparkline-wrap">
+          <svg id="spark-colada" width="100%" height="80" viewBox="0 0 600 80" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="sparkline-title" style="margin-top:14px">Nivel Puente Nuevo (hm³)</div>
+        <div class="sparkline-wrap">
+          <svg id="spark-pnuevo" width="100%" height="80" viewBox="0 0 600 80" preserveAspectRatio="none"></svg>
+        </div>
+      </div>
+
+      <div class="nota-legal">
+        <strong>Fuente:</strong> SAIH Confederación Hidrográfica del Guadalquivir. GitHub Actions scraping cada 15 minutos. Código: github.com/herzonekg-hue/Pulso-Hidrico-Cordoba-
+      </div>
+    </section>
+
+    <!-- ===== CAPA 3b: SIRA Guadiana ===== -->
+    <section class="section" id="sec-sira">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="capa-label">Capa 3b · SIRA CHG Guadiana</span>
+          Estaciones de Calidad
+        </div>
+        <div class="section-meta">
+          <span class="status-pill live">Activo</span>
+        </div>
+      </div>
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">La Colada E2-40</div>
+          <div class="kpi-value agua" id="sira-colada-ph">—</div>
+          <div class="kpi-sub">pH último registro</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Guadarramilla EAA-421</div>
+          <div class="kpi-value agua" id="sira-eaa-cond">—</div>
+          <div class="kpi-sub">Conductividad µS/cm</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Fosfatos CR2-07</div>
+          <div class="kpi-value rojo" id="sira-fosf">—</div>
+          <div class="kpi-sub">mg P/L · Guadarramilla</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">🧪</span> Parámetros en tiempo real — La Colada E2-40</div>
+        <div class="sira-table-wrap">
+          <table class="sira-table" id="sira-table-colada">
+            <thead><tr>
+              <th>Parámetro</th>
+              <th>Último valor</th>
+              <th>Unidad</th>
+              <th>Referencia</th>
+              <th>Estado</th>
+            </tr></thead>
+            <tbody id="sira-colada-tbody"></tbody>
+          </table>
+        </div>
+        <div class="data-ts" id="sira-colada-ts">🕐 —</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">🌿</span> EAA-421 Guadarramilla — vertido difuso</div>
+        <div class="sira-table-wrap">
+          <table class="sira-table" id="sira-table-eaa">
+            <thead><tr>
+              <th>Parámetro</th>
+              <th>Último valor</th>
+              <th>Unidad</th>
+              <th>Referencia</th>
+              <th>Estado</th>
+            </tr></thead>
+            <tbody id="sira-eaa-tbody"></tbody>
+          </table>
+        </div>
+        <div class="data-ts" id="sira-eaa-ts">🕐 —</div>
+      </div>
+
+      <div class="nota-legal tecnico-only">
+        <strong>Nota:</strong> CR2-07 Guadarramilla a.ab. La Colada registró fosfatos hasta 22,73 mg P/L (muy por encima del límite 2 mg/L RDPH). Pendiente integración scraper_sira.py. Consulta SIRA: <a href="https://sinia.miteco.gob.es" target="_blank" style="color:var(--agua)">sinia.miteco.gob.es</a>
+      </div>
+    </section>
+
+    <!-- ===== CAPA 2: AEMET ===== -->
+    <section class="section" id="sec-aemet">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="capa-label">Capa 2 · AEMET</span>
+          Meteorología Comarca
+        </div>
+        <div class="section-meta">
+          <span class="status-pill sample">Datos ejemplo</span>
+        </div>
+      </div>
+
+      <div class="weather-grid">
+        <div class="weather-card">
+          <div class="weather-icon">🌡️</div>
+          <div class="weather-label">Temperatura</div>
+          <div class="weather-val" id="aemet-temp">—<span class="unit">°C</span></div>
+        </div>
+        <div class="weather-card">
+          <div class="weather-icon">🌧️</div>
+          <div class="weather-label">Precipitación</div>
+          <div class="weather-val" id="aemet-prec">—<span class="unit">mm</span></div>
+        </div>
+        <div class="weather-card">
+          <div class="weather-icon">💧</div>
+          <div class="weather-label">Humedad</div>
+          <div class="weather-val" id="aemet-hum">—<span class="unit">%</span></div>
+        </div>
+        <div class="weather-card">
+          <div class="weather-icon">💨</div>
+          <div class="weather-label">Viento</div>
+          <div class="weather-val" id="aemet-viento">—<span class="unit">km/h</span></div>
+        </div>
+        <div class="weather-card">
+          <div class="weather-icon">☀️</div>
+          <div class="weather-label">Radiación</div>
+          <div class="weather-val" id="aemet-rad">—<span class="unit">W/m²</span></div>
+        </div>
+        <div class="weather-card">
+          <div class="weather-icon">🏔️</div>
+          <div class="weather-label">Estación</div>
+          <div class="weather-val" style="font-size:13px;font-weight:600;">Pozoblanco</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><span class="icon">📅</span> Previsión 5 días</div>
+        <div id="aemet-forecast-wrap" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:4px"></div>
+      </div>
+
+      <div class="nota-legal">
+        <strong>Fuente:</strong> AEMET API abierta. Estación Pozoblanco (Córdoba Norte). Los datos meteorológicos se integran con el índice de riesgo de contaminación difusa.
+      </div>
+    </section>
+
+    <!-- ===== CAPA 4: SENTINEL-2 ===== -->
+    <section class="section" id="sec-sentinel">
+      <div class="section-header">
+        <div class="section-title">
+          <span class="capa-label">Capa 4 · Sentinel-2 Copernicus</span>
+          Turbidez y Clorofila — La Colada
+        </div>
+        <div class="section-meta">
+          <span class="status-pill pending">En desarrollo</span>
+        </div>
+      </div>
+
+      <div class="sentinel-placeholder">
+        <div class="icon">🛰️</div>
+        <h3>Integración Copernicus en curso</h3>
+        <p>Esta capa incorporará análisis de turbidez y concentración de clorofila-a en el embalse La Colada a partir de imágenes Sentinel-2 (10m/píxel, revisita 5 días). Acceso gratuito vía Copernicus Browser y API CDSE. Parámetros clave: B3/B4 (turbidez), B5/B4 (clorofila), NDCI.</p>
+      </div>
+
+      <div class="nota-legal tecnico-only" style="margin-top:16px">
+        <strong>Próximos pasos:</strong> Registrar cuenta CDSE (Copernicus Data Space Ecosystem). Script Python sentinelhub-py + Band Math B5/B4 para clorofila NDCI. Umbral alerta: NDCI &gt; 0.15 (posible bloom de cianobacterias). Integración prevista Q1 2027.
+      </div>
+    </section>
+
+  </main><!-- /main -->
+</div><!-- /app -->
+
+<!-- Municipio detail modal -->
+<div class="modal-overlay" id="muni-modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-semaforo" id="modal-semaforo"></div>
+    <div class="modal-muni" id="modal-muni"></div>
+    <div class="modal-estado" id="modal-estado"></div>
+    <div id="modal-rows"></div>
+    <div id="modal-resolucion" style="display:none" class="modal-resolucion">
+      ⚠️ Resolución de no aptitud vigente en SINAC. Consultar con el Ayuntamiento.
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+//  DATOS EJEMPLO — reemplazados por sinac_calidad.json en prod
+// ============================================================
+
+const SINAC_DATA = {
+  meta: {
+    generado: "2026-11-14T09:00:00Z",
+    fecha_consulta_legible: "14 nov 2026 09:00",
+    fuente: "SINAC ciudadano (ejemplo)",
+    nota_legal: "Datos de ejemplo para visualización del panel. Activar con scraper_sinac.py.",
+    logica_semaforo: "Resolución no aptitud vigente = ROJO siempre."
+  },
+  resumen: { VERDE: 20, ROJO: 2, GRIS: 5 },
+  municipios: [
+    { municipio:"Pozoblanco",             semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Pozoblanco",    fecha_analisis:"oct 2026" },
+    { municipio:"Villanueva de Córdoba",  semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"V. de Córdoba",  fecha_analisis:"oct 2026" },
+    { municipio:"Hinojosa del Duque",     semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Hinojosa",       fecha_analisis:"sep 2026" },
+    { municipio:"Añora",                  semaforo:{color:"ROJO", icono:"🔴",texto:"No apta"},calificacion:"No apta",resolucion_no_apta:true,  red:"Añora",          fecha_analisis:"oct 2026" },
+    { municipio:"Dos Torres",             semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Dos Torres",     fecha_analisis:"oct 2026" },
+    { municipio:"El Viso",                semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"El Viso",        fecha_analisis:"oct 2026" },
+    { municipio:"Villanueva del Duque",   semaforo:{color:"GRIS", icono:"⚫",texto:"Sin datos"},calificacion:null,  resolucion_no_apta:false, red:"—",              fecha_analisis:"—"        },
+    { municipio:"Alcaracejos",            semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Alcaracejos",    fecha_analisis:"oct 2026" },
+    { municipio:"Torrecampo",             semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Torrecampo",     fecha_analisis:"oct 2026" },
+    { municipio:"Santa Eufemia",          semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Sta. Eufemia",   fecha_analisis:"sep 2026" },
+    { municipio:"Fuente la Lancha",       semaforo:{color:"GRIS", icono:"⚫",texto:"Sin datos"},calificacion:null,  resolucion_no_apta:false, red:"—",              fecha_analisis:"—"        },
+    { municipio:"Belalcázar",             semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Belalcázar",     fecha_analisis:"oct 2026" },
+    { municipio:"Conquista",              semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Conquista",      fecha_analisis:"sep 2026" },
+    { municipio:"Guijo",                  semaforo:{color:"GRIS", icono:"⚫",texto:"Sin datos"},calificacion:null,  resolucion_no_apta:false, red:"—",              fecha_analisis:"—"        },
+    { municipio:"Villaralto",             semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Villaralto",     fecha_analisis:"oct 2026" },
+    { municipio:"Obejo",                  semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Obejo",          fecha_analisis:"sep 2026" },
+    { municipio:"Adamuz",                 semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Adamuz",         fecha_analisis:"oct 2026" },
+    { municipio:"Montoro",                semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Montoro",        fecha_analisis:"oct 2026" },
+    { municipio:"Cardeña",                semaforo:{color:"GRIS", icono:"⚫",texto:"Sin datos"},calificacion:null,  resolucion_no_apta:false, red:"—",              fecha_analisis:"—"        },
+    { municipio:"Espiel",                 semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Espiel",         fecha_analisis:"oct 2026" },
+    { municipio:"Villaviciosa de Córdoba",semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Villaviciosa",   fecha_analisis:"oct 2026" },
+    { municipio:"Fuente Obejuna",         semaforo:{color:"ROJO", icono:"🔴",texto:"No apta"},calificacion:"No apta",resolucion_no_apta:true,  red:"F. Obejuna",     fecha_analisis:"oct 2026" },
+    { municipio:"Belmez",                 semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Belmez",         fecha_analisis:"oct 2026" },
+    { municipio:"Peñarroya-Pueblonuevo",  semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Peñarroya",      fecha_analisis:"oct 2026" },
+    { municipio:"Villaharta",             semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Villaharta",     fecha_analisis:"sep 2026" },
+    { municipio:"Guadalcázar",            semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Guadalcázar",    fecha_analisis:"sep 2026" },
+    { municipio:"Pedroche",               semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Pedroche",       fecha_analisis:"oct 2026" },
+  ]
+};
+
+const SAIH_DATA = {
+  colada:  { pct: 61.4, vol: 2.58, cap: 4.20, ts: "14/11/2026 08:45" },
+  pnuevo:  { pct: 48.2, vol: 27.0, cap: 56.0, ts: "14/11/2026 08:30" },
+};
+
+const SIRA_DATA = {
+  colada: {
+    ts: "13/11/2026 23:00",
+    ph: 7.84,
+    params: [
+      { param:"pH",           valor:7.84,  unidad:"—",      ref:"6.5–9.0",  estado:"ok"  },
+      { param:"Turbidez",     valor:1.2,   unidad:"NTU",    ref:"< 4 NTU",  estado:"ok"  },
+      { param:"Oxígeno dis.", valor:8.6,   unidad:"mg/L",   ref:"> 7",      estado:"ok"  },
+      { param:"Temperatura",  valor:14.3,  unidad:"°C",     ref:"< 25",     estado:"ok"  },
+      { param:"Conductividad",valor:382,   unidad:"µS/cm",  ref:"< 2500",   estado:"ok"  },
+      { param:"Nitratos",     valor:4.1,   unidad:"mg/L",   ref:"< 50",     estado:"ok"  },
+      { param:"Clorofila",    valor:12.4,  unidad:"µg/L",   ref:"< 10",     estado:"warn"},
+    ]
+  },
+  eaa: {
+    ts: "13/11/2026 22:30",
+    cond: 1247,
+    params: [
+      { param:"pH",           valor:7.42,  unidad:"—",      ref:"6.5–9.0",  estado:"ok"  },
+      { param:"Conductividad",valor:1247,  unidad:"µS/cm",  ref:"< 2500",   estado:"warn"},
+      { param:"Turbidez",     valor:6.3,   unidad:"NTU",    ref:"< 4 NTU",  estado:"warn"},
+      { param:"Nitratos",     valor:18.7,  unidad:"mg/L",   ref:"< 50",     estado:"ok"  },
+      { param:"Fosfatos",     valor:22.73, unidad:"mg P/L", ref:"< 2.0",    estado:"bad" },
+      { param:"DBO₅",         valor:4.8,   unidad:"mg/L",   ref:"< 5",      estado:"ok"  },
+    ]
+  }
+};
+
+const AEMET_DATA = {
+  temp: 16.4, prec: 0.0, hum: 72, viento: 18, rad: 312,
+  forecast: [
+    { dia:"Sáb",  ico:"⛅", tmax:17, tmin:9,  prec:0  },
+    { dia:"Dom",  ico:"🌧️", tmax:14, tmin:8,  prec:12 },
+    { dia:"Lun",  ico:"🌧️", tmax:12, tmin:7,  prec:28 },
+    { dia:"Mar",  ico:"⛅", tmax:15, tmin:8,  prec:4  },
+    { dia:"Mié",  ico:"☀️", tmax:18, tmin:6,  prec:0  },
+  ]
+};
+
+// ============================================================
+//  RENDER FUNCIONES
+// ============================================================
+
+function renderSINAC(data) {
+  const { municipios, resumen, meta } = data;
+  document.getElementById('kpi-verde').textContent = resumen.VERDE || 0;
+  document.getElementById('kpi-rojo').textContent  = resumen.ROJO  || 0;
+  document.getElementById('kpi-gris').textContent  = resumen.GRIS  || 0;
+  document.getElementById('nb-alerta').textContent = resumen.ROJO  || 0;
+  document.getElementById('sinac-ts').textContent  = '🕐 ' + (meta.fecha_consulta_legible || '—');
+
+  // Banner alertas
+  const alertas = municipios.filter(m => m.resolucion_no_apta || m.semaforo.color === 'ROJO');
+  if (alertas.length > 0) {
+    document.getElementById('sinac-alertas-banner').style.display = 'flex';
+    document.getElementById('alertas-title').textContent = `${alertas.length} resolución(es) de no aptitud vigente(s)`;
+    document.getElementById('alertas-body').textContent = alertas.map(m => m.municipio).join(' · ');
+  }
+
+  renderMunicipios(municipios);
+}
+
+function renderMunicipios(municipios, filtro='') {
+  const grid = document.getElementById('muni-grid');
+  grid.innerHTML = '';
+  const f = filtro.toLowerCase();
+  const visible = municipios.filter(m => !f || m.municipio.toLowerCase().includes(f));
+  visible.forEach(m => {
+    const c = m.semaforo.color.toLowerCase();
+    const div = document.createElement('div');
+    div.className = 'muni-card';
+    div.innerHTML = `
+      <div class="muni-semaforo">${m.semaforo.icono}</div>
+      <div class="muni-info">
+        <div class="muni-nombre">${m.municipio}</div>
+        <div class="muni-estado ${c}">${m.semaforo.texto}</div>
+      </div>`;
+    div.onclick = () => openModal(m);
+    grid.appendChild(div);
+  });
+}
+
+function filtrarMunicipios(val) {
+  renderMunicipios(SINAC_DATA.municipios, val);
+}
+
+function openModal(m) {
+  const c = m.semaforo.color.toLowerCase();
+  document.getElementById('modal-semaforo').textContent = m.semaforo.icono;
+  document.getElementById('modal-muni').textContent = m.municipio;
+  const est = document.getElementById('modal-estado');
+  est.textContent = m.semaforo.texto;
+  est.className = `modal-estado ${c}`;
+  const rows = [
+    ['Red de abastecimiento', m.red || '—'],
+    ['Calificación SINAC',    m.calificacion || 'Sin datos'],
+    ['Último análisis',       m.fecha_analisis || '—'],
+    ['Semáforo',              `${m.semaforo.icono} ${m.semaforo.color}`],
+  ];
+  document.getElementById('modal-rows').innerHTML = rows.map(([l,v]) =>
+    `<div class="modal-row"><span class="label">${l}</span><span class="value">${v}</span></div>`
+  ).join('');
+  const res = document.getElementById('modal-resolucion');
+  res.style.display = m.resolucion_no_apta ? 'block' : 'none';
+  document.getElementById('muni-modal').classList.add('open');
+}
+function closeModal() { document.getElementById('muni-modal').classList.remove('open'); }
+
+function renderSAIH() {
+  const { colada, pnuevo } = SAIH_DATA;
+  // La Colada
+  document.getElementById('colada-pct').textContent = colada.pct.toFixed(1) + '%';
+  document.getElementById('colada-vol').textContent = colada.vol.toFixed(2) + ' hm³';
+  document.getElementById('colada-ts').textContent  = '🕐 ' + colada.ts;
+  const cbar = document.getElementById('colada-bar');
+  cbar.style.width = colada.pct + '%';
+  cbar.className = 'nivel-bar ' + (colada.pct >= 60 ? 'alto' : colada.pct >= 30 ? 'medio' : 'bajo');
+  // Puente Nuevo
+  document.getElementById('pnuevo-pct').textContent = pnuevo.pct.toFixed(1) + '%';
+  document.getElementById('pnuevo-vol').textContent = pnuevo.vol.toFixed(1) + ' hm³';
+  document.getElementById('pnuevo-ts').textContent  = '🕐 ' + pnuevo.ts;
+  const pbar = document.getElementById('pnuevo-bar');
+  pbar.style.width = pnuevo.pct + '%';
+  pbar.className = 'nivel-bar ' + (pnuevo.pct >= 60 ? 'alto' : pnuevo.pct >= 30 ? 'medio' : 'bajo');
+  // Sparklines
+  drawSparkline('spark-colada', generateFakeTS(colada.vol, 48, 0.08, 4.20), '#1F7A8C');
+  drawSparkline('spark-pnuevo', generateFakeTS(pnuevo.vol, 48, 0.4, 56.0),  '#3E6B2F');
+}
+
+function generateFakeTS(last, n, noise, cap) {
+  const vals = [];
+  let v = last;
+  for (let i = n; i >= 0; i--) {
+    v = Math.max(0.1, Math.min(cap, v + (Math.random()-0.5)*noise));
+    vals.unshift(v);
+  }
+  vals[0] = last;
+  return vals;
+}
+
+function drawSparkline(id, vals, color) {
+  const svg = document.getElementById(id);
+  if (!svg) return;
+  const W = 600, H = 80, pad = 6;
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const range = mx - mn || 1;
+  const pts = vals.map((v, i) => {
+    const x = pad + (i / (vals.length-1)) * (W - 2*pad);
+    const y = H - pad - ((v - mn) / range) * (H - 2*pad);
+    return `${x},${y}`;
+  });
+  const area = `M${pts[0]} L${pts.join(' L')} L${600-pad},${H} L${pad},${H} Z`;
+  const line = `M${pts.join(' L')}`;
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="g${id}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="0.03"/>
+      </linearGradient>
+    </defs>
+    <path d="${area}" fill="url(#g${id})"/>
+    <path d="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="${pts[pts.length-1].split(',')[0]}" cy="${pts[pts.length-1].split(',')[1]}" r="4" fill="${color}"/>
+  `;
+}
+
+function renderSIRA() {
+  const { colada, eaa } = SIRA_DATA;
+  document.getElementById('sira-colada-ph').textContent  = colada.ph;
+  document.getElementById('sira-eaa-cond').textContent   = eaa.cond;
+  document.getElementById('sira-fosf').textContent       = '22.73';
+  document.getElementById('sira-colada-ts').textContent  = '🕐 ' + colada.ts;
+  document.getElementById('sira-eaa-ts').textContent     = '🕐 ' + eaa.ts;
+
+  const renderTable = (tbodyId, params) => {
+    document.getElementById(tbodyId).innerHTML = params.map(p => `
+      <tr>
+        <td>${p.param}</td>
+        <td style="font-family:var(--font-mono);font-weight:600">${p.valor}</td>
+        <td style="color:var(--fg-muted)">${p.unidad}</td>
+        <td style="color:var(--fg-muted)">${p.ref}</td>
+        <td><span class="param-badge param-${p.estado}">${
+          p.estado==='ok' ? '✓ OK' : p.estado==='warn' ? '⚠ Alerta' : '✕ Excede'
+        }</span></td>
+      </tr>`).join('');
+  };
+  renderTable('sira-colada-tbody', colada.params);
+  renderTable('sira-eaa-tbody',    eaa.params);
+}
+
+function renderAEMET() {
+  const d = AEMET_DATA;
+  document.getElementById('aemet-temp').innerHTML   = d.temp + '<span class="unit">°C</span>';
+  document.getElementById('aemet-prec').innerHTML   = d.prec + '<span class="unit">mm</span>';
+  document.getElementById('aemet-hum').innerHTML    = d.hum  + '<span class="unit">%</span>';
+  document.getElementById('aemet-viento').innerHTML = d.viento + '<span class="unit">km/h</span>';
+  document.getElementById('aemet-rad').innerHTML    = d.rad  + '<span class="unit">W/m²</span>';
+
+  const fw = document.getElementById('aemet-forecast-wrap');
+  fw.innerHTML = d.forecast.map(f => `
+    <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;text-align:center;min-width:80px;flex-shrink:0;box-shadow:var(--shadow-sm)">
+      <div style="font-family:var(--font-display);font-weight:700;font-size:12px;color:var(--fg-muted);margin-bottom:6px">${f.dia}</div>
+      <div style="font-size:22px;margin-bottom:6px">${f.ico}</div>
+      <div style="font-family:var(--font-display);font-size:14px;font-weight:700">${f.tmax}°</div>
+      <div style="font-size:11px;color:var(--fg-muted)">${f.tmin}°</div>
+      ${f.prec>0?`<div style="font-size:10.5px;color:var(--agua);margin-top:4px;font-family:var(--font-mono)">${f.prec}mm</div>`:''}
+    </div>`).join('');
+}
+
+// ============================================================
+//  NAVEGACIÓN
+// ============================================================
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function setPerfil(p, btn) {
+  document.querySelectorAll('.perfil-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.body.className = p === 'tecnica' ? 'perfil-tecnico' : '';
+}
+
+// ============================================================
+//  CARGA DE DATOS REALES (si existe sinac_calidad.json)
+// ============================================================
+async function intentarCargarSINAC() {
+  try {
+    const r = await fetch('./data/sinac_calidad.json');
+    if (!r.ok) throw new Error('no data');
+    const data = await r.json();
+    if (data && data.municipios && data.municipios.length > 0) {
+      renderSINAC(data);
+      document.getElementById('sinac-status-pill').textContent = 'SINAC actualizado';
+      document.getElementById('sinac-status-pill').className   = 'status-pill live';
+    }
+  } catch {
+    // usa datos de ejemplo
+    renderSINAC(SINAC_DATA);
+  }
+}
+
+// ============================================================
+//  TIMESTAMP GLOBAL
+// ============================================================
+function updateTS() {
+  const now = new Date();
+  const fmt = now.toLocaleString('es-ES', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('ts-global').textContent = fmt;
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+(function init() {
+  updateTS();
+  setInterval(updateTS, 60000);
+  intentarCargarSINAC();
+  renderSAIH();
+  renderSIRA();
+  renderAEMET();
+})();
+</script>

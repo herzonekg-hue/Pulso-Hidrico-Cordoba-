@@ -1,0 +1,11 @@
+{
+  "meta": {
+    "generado": null,
+    "fecha_consulta_legible": "Sin ejecutar aún",
+    "fuente": "SINAC ciudadano — Ministerio de Sanidad",
+    "nota_legal": "Ejecutar scraper_sinac.py para obtener datos reales.",
+    "logica_semaforo": "Resolución no aptitud vigente = ROJO siempre."
+  },
+  "resumen": {"VERDE": 0, "ROJO": 0, "GRIS": 27},
+  "municipios": []
+}

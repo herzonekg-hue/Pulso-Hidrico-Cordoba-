@@ -1,0 +1,76 @@
+name: Prueba del panel hídrico
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  prueba-sin-red:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 lxml
+
+      - name: Preparar configuración de prueba
+        run: cp config.example.json config.json
+
+      - name: Comprobar sintaxis
+        run: python -m py_compile scraper_saih.py alertas.py
+
+      - name: Ejecutar lector con páginas de ejemplo
+        run: |
+          mkdir -p pruebas
+          [ -f pruebas/EmbalNiv.html ] || cp EmbalNiv.html pruebas/
+          [ -f pruebas/AforosTabla.html ] || cp AforosTabla.html pruebas/
+          mkdir -p /tmp/salida
+          HIDRICO_SALIDA=/tmp/salida python scraper_saih.py --fixture-dir pruebas
+
+      - name: Comprobar que los datos son correctos
+        run: |
+          python - <<'PY'
+          import json, sys
+          d = json.load(open('/tmp/salida/datos.json', encoding='utf-8'))
+          emb = d['embalses']; rios = d['aforos']
+          assert len(emb) == 15, f"Embalses: {len(emb)} en vez de 15"
+          assert len([a for a in rios if a['valor'] is not None]) >= 15, "Pocos puntos de río con lectura"
+          assert any(e['id'] == 'COLADA' for e in emb), "Falta La Colada"
+          print(f"Correcto: {len(emb)} embalses y {len(rios)} puntos de río")
+          PY
+
+      - name: Ejecutar el motor de avisos
+        run: HIDRICO_SALIDA=/tmp/salida python alertas.py
+
+  prueba-saih-real:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install requests beautifulsoup4 lxml
+      - run: cp config.example.json config.json
+      - name: Leer el SAIH real
+        run: |
+          mkdir -p /tmp/salida
+          HIDRICO_SALIDA=/tmp/salida python scraper_saih.py
+      - name: Comprobar que hay datos reales
+        run: |
+          python - <<'PY'
+          import json
+          d = json.load(open('/tmp/salida/datos.json', encoding='utf-8'))
+          con = [e for e in d['embalses'] if e.get('tiempo_real')]
+          assert len(con) >= 10, f"Solo {len(con)} embalses con lectura en tiempo real"
+          print(f"SAIH real: {len(con)} embalses con lectura")
+          PY

@@ -1,0 +1,46 @@
+name: Actualizar datos hídricos
+ 
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+ 
+permissions:
+  contents: write
+ 
+jobs:
+  actualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+ 
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+ 
+      - name: Instalar dependencias
+        run: pip install requests beautifulsoup4 lxml
+ 
+      - name: Preparar configuración
+        run: cp config.example.json config.json
+ 
+      - name: Leer el SAIH y La Colada
+        continue-on-error: true
+        env:
+          HIDRICO_SALIDA: ${{ github.workspace }}
+        run: python scraper_saih.py
+ 
+      - name: Guardar los datos si han cambiado
+        run: |
+          git config user.name "actualizacion-automatica"
+          git config user.email "actualizacion-automatica@users.noreply.github.com"
+          # datos.json y serie.json están en .gitignore, por eso se añaden con -f
+          git add -f datos.json serie.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios que guardar"
+          else
+            git commit -m "Actualización automática de datos"
+            git push
+          fi

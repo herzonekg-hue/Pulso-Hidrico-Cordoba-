@@ -1,0 +1,637 @@
+{
+ "generado": "2026-11-10T16:29:52",
+ "aviso": "Datos automáticos no contrastados (SAIH Guadalquivir). El dato validado es el boletín hidrológico del MITECO.",
+ "zonas": {
+  "norte": {
+   "nombre": "Norte",
+   "detalle": "Los Pedroches y Valle del Guadiato"
+  },
+  "capital": {
+   "nombre": "Capital y sierra",
+   "detalle": "Término de Córdoba y Sierra Morena central"
+  },
+  "este": {
+   "nombre": "Este",
+   "detalle": "Sierra de Montoro y Alto Guadalquivir"
+  },
+  "oeste": {
+   "nombre": "Oeste",
+   "detalle": "Hornachuelos, Bembézar y Bajo Guadiato"
+  },
+  "sur": {
+   "nombre": "Sur",
+   "detalle": "Campiña Sur y Subbética"
+  }
+ },
+ "embalses": [
+  {
+   "id": "COLADA",
+   "nombre": "La Colada",
+   "zona": "norte",
+   "municipios": [
+    "El Viso",
+    "Belalcázar"
+   ],
+   "rio": "Guadamatilla",
+   "cuenca": "Guadiana",
+   "nota": "Pertenece a la CHG Guadiana. Sin medición automática accesible; se usa el dato semanal del MITECO. Alimentó la ETAP de Sierra Boyera mediante bombeo de emergencia desde 2023. En marzo de 2026 la CHG Guadiana denegó la concesión de aguas solicitada por la Diputación. Uso actual no confirmado.",
+   "volumen": 47.0,
+   "capacidad": 58.0,
+   "pct": 81.03,
+   "fecha": "09/11/2026",
+   "tiempo_real": false,
+   "origen": "MITECO boletín semanal, a través de embalses.net"
+  },
+  {
+   "id": "E33",
+   "nombre": "Sierra Boyera",
+   "zona": "norte",
+   "municipios": [
+    "Belmez",
+    "Peñarroya-Pueblonuevo",
+    "Fuente Obejuna"
+   ],
+   "rio": "Guadiato",
+   "cuenca": "Guadalquivir",
+   "ute": "UTE 0707 Sierra Boyera",
+   "volumen": 27.73,
+   "capacidad": 39.476,
+   "pct": 70.25,
+   "nmn": 500.0,
+   "nivel": 497.39,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E34",
+   "nombre": "Puente Nuevo",
+   "zona": "norte",
+   "municipios": [
+    "Villaviciosa de Córdoba",
+    "Espiel"
+   ],
+   "rio": "Guadiato",
+   "cuenca": "Guadalquivir",
+   "ute": "UTE 0701 Regulación General",
+   "volumen": 201.774,
+   "capacidad": 281.259,
+   "pct": 71.74,
+   "nmn": 445.0,
+   "nivel": 440.67,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E30",
+   "nombre": "San Rafael de Navallana",
+   "zona": "capital",
+   "municipios": [
+    "Córdoba"
+   ],
+   "rio": "Guadalmellato",
+   "cuenca": "Guadalquivir",
+   "ute": "UTE 0701 Regulación General",
+   "volumen": 98.855,
+   "capacidad": 160.124,
+   "pct": 61.74,
+   "nmn": 158.0,
+   "nivel": 151.14,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E35",
+   "nombre": "Guadanuño",
+   "zona": "capital",
+   "municipios": [
+    "Córdoba",
+    "Obejo",
+    "Villaviciosa de Córdoba"
+   ],
+   "rio": "Guadanuño",
+   "cuenca": "Guadalquivir",
+   "volumen": 0.824,
+   "capacidad": 1.637,
+   "pct": 50.35,
+   "nmn": 512.15,
+   "nivel": 509.5,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E29",
+   "nombre": "Guadalmellato",
+   "zona": "capital",
+   "municipios": [
+    "Adamuz",
+    "Obejo"
+   ],
+   "rio": "Guadalmellato",
+   "cuenca": "Guadalquivir",
+   "ute": "UTE 0712 Guadalmellato",
+   "volumen": 88.241,
+   "capacidad": 145.21,
+   "pct": 60.77,
+   "nmn": 211.5,
+   "nivel": 203.02,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E28",
+   "nombre": "Arenoso",
+   "zona": "este",
+   "municipios": [
+    "Montoro"
+   ],
+   "rio": "Arenoso",
+   "cuenca": "Guadalquivir",
+   "volumen": 114.725,
+   "capacidad": 166.967,
+   "pct": 68.71,
+   "nmn": 209.0,
+   "nivel": 201.16,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E26",
+   "nombre": "Yeguas",
+   "zona": "este",
+   "municipios": [
+    "Montoro",
+    "Marmolejo (Jaén)"
+   ],
+   "rio": "Yeguas",
+   "cuenca": "Guadalquivir",
+   "nota": "La presa está en el límite entre Córdoba y Jaén, entre Montoro y Marmolejo, según el inventario de la Junta de Andalucía. Se asigna a Córdoba y a la zona Este por el lado cordobés.",
+   "volumen": 172.734,
+   "capacidad": 228.704,
+   "pct": 75.53,
+   "nmn": 248.5,
+   "nivel": 242.06,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E27",
+   "nombre": "Martín Gonzalo",
+   "zona": "este",
+   "municipios": [
+    "Montoro",
+    "Cardeña"
+   ],
+   "rio": "Arroyo Martín Gonzalo",
+   "cuenca": "Guadalquivir",
+   "ute": "UTE 0705 Martín Gonzalo",
+   "volumen": 12.04,
+   "capacidad": 20.491,
+   "pct": 58.76,
+   "nmn": 282.4,
+   "nivel": 274.65,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E37",
+   "nombre": "Bembézar",
+   "zona": "oeste",
+   "municipios": [
+    "Hornachuelos",
+    "Espiel"
+   ],
+   "rio": "Bembézar",
+   "cuenca": "Guadalquivir",
+   "ute": "UTE 0801 Bembézar-Retortillo",
+   "volumen": 246.463,
+   "capacidad": 327.982,
+   "pct": 75.15,
+   "nmn": 182.5,
+   "nivel": 174.88,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E38",
+   "nombre": "Hornachuelos",
+   "zona": "oeste",
+   "municipios": [
+    "Hornachuelos"
+   ],
+   "rio": "Bembézar",
+   "cuenca": "Guadalquivir",
+   "nota": "Contraembalse (azud de derivación) del Bembézar, en el término de Hornachuelos. Municipio confirmado en varias fuentes.",
+   "contraembalse": true,
+   "volumen": 11.25,
+   "capacidad": 11.771,
+   "pct": 95.58,
+   "nmn": 96.8,
+   "nivel": 96.28,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E39",
+   "nombre": "Retortillo",
+   "zona": "oeste",
+   "municipios": [
+    "Hornachuelos",
+    "Puebla de los Infantes (Sevilla)"
+   ],
+   "rio": "Retortillo",
+   "cuenca": "Guadalquivir",
+   "ute": "UTE 0801 Bembézar-Retortillo",
+   "volumen": 42.185,
+   "capacidad": 61.142,
+   "pct": 69.0,
+   "nmn": 187.0,
+   "nivel": 183.25,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E36",
+   "nombre": "La Breña II",
+   "zona": "oeste",
+   "municipios": [
+    "Almodóvar del Río"
+   ],
+   "rio": "Guadiato",
+   "cuenca": "Guadalquivir",
+   "ute": "UTE 0701 Regulación General",
+   "volumen": 632.125,
+   "capacidad": 823.4,
+   "pct": 76.77,
+   "nmn": 179.0,
+   "nivel": 168.41,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E32",
+   "nombre": "Vadomojón",
+   "zona": "sur",
+   "municipios": [
+    "Baena",
+    "Alcaudete (Jaén)"
+   ],
+   "rio": "Guadajoz",
+   "cuenca": "Guadalquivir",
+   "volumen": 108.012,
+   "capacidad": 145.19,
+   "pct": 74.39,
+   "nmn": 363.5,
+   "nivel": 358.2,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  },
+  {
+   "id": "E48",
+   "nombre": "Iznájar",
+   "zona": "sur",
+   "municipios": [
+    "Iznájar",
+    "Rute"
+   ],
+   "rio": "Genil",
+   "cuenca": "Guadalquivir",
+   "nota": "El vaso se extiende por otras provincias (consta Cuevas de San Marcos, en Málaga). La presa está en Córdoba.",
+   "volumen": 687.335,
+   "capacidad": 920.233,
+   "pct": 74.69,
+   "nmn": 421.06,
+   "nivel": 410.86,
+   "fecha": "10/11/2026 17:28",
+   "tiempo_real": true,
+   "origen": "SAIH Guadalquivir"
+  }
+ ],
+ "aforos": [
+  {
+   "id": "M15",
+   "nombre": "Cuzna en Pozoblanco",
+   "rio": "Cuzna",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    1.5,
+    2.1,
+    2.7
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.01,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "M13",
+   "nombre": "Guadalquivir en Córdoba",
+   "rio": "Guadalquivir",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    1.5,
+    2.0,
+    2.5
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.36,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "M35",
+   "nombre": "Guadalquivir en Alcolea",
+   "rio": "Guadalquivir",
+   "unidad": "m.s.n.m",
+   "medida": "cota",
+   "umbrales": [
+    106.55,
+    107.45,
+    108.15
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 104.65,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "M49",
+   "nombre": "Guadalquivir en Almodóvar",
+   "rio": "Guadalquivir",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    5.25,
+    6.0,
+    7.25
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.79,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "H06",
+   "nombre": "Central de El Carpio",
+   "rio": "Guadalquivir",
+   "unidad": "m³/s",
+   "medida": "caudal",
+   "umbrales": [
+    445.0,
+    670.0,
+    895.0
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 3.94,
+   "caudal": 3.94,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "H07",
+   "nombre": "Central de Villafranca",
+   "rio": "Guadalquivir",
+   "unidad": "m³/s",
+   "medida": "caudal",
+   "umbrales": [
+    475.0,
+    710.0,
+    950.0
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 1.0,
+   "caudal": 1.0,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "I11",
+   "nombre": "Fuente Palmera",
+   "rio": "Guadalquivir",
+   "unidad": "m³/s",
+   "medida": "caudal",
+   "umbrales": [
+    600.0,
+    850.0,
+    1200.0
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 20.13,
+   "caudal": 20.13,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "A32",
+   "nombre": "Genil en Puente Genil",
+   "rio": "Genil",
+   "unidad": "m.s.n.m",
+   "medida": "cota",
+   "umbrales": [
+    165.6,
+    166.1,
+    166.4
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 164.84,
+   "caudal": 0.94,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "M44",
+   "nombre": "Genil en Benamejí",
+   "rio": "Genil",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    3.6,
+    4.0,
+    4.5
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.98,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "M40",
+   "nombre": "Genil en Palma del Río",
+   "rio": "Genil",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    4.9,
+    5.9,
+    6.6
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 1.86,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "A14",
+   "nombre": "Guadajoz en Córdoba",
+   "rio": "Guadajoz",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    1.7,
+    2.3,
+    2.9
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.28,
+   "caudal": 1.17,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "A35",
+   "nombre": "Guadajoz en Castro del Río",
+   "rio": "Guadajoz",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    2.0,
+    3.0,
+    3.8
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.81,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "M16",
+   "nombre": "Bembézar en Hornachuelos",
+   "rio": "Bembézar",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    3.4,
+    5.1,
+    6.8
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.1,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "M28",
+   "nombre": "Arroyo Montesina en Hornachuelos",
+   "rio": "Bembézar",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    3.4,
+    5.1,
+    6.8
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.0,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "M17",
+   "nombre": "Salado en Luque",
+   "rio": "Salado",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    2.5,
+    4.0,
+    5.8
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 1.44,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "M50",
+   "nombre": "Arroyo Salado en Santaella",
+   "rio": "Salado",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    2.0,
+    3.0,
+    4.5
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.38,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "A10",
+   "nombre": "Anzur en Lucena",
+   "rio": "Anzur",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    2.0,
+    2.4,
+    2.8
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.09,
+   "caudal": null,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "A16",
+   "nombre": "Cabra en Aguilar de la Frontera",
+   "rio": "Cabra",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    0.9,
+    1.5,
+    2.0
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.17,
+   "caudal": 0.26,
+   "fecha": "10/11/2026 17:29"
+  },
+  {
+   "id": "A52",
+   "nombre": "Arroyo Madrefuentes en Palma del Río",
+   "rio": "Madrefuentes",
+   "unidad": "m.l.a",
+   "medida": "calado",
+   "umbrales": [
+    1.4,
+    2.0,
+    2.7
+   ],
+   "umbrales_origen": "SAIH",
+   "valor": 0.0,
+   "caudal": 0.0,
+   "fecha": "10/11/2026 17:29"
+  }
+ ],
+ "umbrales_embalse": {
+  "unidad": "porcentaje de llenado",
+  "amarillo": 40,
+  "naranja": 25,
+  "rojo": 15,
+  "oficial": false,
+  "nota": "Referencia propia de llenado, NO oficial. El método oficial de sequía es el indicador de escasez por Unidad Territorial de Escasez (UTE), con umbrales distintos por sistema y por mes (Plan Especial de Sequía del Guadalquivir). Ver LEEME, apartado 5."
+ },
+ "frescura_maxima_horas": 6
+}

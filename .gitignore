@@ -1,0 +1,9 @@
+# Secretos y datos generados: no subir nunca
+config.json
+datos.json
+serie.json
+estado_alertas.json
+*.log
+venv/
+__pycache__/
+*.tmp

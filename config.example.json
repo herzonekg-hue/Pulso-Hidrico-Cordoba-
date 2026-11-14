@@ -1,0 +1,10 @@
+{
+  "_aviso": "Copia este archivo a config.json. El archivo config.json NO debe subirse a GitHub (está en .gitignore).",
+  "aemet_api_key": "PON_TU_CLAVE_AEMET_AQUI",
+  "ntfy_topic": "",
+  "ntfy_server": "https://ntfy.sh",
+  "correo_smtp": "",
+  "correo_usuario": "",
+  "correo_password": "",
+  "correo_destino": ""
+}

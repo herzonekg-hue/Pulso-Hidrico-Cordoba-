@@ -1,0 +1,81 @@
+{
+  "generado": "2026-11-08T10:00:00Z",
+  "fuente": "FIXTURE — datos de prueba, no reales",
+  "aviso": "Datos de prueba. No usar para toma de decisiones.",
+  "riesgo_colada": {
+    "lluvia_ponderada_mm": 22.5,
+    "nivel": "alerta",
+    "nivel_num": 2,
+    "mensaje": "Lluvia moderada (22.5 mm pond.). Posible incremento de turbidez y materia orgánica en La Colada en 36-48 h.",
+    "tiempo_transito_h": 36,
+    "umbral_alerta_mm": 15.0,
+    "umbral_critico_mm": 30.0
+  },
+  "estaciones": [
+    {
+      "id": "5402",
+      "nombre": "Pozoblanco",
+      "lat": 38.3833, "lon": -4.8333, "alt": 649,
+      "cuenca": "Guadarramilla",
+      "nota": "EDAR Pozoblanco vierte al Guadarramilla. Máximo riesgo.",
+      "ok": true,
+      "hora_obs": "2026-11-08T09:00:00Z",
+      "prec_1h_mm": 12.0,
+      "temp_c": 14.2,
+      "racha_kmh": 28.0,
+      "humedad_pct": 88.0
+    },
+    {
+      "id": "5411",
+      "nombre": "Peñarroya-Pueblonuevo",
+      "lat": 38.300, "lon": -5.2667, "alt": 562,
+      "cuenca": "Guadiato",
+      "nota": "Cuenca del Guadiato. Referencia occidental.",
+      "ok": true,
+      "hora_obs": "2026-11-08T09:00:00Z",
+      "prec_1h_mm": 5.0,
+      "temp_c": 13.8,
+      "racha_kmh": 22.0,
+      "humedad_pct": 82.0
+    },
+    {
+      "id": "5410",
+      "nombre": "Hinojosa del Duque",
+      "lat": 38.500, "lon": -5.1333, "alt": 590,
+      "cuenca": "Zújar",
+      "nota": "Cuenca alta del Zújar. Contribución moderada.",
+      "ok": true,
+      "hora_obs": "2026-11-08T09:00:00Z",
+      "prec_1h_mm": 7.5,
+      "temp_c": 13.1,
+      "racha_kmh": 19.0,
+      "humedad_pct": 85.0
+    },
+    {
+      "id": "5403",
+      "nombre": "Villanueva de Córdoba",
+      "lat": 38.3167, "lon": -4.6167, "alt": 648,
+      "cuenca": "Yeguas",
+      "nota": "Cuenca del río Yeguas — afluente zona Sierra Boyera.",
+      "ok": true,
+      "hora_obs": "2026-11-08T09:00:00Z",
+      "prec_1h_mm": 4.2,
+      "temp_c": 14.5,
+      "racha_kmh": 15.0,
+      "humedad_pct": 80.0
+    },
+    {
+      "id": "5389",
+      "nombre": "Belmez",
+      "lat": 38.2667, "lon": -5.2167, "alt": 485,
+      "cuenca": "Guadiato",
+      "nota": "Guadiato sur. Referencia minería histórica.",
+      "ok": true,
+      "hora_obs": "2026-11-08T09:00:00Z",
+      "prec_1h_mm": 3.0,
+      "temp_c": 15.1,
+      "racha_kmh": 12.0,
+      "humedad_pct": 78.0
+    }
+  ]
+}

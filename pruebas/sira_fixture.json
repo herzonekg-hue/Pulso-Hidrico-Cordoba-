@@ -1,0 +1,53 @@
+{
+  "generado": "2026-11-08T22:00:00Z",
+  "fuente": "FIXTURE — datos de prueba, no reales",
+  "aviso": "Datos de prueba. No usar para toma de decisiones.",
+  "alerta_calidad": "alerta",
+  "embalses": [
+    {
+      "cod": "E2-40",
+      "nombre": "La Colada",
+      "tipo": "embalse",
+      "rio": "Guadamatilla",
+      "nota": "Embalse de reserva comarca Los Pedroches. Cuenca CHG.",
+      "nivel_msnm": 471.33,
+      "volumen_hm3": 46.88,
+      "capacidad_hm3": 58.0,
+      "pct_capacidad": 80.83,
+      "q_salida_m3s": 0.01,
+      "ok": true
+    }
+  ],
+  "calidad": [
+    {
+      "cod": "EAA-421",
+      "nombre": "El Viso — Guadarramilla",
+      "tipo": "calidad",
+      "rio": "Guadarramilla",
+      "nota": "Sonda SAICA. Mide fosfatos, amonio, pH antes de desembocar en La Colada.",
+      "hora_obs": "2026-11-08T21:45:00Z",
+      "fosfatos_mgl": 0.52,
+      "amonio_mgl": 0.38,
+      "ph": 7.82,
+      "turbidez_ntu": 12.4,
+      "cot_mgl": 4.1,
+      "nivel_alerta": "alerta",
+      "umbral_fosfatos_alerta_mgl": 0.4,
+      "umbral_fosfatos_critico_mgl": 1.0,
+      "ok": true
+    }
+  ],
+  "aforos": [
+    {
+      "cod": "CR2-08",
+      "nombre": "Zújar en Guadamatilla",
+      "tipo": "aforo",
+      "rio": "Zújar / Guadamatilla",
+      "nota": "Aforo en El Viso. Caudal que entra a La Colada por el Guadamatilla.",
+      "hora_obs": "2026-11-08T21:45:00Z",
+      "caudal_m3s": 2.14,
+      "nivel_mla": 0.68,
+      "ok": true
+    }
+  ]
+}
