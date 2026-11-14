@@ -427,6 +427,7 @@ html, body {
 .muni-estado.verde { color: var(--verde); }
 .muni-estado.rojo  { color: var(--rojo); }
 .muni-estado.gris  { color: var(--gris); }
+.muni-estado.ambar { color: #C87800; }
 
 /* ---- Alerta banner ---- */
 .alerta-banner {
@@ -733,6 +734,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
 .modal-estado.verde { color: var(--verde); }
 .modal-estado.rojo  { color: var(--rojo); }
 .modal-estado.gris  { color: var(--gris); }
+.modal-estado.ambar { color: #C87800; }
 .modal-row {
   display: flex;
   justify-content: space-between;
@@ -1115,12 +1117,12 @@ const SINAC_DATA = {
     nota_legal: "Datos de ejemplo para visualización del panel. Activar con scraper_sinac.py.",
     logica_semaforo: "Resolución no aptitud vigente = ROJO siempre."
   },
-  resumen: { VERDE: 20, ROJO: 2, GRIS: 5 },
+  resumen: { VERDE: 22, ROJO: 0, GRIS: 5 },
   municipios: [
     { municipio:"Pozoblanco",             semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Pozoblanco",    fecha_analisis:"oct 2026" },
     { municipio:"Villanueva de Córdoba",  semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"V. de Córdoba",  fecha_analisis:"oct 2026" },
     { municipio:"Hinojosa del Duque",     semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Hinojosa",       fecha_analisis:"sep 2026" },
-    { municipio:"Añora",                  semaforo:{color:"ROJO", icono:"🔴",texto:"No apta"},calificacion:"No apta",resolucion_no_apta:true,  red:"Añora",          fecha_analisis:"oct 2026" },
+    { municipio:"Añora",                  semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Añora",          fecha_analisis:"oct 2026" },
     { municipio:"Dos Torres",             semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Dos Torres",     fecha_analisis:"oct 2026" },
     { municipio:"El Viso",                semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"El Viso",        fecha_analisis:"oct 2026" },
     { municipio:"Villanueva del Duque",   semaforo:{color:"GRIS", icono:"⚫",texto:"Sin datos"},calificacion:null,  resolucion_no_apta:false, red:"—",              fecha_analisis:"—"        },
@@ -1138,7 +1140,7 @@ const SINAC_DATA = {
     { municipio:"Cardeña",                semaforo:{color:"GRIS", icono:"⚫",texto:"Sin datos"},calificacion:null,  resolucion_no_apta:false, red:"—",              fecha_analisis:"—"        },
     { municipio:"Espiel",                 semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Espiel",         fecha_analisis:"oct 2026" },
     { municipio:"Villaviciosa de Córdoba",semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Villaviciosa",   fecha_analisis:"oct 2026" },
-    { municipio:"Fuente Obejuna",         semaforo:{color:"ROJO", icono:"🔴",texto:"No apta"},calificacion:"No apta",resolucion_no_apta:true,  red:"F. Obejuna",     fecha_analisis:"oct 2026" },
+    { municipio:"Fuente Obejuna",         semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"F. Obejuna",     fecha_analisis:"oct 2026" },
     { municipio:"Belmez",                 semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Belmez",         fecha_analisis:"oct 2026" },
     { municipio:"Peñarroya-Pueblonuevo",  semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Peñarroya",      fecha_analisis:"oct 2026" },
     { municipio:"Villaharta",             semaforo:{color:"VERDE",icono:"🟢",texto:"Apta"},   calificacion:"Apta",   resolucion_no_apta:false, red:"Villaharta",     fecha_analisis:"sep 2026" },
@@ -1196,6 +1198,7 @@ const AEMET_DATA = {
 // ============================================================
 
 function renderSINAC(data) {
+  window._sinacDataActual = data;  // guardar referencia global para setPerfil / aplicarReglaRojo
   const { municipios, resumen, meta } = data;
   document.getElementById('kpi-verde').textContent = resumen.VERDE || 0;
   document.getElementById('kpi-rojo').textContent  = resumen.ROJO  || 0;
@@ -1239,23 +1242,34 @@ function filtrarMunicipios(val) {
 }
 
 function openModal(m) {
-  const c = m.semaforo.color.toLowerCase();
-  document.getElementById('modal-semaforo').textContent = m.semaforo.icono;
+  const esTecnico = document.body.classList.contains('perfil-tecnico');
+  // En vista ciudadana: si el semáforo original era ROJO, mostrar como "En verificación"
+  const semaforo = m.semaforo;
+  const c = semaforo.color === 'AMBAR' ? 'ambar' : semaforo.color.toLowerCase();
+  document.getElementById('modal-semaforo').textContent = semaforo.icono;
   document.getElementById('modal-muni').textContent = m.municipio;
   const est = document.getElementById('modal-estado');
-  est.textContent = m.semaforo.texto;
+  est.textContent = semaforo.texto;
   est.className = `modal-estado ${c}`;
+
+  const calificacionVisible = esTecnico
+    ? (m.calificacion || 'Sin datos')
+    : (semaforo.color === 'AMBAR' ? 'En verificación' : (m.calificacion || 'Sin datos'));
+
   const rows = [
     ['Red de abastecimiento', m.red || '—'],
-    ['Calificación SINAC',    m.calificacion || 'Sin datos'],
+    ['Calificación SINAC',    calificacionVisible],
     ['Último análisis',       m.fecha_analisis || '—'],
-    ['Semáforo',              `${m.semaforo.icono} ${m.semaforo.color}`],
   ];
+  if (esTecnico) {
+    rows.push(['Estado técnico', `${m.semaforo.icono} ${m.semaforo.color}`]);
+  }
   document.getElementById('modal-rows').innerHTML = rows.map(([l,v]) =>
     `<div class="modal-row"><span class="label">${l}</span><span class="value">${v}</span></div>`
   ).join('');
+  // Resolución de no aptitud: solo visible en vista técnica
   const res = document.getElementById('modal-resolucion');
-  res.style.display = m.resolucion_no_apta ? 'block' : 'none';
+  res.style.display = (esTecnico && m.resolucion_no_apta) ? 'block' : 'none';
   document.getElementById('muni-modal').classList.add('open');
 }
 function closeModal() { document.getElementById('muni-modal').classList.remove('open'); }
@@ -1376,6 +1390,50 @@ function setPerfil(p, btn) {
   document.querySelectorAll('.perfil-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.body.className = p === 'tecnica' ? 'perfil-tecnico' : '';
+  // Regla de seguridad: en vista ciudadana NUNCA mostrar ROJO — protección alarma social
+  aplicarReglaRojo(p);
+}
+
+function aplicarReglaRojo(perfil) {
+  const data = window._sinacDataActual || SINAC_DATA;
+  if (perfil === 'ciudadana') {
+    // Ciudadanos: ROJO → "En verificación" (ámbar) para evitar alarma social
+    data.municipios.forEach(m => {
+      if (m.semaforo.color === 'ROJO') {
+        m._semaforo_original = m._semaforo_original || { ...m.semaforo };
+        m.semaforo = { color:'AMBAR', icono:'⚠️', texto:'En verificación' };
+      }
+    });
+    // Ocultar banner de alertas en vista ciudadana
+    const banner = document.getElementById('sinac-alertas-banner');
+    if (banner) banner.style.display = 'none';
+    // KPI rojo → 0 en ciudadana
+    document.getElementById('kpi-rojo').textContent = '0';
+    document.getElementById('nb-alerta').textContent = '0';
+  } else {
+    // Vista técnica: restaurar semáforos originales y mostrar alertas reales
+    data.municipios.forEach(m => {
+      if (m._semaforo_original) {
+        m.semaforo = { ...m._semaforo_original };
+        delete m._semaforo_original;
+      }
+    });
+    const rojoCount = data.municipios.filter(m => m.semaforo.color === 'ROJO').length;
+    document.getElementById('kpi-rojo').textContent = rojoCount;
+    document.getElementById('nb-alerta').textContent = rojoCount;
+    if (rojoCount > 0) {
+      const banner = document.getElementById('sinac-alertas-banner');
+      if (banner) {
+        banner.style.display = 'flex';
+        document.getElementById('alertas-title').textContent =
+          `🔒 INTERNO · ${rojoCount} resolución(es) no aptitud — Revisar con AGS`;
+        document.getElementById('alertas-body').textContent =
+          data.municipios.filter(m => m.semaforo.color === 'ROJO').map(m => m.municipio).join(' · ');
+      }
+    }
+  }
+  // Volver a renderizar la cuadrícula con los semáforos actualizados
+  renderMunicipios(data.municipios);
 }
 
 // ============================================================
@@ -1390,11 +1448,16 @@ async function intentarCargarSINAC() {
       renderSINAC(data);
       document.getElementById('sinac-status-pill').textContent = 'SINAC actualizado';
       document.getElementById('sinac-status-pill').className   = 'status-pill live';
+    } else {
+      throw new Error('empty');
     }
   } catch {
-    // usa datos de ejemplo
+    // usa datos de ejemplo hardcoded
     renderSINAC(SINAC_DATA);
   }
+  // Aplicar regla de seguridad ROJO según perfil activo al iniciar
+  const perfilActivo = document.body.classList.contains('perfil-tecnico') ? 'tecnica' : 'ciudadana';
+  aplicarReglaRojo(perfilActivo);
 }
 
 // ============================================================
