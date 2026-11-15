@@ -1,122 +1,211 @@
-# Pulso hídrico de Córdoba. Guía de instalación
+# AQUASALUD NORTE — Guía de instalación para el informático
 
-Panel web que muestra los 15 embalses de la provincia de Córdoba (incluida La Colada, de la cuenca del Guadiana) y 19 puntos de río con umbral oficial de aviso, y que envía notificaciones cuando una lectura cruza un umbral.
+**AGS Norte de Córdoba · Versión 15 de noviembre de 2026**
 
-Versión: 4 de noviembre de 2026.
+Panel web de inteligencia hídrico-sanitaria para los 27 municipios del norte de Córdoba. Muestra en tiempo real calidad del agua de consumo (SINAC), estado de embalses y ríos (SAIH), meteorología (AEMET), teledetección del embalse de La Colada (Sentinel-2) y calidad fisicoquímica (SIRA Guadiana).
 
-## 1. Qué contiene el paquete
+---
 
-| Archivo | Función |
-|---|---|
-| index.html | Panel visual. Es una página estática, sin dependencias externas. Lee datos.json y serie.json cada 15 minutos. Si no existen, muestra datos de muestra y lo avisa. |
-| scraper_saih.py | Descarga embalses y niveles de río del SAIH del Guadalquivir y busca La Colada. Escribe datos.json y serie.json. |
-| alertas.py | Compara datos.json con los umbrales y notifica solo cuando cambia el nivel de un punto. |
-| config.example.json | Plantilla de configuración: embalses, zonas, municipios, umbrales y canales de aviso. instalar.sh la copia como config.json, que es el único archivo que se edita y que nunca se sube al repositorio. |
-| instalar.sh | Instalación en Linux con cron. |
-| pruebas/ | Dos páginas HTML de ejemplo que reproducen la estructura observada del SAIH, para probar el scraper sin red. |
+## 1. Arquitectura
 
-## 2. Requisitos
+```
+Servidor AGS (cron)
+  ├── scraper_saih.py       → data/datos.json  + data/serie.json
+  ├── scraper_sinac.py      → data/sinac_calidad.json
+  ├── scraper_aemet.py      → data/aemet.json
+  ├── scraper_sira.py       → data/sira.json
+  ├── scraper_sentinel2.py  → data/sentinel2.json + data/sentinel2_thumb.jpg
+  ├── alertas.py            → (lee datos.json, envía avisos si umbral cruzado)
+  └── config.json           ← NUNCA en la carpeta web ni en GitHub
 
-Servidor Linux con Python 3.9 o superior y un servidor web que sirva archivos estáticos (Apache, Nginx o similar). Salida HTTPS hacia estos dominios:
+Carpeta web (Apache/Nginx)
+  ├── index.html            ← panel estático, sin backend
+  └── data/                 ← los scrapers escriben aquí cada X minutos
+```
 
-1. www.chguadalquivir.es (obligatorio).
-2. www.embalses.net (respaldo semanal de La Colada).
-3. El servidor de avisos que se elija: ntfy.sh o uno propio, api.telegram.org, o el servidor SMTP del área.
+**El panel es 100 % estático.** El servidor web solo necesita servir archivos. No hace falta PHP, Node ni ningún backend. Los scrapers corren como cron en el servidor AGS y escriben JSON en la carpeta web.
 
-Si el servidor es Windows, el código Python es válido, pero hay que programar la ejecución con el Programador de tareas y sustituir instalar.sh por pasos manuales.
+---
+
+## 2. Requisitos del servidor
+
+| Componente | Versión mínima | Notas |
+|---|---|---|
+| Linux | cualquiera con systemd | Probado en Ubuntu 22.04 y Debian 12 |
+| Python | 3.9 | Se instala un venv propio, no afecta al sistema |
+| Servidor web | Apache 2 / Nginx | Solo ficheros estáticos. Puerto 80 o 443 |
+| Acceso HTTPS saliente | — | Ver dominios en sección 4 |
+
+**Windows:** el código Python es válido pero `instalar.sh` no funciona. Hay que crear el entorno virtual a mano y usar el Programador de tareas en lugar de cron.
+
+---
 
 ## 3. Instalación
 
-    sudo bash instalar.sh /var/www/html/hidrico /opt/hidrico-cordoba
+```bash
+sudo bash instalar.sh /var/www/html/aquasalud /opt/aquasalud-norte
+```
 
-El script copia la aplicación a /opt/hidrico-cordoba, publica solo index.html y los datos en la carpeta web, crea un entorno virtual con requests, beautifulsoup4 y lxml, programa una ejecución cada 15 minutos en /etc/cron.d/hidrico-cordoba y lanza una primera lectura.
+El script hace todo automáticamente:
+- Copia los 6 scrapers y alertas.py a `/opt/aquasalud-norte/`
+- Publica `index.html` y el esqueleto de datos en `/var/www/html/aquasalud/`
+- Crea un entorno virtual Python con `requests`, `beautifulsoup4`, `lxml`
+- Instala el cron en `/etc/cron.d/aquasalud-norte`
+- Lanza una primera lectura del SAIH
+- Crea `config.json` (si no existe ya) con plantilla vacía
 
-El archivo config.json queda fuera de la carpeta web a propósito, porque puede contener el token del bot de Telegram o la clave del correo. No debe servirse por HTTP.
+**Después de instalar, editar config.json:**
 
-Comprobación: abrir /opt/hidrico-cordoba/scraper.log tras la primera ejecución. Debe aparecer la línea "datos.json actualizado: 15 embalses, 19 puntos de río".
+```bash
+nano /opt/aquasalud-norte/config.json
+```
 
-## 4. Zonas y municipios
+---
 
-La zona se asigna por el municipio donde se sitúa la presa. No se usa el sistema de abastecimiento ni la confederación. Para cambiar un embalse de zona basta editar el campo "zona" en config.json.
+## 4. Dominios que el servidor debe poder alcanzar (HTTPS saliente)
 
-| Zona | Embalses | Municipios de la presa |
+| Dominio | Para qué | Scraper |
 |---|---|---|
-| Norte | La Colada | El Viso, Belalcázar |
-| Norte | Sierra Boyera | Belmez, Peñarroya-Pueblonuevo, Fuente Obejuna |
-| Norte | Puente Nuevo | Villaviciosa de Córdoba, Espiel |
-| Capital y sierra | San Rafael de Navallana | Córdoba |
-| Capital y sierra | Guadanuño | Córdoba, Obejo, Villaviciosa de Córdoba |
-| Capital y sierra | Guadalmellato | Adamuz, Obejo |
-| Este | Arenoso | Montoro |
-| Este | Yeguas | Montoro |
-| Este | Martín Gonzalo | Montoro, Cardeña |
-| Oeste | Bembézar | Hornachuelos, Espiel |
-| Oeste | Hornachuelos (contraembalse) | Hornachuelos |
-| Oeste | Retortillo | Hornachuelos, Puebla de los Infantes (Sevilla) |
-| Oeste | La Breña II | Almodóvar del Río |
-| Sur | Vadomojón | Baena, Alcaudete (Jaén) |
-| Sur | Iznájar | Iznájar, Rute |
+| `www.chguadalquivir.es` | Embalses y ríos | scraper_saih.py |
+| `www.embalses.net` | Respaldo La Colada | scraper_saih.py |
+| `sinac.sanidad.gob.es` | Calidad agua consumo | scraper_sinac.py |
+| `opendata.aemet.es` | Meteorología | scraper_aemet.py |
+| `www.siraguadiana.com` | Calidad fisicoquímica | scraper_sira.py |
+| `identity.dataspace.copernicus.eu` | OAuth Sentinel-2 | scraper_sentinel2.py |
+| `catalogue.dataspace.copernicus.eu` | Catálogo imágenes | scraper_sentinel2.py |
+| `sh.dataspace.copernicus.eu` | Estadísticas + imágenes | scraper_sentinel2.py |
+| El servidor ntfy o SMTP configurado | Alertas | alertas.py |
 
-Correcciones respecto a la versión anterior del panel: Vadomojón se sitúa en Baena, en la Campiña Sur, no en la capital. Hornachuelos, Bembézar y Retortillo pertenecen a la zona oeste, junto al límite con Sevilla. Yeguas, Arenoso y Martín Gonzalo corresponden a Montoro y su sierra. Hornachuelos y Bembézar no son zona norte ni zona sur.
+Si hay cortafuegos, hay que abrir estos dominios en salida HTTPS (puerto 443).
 
-Municipios comprobados en fuentes concordantes: el contraembalse de Hornachuelos está en el término de Hornachuelos. La presa de Yeguas está en el límite entre Córdoba y Jaén, entre Montoro y Marmolejo, según el inventario de la Junta de Andalucía; se asigna a Córdoba y a la zona Este por el lado cordobés. El vaso de Iznájar se extiende por otras provincias (consta Cuevas de San Marcos, en Málaga); la presa está en Córdoba.
+---
 
-## 5. Umbrales
+## 5. Configuración — config.json
 
-Ríos. Son los umbrales oficiales amarillo, naranja y rojo que publica el SAIH del Guadalquivir. El scraper los lee de la página en cada ejecución y, si difieren de los de config.json, lo anota en scraper.log. Si el SAIH no los publicara en algún momento, se usan los de config.json.
+Este archivo **nunca debe publicarse en la web ni subirse a GitHub**. Contiene claves privadas.
 
-Embalses. El método oficial de sequía no usa un porcentaje de llenado fijo. El Plan Especial de Sequía del Guadalquivir calcula un indicador de escasez por Unidad Territorial de Escasez (UTE), con cuatro escenarios (normalidad, prealerta, alerta y emergencia) y umbrales propios de cada sistema y de cada mes. Por eso los valores de 40, 25 y 15 por ciento del panel son una referencia propia, no oficial, y se marcan así en el panel y en los avisos.
+```jsonc
+{
+  "aemet_api_key": "...",              // Clave AEMET API (Junta de Andalucía)
 
-Cada tarjeta indica la UTE oficial cuando se ha podido verificar: Sierra Boyera (UTE 0707), Guadalmellato (UTE 0712), Bembézar y Retortillo (UTE 0801), Martín Gonzalo (UTE 0705) y Regulación General (UTE 0701) para Puente Nuevo, La Breña II y San Rafael de Navallana. Para Arenoso, Yeguas, Vadomojón, Guadanuño, Hornachuelos e Iznájar no se ha verificado su UTE y no se indica.
+  // Alertas por ntfy (push al móvil sin cuenta)
+  "ntfy_topic": "...",                 // Tema largo y privado, ej: aquasalud-norte-xk7m9p
+  "ntfy_server": "https://ntfy.sh",   // O servidor ntfy propio
 
-El estado oficial vigente de cada UTE lo publica la CHG en su página de sequía y escasez (IDE-CHG), pero esa página prohíbe el acceso automatizado, así que el scraper no puede leerla. Opciones: introducir cada mes el escenario oficial a mano, o pedir a la CHG un acceso a ese dato. Hasta entonces el panel avisa por los umbrales propios y por los oficiales de los ríos.
+  // Alertas por correo (alternativa o complemento a ntfy)
+  "correo_smtp": "smtp.juntadeandalucia.es",
+  "correo_puerto": 587,
+  "correo_usuario": "...",
+  "correo_password": "...",
+  "correo_destino": "antonio.gonzalez.caballero.sspa@juntadeandalucia.es",
 
-Los contraembalses, como Hornachuelos, no generan aviso por nivel bajo porque funcionan casi llenos por diseño.
+  // Sentinel-2 — Copernicus Data Space Ecosystem
+  // Cliente OAuth: "aquasalud-norte" — creado en cdse.eu con la cuenta Junta
+  "sentinel2_client_id": "sh-2ca6f517-c07c-437f-80b4-09f912ef1e68",
+  "sentinel2_client_secret": "84O1H4uk7aNB2fDOmD0UwVEnBuBzWlqhbfx6ZDs7w4qiITQgoqJ.",
+  "sentinel2_bbox_la_colada": [-5.1850, 38.3720, -5.1200, 38.4180],
+  "sentinel2_instance_id": "aquasalud-norte"
+}
+```
 
-Pendiente de decisión del área: si se quieren avisos por caudal mínimo en ríos. No existe umbral oficial de mínimos en la tabla del SAIH.
+> **Las claves Sentinel-2 ya están rellenas.** Solo hay que añadir `aemet_api_key` y los datos de notificación.
 
-## 6. La Colada
+---
 
-Pertenece a la Confederación Hidrográfica del Guadiana y no aparece en el SAIH del Guadalquivir.
+## 6. Cron instalado
 
-Estado actual de la integración: el panel la muestra junto al resto, con el dato semanal del MITECO obtenido de embalses.net (último dato verificado: 47 hm³ el 19/10/2026). No hay medición automática, y el panel lo indica en su tarjeta.
+```
+*/15 * * * *   SAIH + alertas  (embalses, ríos, avisos de umbral)
+*/15 * * * *   AEMET           (meteorología)
+0 6,18 * * *   SINAC           (calidad agua consumo — dos veces al día)
+0 8   * * *    Sentinel-2      (teledetección La Colada — máx. una imagen cada 5 días)
+0 *   * * *    SIRA Guadiana   (calidad fisicoquímica — cada hora)
+```
 
-Para conectar una fuente en tiempo real. SIRA Guadiana (https://www.siraguadiana.com) publica embalses y niveles de río, pero es una aplicación que carga los datos de forma dinámica y no se ha podido verificar un punto de acceso público estable. Dos vías posibles:
+---
 
-1. Abrir siraguadiana.com en un navegador, entrar en la sección de embalses, abrir las herramientas de desarrollo, pestaña Red, y localizar la petición que devuelve los datos de La Colada.
-2. Preguntar a la Confederación Hidrográfica del Guadiana si ofrece un acceso para organismos públicos.
+## 7. Regla de seguridad inamovible — NO APTA
 
-Si se localiza una dirección que devuelva un JSON con las claves "volumen_hm3" y "fecha", basta escribirla en config.json, campo la_colada.endpoint_tiempo_real. Si el formato es otro, se adapta la función leer_la_colada() de scraper_saih.py.
+**Esta regla nunca debe modificarse.** Si un análisis SINAC devuelve "no apta", el panel **no muestra ningún color rojo al ciudadano**. En su lugar:
 
-Situación del abastecimiento, con fuentes. Desde marzo de 2023, tras la conexión de emergencia ejecutada por la CHG Guadiana, el agua de La Colada llegó a la ETAP de Sierra Boyera mediante bombeo (informes del MITECO y de EMPROACSA). El 31 de marzo de 2026 La Voz de Córdoba informó de que la CHG Guadiana denegó la concesión de aguas superficiales que solicitaba la Diputación para el abastecimiento del norte, y de la discrepancia sobre las obras de conexión definitiva con Sierra Boyera. Esa información no permite afirmar si hoy se bombea agua o no. El panel lo expresa como "Concesión denegada" y deja el uso actual pendiente de contrastar con el gestor del abastecimiento. No se ha podido verificar la cita atribuida a la Diputación sobre el estado de la estación de bombeo, y por eso no figura.
+- Vista ciudadana: muestra ÁMBAR con el texto "En verificación"
+- El scraper envía una alerta interna (ntfy + correo) a Antonio González Caballero
+- Nada se publica hasta que el técnico lo revise
 
-## 7. Avisos
+Esta lógica está implementada en `scraper_sinac.py` (función `enviar_alerta_interna`) y en `index.html` (función `aplicarReglaRojo`). No tocar.
 
-Se configuran en config.json, apartado "notificaciones", activando uno o varios canales:
+---
 
-1. ntfy: notificaciones push al móvil sin cuenta, con la aplicación ntfy. El tema debe ser largo y privado. Puede usarse el servidor público o uno propio del área.
-2. Telegram: se necesita un bot propio (token) y el identificador del chat.
-3. Correo: servidor SMTP con STARTTLS.
+## 8. Actualizar el código (cuando llegue una nueva versión)
 
-Prueba de un canal:
+Como el informático tiene acceso al servidor pero Antonio no tiene acceso remoto después del despliegue, el proceso de actualización es:
 
-    /opt/hidrico-cordoba/venv/bin/python /opt/hidrico-cordoba/alertas.py --probar
+```bash
+# 1. En el servidor, descargar la nueva versión del repositorio
+cd /tmp
+git clone https://github.com/herzonekg-hue/Pulso-Hidrico-Cordoba- aquasalud-nueva
+# (o git pull si ya lo tienes clonado)
 
-Funcionamiento: se avisa solo cuando un punto sube, baja o vuelve a la normalidad, no en cada lectura. Si ningún canal está activo o todos fallan, el aviso queda pendiente y se reintenta en la siguiente pasada.
+# 2. Copiar los scripts actualizados (nunca tocar config.json)
+cp aquasalud-nueva/scraper_*.py /opt/aquasalud-norte/
+cp aquasalud-nueva/alertas.py   /opt/aquasalud-norte/
+cp aquasalud-nueva/index.html   /var/www/html/aquasalud/
 
-Alternativa oficial que complementa a lo anterior: el menú del SAIH del Guadalquivir incluye un bot de Telegram y una sección de gestión de avisos por SMS. No se han podido comprobar sus condiciones de acceso desde el entorno de desarrollo.
+# 3. Verificar sintaxis
+/opt/aquasalud-norte/venv/bin/python -m py_compile /opt/aquasalud-norte/scraper_saih.py
+# (repetir para cada scraper)
 
-## 8. Qué se ha probado y qué no
+# 4. El cron retoma automáticamente en la siguiente pasada. No hace falta reiniciar nada.
+```
 
-Probado: el análisis de las dos páginas del SAIH con archivos de ejemplo que reproducen la estructura observada, el cálculo de niveles de alerta con valores forzados, el control de duplicados de avisos, la sintaxis de los scripts y la visualización del panel en un navegador móvil.
+---
 
-No probado: la descarga real desde chguadalquivir.es, porque el entorno de desarrollo no tenía acceso a ese dominio, y el envío real por ntfy, Telegram o correo. Si el SAIH cambia el diseño de sus páginas, el scraper lo registra en scraper.log y conserva el último datos.json válido. Las funciones a revisar serían parse_embalses y parse_aforos.
+## 9. Logs y diagnóstico
 
-Los datos automáticos del SAIH llevan el aviso oficial "Datos no contrastados". El panel no sustituye los avisos de Protección Civil, AEMET ni la Confederación.
+| Log | Ruta | Qué buscar |
+|---|---|---|
+| SAIH | `/opt/aquasalud-norte/saih.log` | "datos.json actualizado: 15 embalses" |
+| SINAC | `/opt/aquasalud-norte/sinac.log` | "sinac_calidad.json actualizado: 27 municipios" |
+| AEMET | `/opt/aquasalud-norte/aemet.log` | "aemet.json actualizado" |
+| Sentinel-2 | `/opt/aquasalud-norte/sentinel2.log` | "sentinel2.json actualizado" o "nube > 10 %, sin imagen" |
+| SIRA | `/opt/aquasalud-norte/sira.log` | "sira.json actualizado" |
+| Alertas | `/opt/aquasalud-norte/alertas.log` | "Alerta enviada" o "Sin cambios" |
 
-## 9. Problemas habituales
+**Problemas frecuentes:**
 
-1. El panel muestra el aviso de datos de muestra: datos.json no está en la carpeta web. Revisar la variable HIDRICO_SALIDA del cron y los permisos.
-2. El panel muestra horas de antigüedad: el cron no se ejecuta o el SAIH no responde. Revisar scraper.log.
-3. El log indica "EmbalNiv sin filas reconocibles": cambió el diseño de la página del SAIH. Revisar parse_embalses.
-4. Un embalse figura como dato antiguo: dejó de aparecer en la tabla del SAIH. Se conserva su último valor.
+1. **El panel muestra datos de ejemplo** → `datos.json` no está en la carpeta web. Comprobar variable `HIDRICO_SALIDA` en el cron.
+2. **SINAC muestra todo en gris** → El scraper no ha corrido o falló. Ver `sinac.log`.
+3. **Sentinel-2 no actualiza** → Normal si hay nubes (nube > 10 % descarta la imagen). El último valor se conserva.
+4. **El panel muestra horas de antigüedad** → El cron no se ejecuta. `systemctl status cron`.
+5. **"EmbalNiv sin filas reconocibles"** → El SAIH cambió el diseño de su página. Contactar con Antonio.
+
+---
+
+## 10. Qué se ha probado y qué no
+
+**Probado (en entorno de desarrollo):**
+- Sintaxis de los 6 scrapers y alertas.py
+- Scraper SAIH con páginas de ejemplo (fixture)
+- Lógica de semáforos y alertas con valores forzados
+- Visualización del panel en navegador (móvil y escritorio)
+- Workflow CI en GitHub Actions verifica que nada se rompe en cada commit
+
+**Pendiente de probar en servidor real:**
+- Descarga real desde chguadalquivir.es, sinac.sanidad.gob.es, opendata.aemet.es, siraguadiana.com
+- Autenticación OAuth Sentinel-2 con las claves de producción
+- Envío real de alertas por ntfy y correo
+- Integración del thumbnail Sentinel-2 en el panel (el panel ya tiene el punto de integración; falta validar con imagen real)
+
+---
+
+## 11. Repositorio
+
+`https://github.com/herzonekg-hue/Pulso-Hidrico-Cordoba-` (privado)
+
+El repositorio contiene el código fuente pero **nunca** `config.json`, `datos.json`, `serie.json` ni ningún dato de explotación. Solo el informático con acceso al repositorio puede ver el código.
+
+**Importante:** `config.example.json` en el repositorio tiene las claves Sentinel-2 reales (ya configuradas). No es necesario tocarlas.
+
+---
+
+*AQUASALUD NORTE — AGS Norte de Córdoba — Antonio González Caballero*

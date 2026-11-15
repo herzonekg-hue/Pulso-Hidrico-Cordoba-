@@ -1,46 +1,74 @@
-name: Actualizar datos hídricos
- 
+name: Verificar scrapers (CI)
+
+# NOTA: Los scrapers se ejecutan en el servidor AGS mediante cron, NO aquí.
+# Este workflow solo comprueba la sintaxis y coherencia del código en cada push.
+
 on:
-  schedule:
-    - cron: "*/15 * * * *"
+  push:
+  pull_request:
   workflow_dispatch:
- 
-permissions:
-  contents: write
- 
+
 jobs:
-  actualizar:
+  verificar-sintaxis:
     runs-on: ubuntu-latest
     steps:
       - name: Descargar el repositorio
         uses: actions/checkout@v4
- 
+
       - name: Preparar Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
- 
+
       - name: Instalar dependencias
         run: pip install requests beautifulsoup4 lxml
- 
-      - name: Preparar configuración
-        run: cp config.example.json config.json
- 
-      - name: Leer el SAIH y La Colada
-        continue-on-error: true
-        env:
-          HIDRICO_SALIDA: ${{ github.workspace }}
-        run: python scraper_saih.py
- 
-      - name: Guardar los datos si han cambiado
+
+      - name: Verificar sintaxis de todos los scrapers
         run: |
-          git config user.name "actualizacion-automatica"
-          git config user.email "actualizacion-automatica@users.noreply.github.com"
-          # datos.json y serie.json están en .gitignore, por eso se añaden con -f
-          git add -f datos.json serie.json
-          if git diff --cached --quiet; then
-            echo "Sin cambios que guardar"
-          else
-            git commit -m "Actualización automática de datos"
-            git push
+          python -m py_compile scraper_saih.py
+          python -m py_compile scraper_sinac.py
+          python -m py_compile scraper_sentinel2.py
+          python -m py_compile scraper_aemet.py
+          python -m py_compile scraper_sira.py
+          python -m py_compile alertas.py
+          echo "Sintaxis correcta en los 6 scrapers + alertas.py"
+
+      - name: Verificar que config.json no está en el repositorio
+        run: |
+          if git ls-files config.json | grep -q config.json; then
+            echo "ERROR: config.json está trackeado en git — contiene credenciales"
+            exit 1
           fi
+          echo "OK: config.json no está en el repositorio"
+
+      - name: Verificar que datos.json y serie.json no están en el repositorio
+        run: |
+          if git ls-files datos.json serie.json | grep -q ".json"; then
+            echo "ERROR: datos.json o serie.json están trackeados en git"
+            exit 1
+          fi
+          echo "OK: datos de explotación no están en el repositorio"
+
+      - name: Ejecutar scraper SAIH con fixture (sin red)
+        run: |
+          mkdir -p pruebas
+          [ -f pruebas/EmbalNiv.html ] || cp EmbalNiv.html pruebas/
+          [ -f pruebas/AforosTabla.html ] || cp AforosTabla.html pruebas/
+          mkdir -p /tmp/salida
+          HIDRICO_SALIDA=/tmp/salida python scraper_saih.py --fixture-dir pruebas
+
+      - name: Verificar estructura de datos SAIH
+        run: |
+          python - <<'PY'
+          import json, sys
+          d = json.load(open('/tmp/salida/datos.json', encoding='utf-8'))
+          emb = d['embalses']; rios = d['aforos']
+          assert len(emb) == 15, f"Embalses: {len(emb)} en vez de 15"
+          assert any(e['id'] == 'COLADA' for e in emb), "Falta La Colada"
+          print(f"OK: {len(emb)} embalses y {len(rios)} puntos de río")
+          PY
+
+      - name: Ejecutar motor de avisos con datos fixture
+        run: |
+          cp config.example.json /tmp/salida/config.json || cp config.example.json config.json
+          HIDRICO_SALIDA=/tmp/salida python alertas.py
