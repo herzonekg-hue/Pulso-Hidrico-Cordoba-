@@ -1,0 +1,62 @@
+name: Desplegar panel en GitHub Pages
+
+# Despliega el panel (index.html + data/) en GitHub Pages
+# tras cada push a main que modifique archivos del panel.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "index.html"
+      - "data/**"
+      - ".nojekyll"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Solo un despliegue simultáneo; cancelar el anterior si llega otro.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  desplegar:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Preparar artefacto del panel
+        # Solo publicamos lo estrictamente necesario para el panel:
+        # index.html, .nojekyll y el directorio data/ (JSONs de scrapers).
+        # Los scrapers .py, docs/ y demás solo son para el servidor AGS.
+        run: |
+          mkdir -p _site
+          cp index.html _site/
+          cp .nojekyll _site/
+          if [ -d data ] && [ "$(ls -A data)" ]; then
+            cp -r data _site/
+          else
+            mkdir -p _site/data
+          fi
+          echo "Contenido de _site:"
+          ls -la _site/
+
+      - name: Subir artefacto
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Desplegar en GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
