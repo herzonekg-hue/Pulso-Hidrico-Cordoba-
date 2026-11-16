@@ -1005,7 +1005,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
       </div>
 
       <div class="nota-legal tecnico-only">
-        <strong>Nota:</strong> CR2-07 Guadarramilla a.ab. La Colada registró fosfatos hasta 22,73 mg P/L (muy por encima del límite 2 mg/L RDPH). Pendiente integración scraper_sira.py. Consulta SIRA: <a href="https://sinia.miteco.gob.es" target="_blank" style="color:var(--agua)">sinia.miteco.gob.es</a>
+        <strong>Nota:</strong> CR2-07 Guadarramilla a.ab. La Colada registró fosfatos hasta 22,73 mg P/L (límite bueno/moderado RD 817/2015 R-T01: 0,4 mg PO₄/L; límite muy bueno: 0,2 mg PO₄/L). Pendiente integración scraper_sira.py. Consulta SIRA: <a href="https://sinia.miteco.gob.es" target="_blank" style="color:var(--agua)">sinia.miteco.gob.es</a>
       </div>
     </section>
 
@@ -1159,25 +1159,25 @@ const SIRA_DATA = {
     ts: "13/11/2026 23:00",
     ph: 7.84,
     params: [
-      { param:"pH",           valor:7.84,  unidad:"—",      ref:"6.5–9.0",  estado:"ok"  },
-      { param:"Turbidez",     valor:1.2,   unidad:"NTU",    ref:"< 4 NTU",  estado:"ok"  },
-      { param:"Oxígeno dis.", valor:8.6,   unidad:"mg/L",   ref:"> 7",      estado:"ok"  },
-      { param:"Temperatura",  valor:14.3,  unidad:"°C",     ref:"< 25",     estado:"ok"  },
-      { param:"Conductividad",valor:382,   unidad:"µS/cm",  ref:"< 2500",   estado:"ok"  },
-      { param:"Nitratos",     valor:4.1,   unidad:"mg/L",   ref:"< 50",     estado:"ok"  },
-      { param:"Clorofila",    valor:12.4,  unidad:"µg/L",   ref:"< 10",     estado:"warn"},
+      { param:"pH",           valor:7.84,  unidad:"—",      ref:"5.5–9 (mb: 6–8.4) · RD 817/2015 R-T01",  estado:"ok"  },
+      { param:"Turbidez",     valor:1.2,   unidad:"NTU",    ref:"< 4 NTU · orientativo",                   estado:"ok"  },
+      { param:"Oxígeno dis.", valor:8.6,   unidad:"mg/L",   ref:"> 5 mg/L (> 7 mb) · RD 817/2015 R-T01",  estado:"ok"  },
+      { param:"Temperatura",  valor:14.3,  unidad:"°C",     ref:"< 25 · orientativo",                      estado:"ok"  },
+      { param:"Conductividad",valor:382,   unidad:"µS/cm",  ref:"< 2500 · orientativo",                    estado:"ok"  },
+      { param:"Nitratos",     valor:4.1,   unidad:"mg/L",   ref:"< 25 NO₃ (mb: < 10) · RD 817/2015 R-T01",estado:"ok"  },
+      { param:"Clorofila",    valor:12.4,  unidad:"µg/L",   ref:"< 10 · orientativo (embalse)",            estado:"warn"},
     ]
   },
   eaa: {
     ts: "13/11/2026 22:30",
     cond: 1247,
     params: [
-      { param:"pH",           valor:7.42,  unidad:"—",      ref:"6.5–9.0",  estado:"ok"  },
-      { param:"Conductividad",valor:1247,  unidad:"µS/cm",  ref:"< 2500",   estado:"warn"},
-      { param:"Turbidez",     valor:6.3,   unidad:"NTU",    ref:"< 4 NTU",  estado:"warn"},
-      { param:"Nitratos",     valor:18.7,  unidad:"mg/L",   ref:"< 50",     estado:"ok"  },
-      { param:"Fosfatos",     valor:22.73, unidad:"mg P/L", ref:"< 2.0",    estado:"bad" },
-      { param:"DBO₅",         valor:4.8,   unidad:"mg/L",   ref:"< 5",      estado:"ok"  },
+      { param:"pH",           valor:7.42,  unidad:"—",      ref:"5.5–9 (mb: 6–8.4) · RD 817/2015 R-T01",    estado:"ok"  },
+      { param:"Conductividad",valor:1247,  unidad:"µS/cm",  ref:"< 2500 · orientativo",                     estado:"warn"},
+      { param:"Turbidez",     valor:6.3,   unidad:"NTU",    ref:"< 4 NTU · orientativo",                    estado:"warn"},
+      { param:"Nitratos",     valor:18.7,  unidad:"mg/L",   ref:"< 25 NO₃ (mb: < 10) · RD 817/2015 R-T01", estado:"ok"  },
+      { param:"Fosfatos",     valor:22.73, unidad:"mg P/L", ref:"< 0.4 PO₄ (mb: < 0.2) · RD 817/2015 R-T01",estado:"bad"},
+      { param:"DBO₅",         valor:4.8,   unidad:"mg/L",   ref:"< 5 · Dir. 91/271/CEE zona sensible",      estado:"ok"  },
     ]
   }
 };
