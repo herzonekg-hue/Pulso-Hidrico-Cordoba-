@@ -272,12 +272,16 @@ def enviar_alerta_interna(municipios_rojo: list, cfg: dict):
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
-    # Cargar config
-    if not CONFIG_PATH.exists():
-        log.error("No existe config.json")
-        sys.exit(1)
-    with open(CONFIG_PATH, encoding="utf-8") as f:
-        cfg = json.load(f)
+    # Cargar config (opcional — solo se necesita para alertas por correo/ntfy)
+    # En GitHub Actions no existe config.json; el scraper funciona igual
+    # pero sin canal de alerta (el log queda en el workflow)
+    if CONFIG_PATH.exists():
+        with open(CONFIG_PATH, encoding="utf-8") as f:
+            cfg = json.load(f)
+        log.info("config.json cargado — alertas activadas")
+    else:
+        cfg = {}
+        log.info("config.json no encontrado — funcionando sin alertas externas (modo CI)")
 
     # Modo fixture (pruebas sin red)
     fixture_dir = os.environ.get("HIDRICO_FIXTURE_DIR")
