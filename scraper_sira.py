@@ -144,6 +144,21 @@ def _get(url: str, params: dict = None, timeout: int = 20):
         return None
 
 
+def _post(url: str, body: dict, timeout: int = 20):
+    ctx = ssl._create_unverified_context()
+    payload = json.dumps(body).encode("utf-8")
+    req = urllib.request.Request(url, data=payload, headers=HEADERS, method="POST")
+    try:
+        with urllib.request.urlopen(req, context=ctx, timeout=timeout) as r:
+            return json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        log.warning("HTTP %s — %s", e.code, url)
+        return None
+    except Exception as e:
+        log.warning("Error POST %s — %s", url, e)
+        return None
+
+
 # ── Funciones de consulta ──────────────────────────────────────────────────────
 
 def obtener_catalogo_estaciones() -> dict:
@@ -159,27 +174,18 @@ def obtener_catalogo_estaciones() -> dict:
     # El catálogo tiene varios arrays: estaciones (EAA), embalses, aforos…
     # Exploramos todos los que haya
     if isinstance(data, dict):
-        # Debug: mostrar claves del catálogo para entender la estructura
-        log.info("Claves catálogo: %s", list(data.keys())[:10])
         for clave, lista in data.items():
             if not isinstance(lista, list):
                 continue
-            if lista:
-                log.info("Muestra [%s][0] claves: %s", clave, list(lista[0].keys()) if isinstance(lista[0], dict) else type(lista[0]))
             for item in lista:
                 cod = item.get("cod_estacion") or item.get("cod_embalse") or ""
                 if cod in ESTACIONES_OBJETIVO:
-                    # Capturar TODOS los campos id-like para debug
-                    id_fields = {k: v for k, v in item.items() if "id" in k.lower()}
-                    log.info("Encontrada: %s — %s | campos id: %s", cod, item.get("nombre",""), id_fields)
                     mapa[cod] = {
-                        "id_interno": item.get("id") or item.get("id_estacion") or cod,
+                        "id_interno": cod,
                         "nombre_sira": item.get("nombre", ""),
                         "cod": cod,
-                        "_item": item,  # guardar item completo para debug
                     }
-                    log.info("Encontrada: %s — %s (id=%s)",
-                             cod, item.get("nombre",""), mapa[cod]["id_interno"])
+                    log.info("Encontrada: %s — %s", cod, item.get("nombre",""))
     elif isinstance(data, list):
         for item in data:
             cod = item.get("cod_estacion") or item.get("cod_embalse") or ""
@@ -194,21 +200,29 @@ def obtener_catalogo_estaciones() -> dict:
     return mapa
 
 
+def _prefijo_estacion(cod: str) -> str:
+    """Extrae el prefijo de tipo a partir del código de estación.
+    EAA-421 → "EAA", E2-40 → "E", CR2-08 → "CR"
+    """
+    return cod.split("-")[0] if "-" in cod else cod
+
+
 def obtener_datos_estacion(cod: str, id_interno: str) -> dict | None:
-    """Consulta los datos en tiempo real de una estación por su ID interno."""
-    log.info("Consultando datos %s (id=%s)…", cod, id_interno)
-    # Probamos los parámetros más comunes que usan estos backends
-    for params in [
-        {"id": id_interno},
-        {"cod": cod},
-        {"cod_estacion": cod},
-        {"id": id_interno, "tipo": ESTACIONES_OBJETIVO[cod]["tipo"]},
-    ]:
-        data = _get(URL_RESOURCE, params=params)
-        if data:
-            log.info("Datos obtenidos para %s con params %s", cod, params)
-            return data
-        time.sleep(0.3)
+    """Consulta los datos en tiempo real de una estación.
+    Endpoint: POST /backend/Visor/resourceByID
+    Body: {"id": "<prefijo>", "idEstacion": "<cod>", "type": "ficha_redes_control_detalle"}
+    """
+    log.info("Consultando datos %s…", cod)
+    prefijo = _prefijo_estacion(cod)
+    body = {
+        "id":         prefijo,
+        "idEstacion": cod,
+        "type":       "ficha_redes_control_detalle",
+    }
+    data = _post(URL_RESOURCE, body)
+    if data:
+        log.info("Datos obtenidos para %s", cod)
+        return data
     log.warning("Sin datos para %s", cod)
     return None
 
