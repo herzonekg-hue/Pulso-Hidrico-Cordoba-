@@ -1,11 +1,368 @@
 {
   "meta": {
-    "generado": null,
-    "fecha_consulta_legible": "Sin ejecutar aún",
-    "fuente": "SINAC ciudadano — Ministerio de Sanidad",
-    "nota_legal": "Ejecutar scraper_sinac.py para obtener datos reales.",
-    "logica_semaforo": "Resolución no aptitud vigente = ROJO siempre."
+    "generado": "2026-11-20T18:20:52Z",
+    "fecha_consulta_legible": "20 noviembre 2026 18:20",
+    "fuente": "SINAC ciudadano (sinac.sanidad.gob.es) — Ministerio de Sanidad",
+    "nota_legal": "Datos de calidad del agua de consumo. Publicación sujeta a autorización de AGS Norte de Córdoba y Salud Ambiental.",
+    "logica_semaforo": "VERDE=apta, ROJO=resolución no aptitud vigente (solo vista técnica), GRIS=sin datos o sin resolución definitiva.",
+    "municipios_total": 27
   },
-  "resumen": {"VERDE": 0, "ROJO": 0, "GRIS": 27},
-  "municipios": []
+  "resumen": {
+    "VERDE": 0,
+    "ROJO": 0,
+    "GRIS": 27
+  },
+  "municipios": [
+    {
+      "municipio": "Adamuz",
+      "cod_ine": "14002",
+      "red": "Adamuz",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Alcaracejos",
+      "cod_ine": "14004",
+      "red": "Alcaracejos",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Belalcázar",
+      "cod_ine": "14012",
+      "red": "Belalcázar",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Belmez",
+      "cod_ine": "14013",
+      "red": "Belmez",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Cardeña",
+      "cod_ine": "14021",
+      "red": "Cardeña",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Conquista",
+      "cod_ine": "14022",
+      "red": "Conquista",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Dos Torres",
+      "cod_ine": "14026",
+      "red": "Dos Torres",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "El Viso",
+      "cod_ine": "14028",
+      "red": "El Viso",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Espiel",
+      "cod_ine": "14030",
+      "red": "Espiel",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Fuente la Lancha",
+      "cod_ine": "14035",
+      "red": "Fuente la Lancha",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Fuente Obejuna",
+      "cod_ine": "14036",
+      "red": "F. Obejuna",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Guadalcázar",
+      "cod_ine": "14037",
+      "red": "Guadalcázar",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Guijo",
+      "cod_ine": "14039",
+      "red": "—",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Hinojosa del Duque",
+      "cod_ine": "14041",
+      "red": "Hinojosa",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Montoro",
+      "cod_ine": "14052",
+      "red": "Montoro",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Obejo",
+      "cod_ine": "14054",
+      "red": "Obejo",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Pedroche",
+      "cod_ine": "14060",
+      "red": "Pedroche",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Peñarroya-Pueblonuevo",
+      "cod_ine": "14063",
+      "red": "Peñarroya",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Pozoblanco",
+      "cod_ine": "14066",
+      "red": "Pozoblanco",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Santa Eufemia",
+      "cod_ine": "14074",
+      "red": "Sta. Eufemia",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Torrecampo",
+      "cod_ine": "14084",
+      "red": "Torrecampo",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Villaharta",
+      "cod_ine": "14085",
+      "red": "Villaharta",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Villanueva de Córdoba",
+      "cod_ine": "14087",
+      "red": "V. de Córdoba",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Villanueva del Duque",
+      "cod_ine": "14088",
+      "red": "—",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Villaralto",
+      "cod_ine": "14090",
+      "red": "Villaralto",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Villaviciosa de Córdoba",
+      "cod_ine": "14092",
+      "red": "Villaviciosa",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    },
+    {
+      "municipio": "Añora",
+      "cod_ine": "14001",
+      "red": "Añora",
+      "calificacion": null,
+      "resolucion_no_apta": false,
+      "fecha_analisis": null,
+      "semaforo": {
+        "color": "GRIS",
+        "icono": "⚫",
+        "texto": "Sin datos"
+      }
+    }
+  ]
 }
