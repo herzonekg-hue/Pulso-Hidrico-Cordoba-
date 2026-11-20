@@ -24,6 +24,9 @@ jobs:
           python-version: "3.11"
 
       - name: Ejecutar scraper SIRA
+        # exit 1 = alerta, exit 2 = crítico — ambos son datos válidos.
+        # La validación de si hay datos la hace el paso siguiente.
+        continue-on-error: true
         env:
           HIDRICO_SALIDA: data
           # SIRA_AUTHJWT ya no es necesario: el scraper obtiene el token
