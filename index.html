@@ -577,6 +577,7 @@ html, body {
 .param-ok   { background: var(--verde-bg); color: var(--verde); }
 .param-warn { background: var(--naranja-bg); color: var(--naranja); }
 .param-bad  { background: var(--rojo-bg); color: var(--rojo); }
+.param-gris { background: var(--bg-hover, #f0f0f0); color: var(--fg-muted); }
 
 /* ---- Data timestamp row ---- */
 .data-ts {
@@ -980,7 +981,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
           <div class="kpi-sub">Conductividad µS/cm</div>
         </div>
         <div class="kpi-card">
-          <div class="kpi-label">Fosfatos CR2-07</div>
+          <div class="kpi-label">Fosfatos EAA-421</div>
           <div class="kpi-value rojo" id="sira-fosf">—</div>
           <div class="kpi-sub">mg P/L · Guadarramilla</div>
         </div>
@@ -1021,7 +1022,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
       </div>
 
       <div class="nota-legal tecnico-only">
-        <strong>Nota:</strong> CR2-07 Guadarramilla a.ab. La Colada registró fosfatos hasta 22,73 mg P/L (límite bueno/moderado RD 817/2015 R-T01: 0,4 mg PO₄/L; límite muy bueno: 0,2 mg PO₄/L). Pendiente integración scraper_sira.py. Consulta SIRA: <a href="https://sinia.miteco.gob.es" target="_blank" style="color:var(--agua)">sinia.miteco.gob.es</a>
+        <strong>Nota:</strong> EAA-421 (Guadarramilla a.ab. La Colada) registró fosfatos de 22,03 mg P/L (20 nov 2026). Límite bueno/moderado RD 817/2015 R-T01: 0,4 mg PO₄/L; límite muy bueno: 0,2 mg PO₄/L. Datos scraper SIRA activo (cron 30 min). Consulta SIRA: <a href="https://siraguadiana.com" target="_blank" style="color:var(--agua)">siraguadiana.com</a>. E2-40 (La Colada) y CR2-08 (Zújar) pendientes de autenticación (HTTP 401).
       </div>
     </section>
 
@@ -1351,12 +1352,13 @@ function drawSparkline(id, vals, color) {
 }
 
 function renderSIRA() {
+  // Datos hardcoded de fallback — serán sobreescritos por intentarCargarSIRA() si sira.json disponible
   const { colada, eaa } = SIRA_DATA;
   document.getElementById('sira-colada-ph').textContent  = colada.ph;
   document.getElementById('sira-eaa-cond').textContent   = eaa.cond;
   document.getElementById('sira-fosf').textContent       = '22.73';
-  document.getElementById('sira-colada-ts').textContent  = '🕐 ' + colada.ts;
-  document.getElementById('sira-eaa-ts').textContent     = '🕐 ' + eaa.ts;
+  document.getElementById('sira-colada-ts').textContent  = '🕐 (ejemplo) ' + colada.ts;
+  document.getElementById('sira-eaa-ts').textContent     = '🕐 (ejemplo) ' + eaa.ts;
 
   const renderTable = (tbodyId, params) => {
     document.getElementById(tbodyId).innerHTML = params.map(p => `
@@ -1464,13 +1466,6 @@ async function intentarCargarSIRA() {
     const d = await r.json();
     if (!d || !d.calidad) throw new Error('empty');
 
-    // Actualizar KPIs y pill de estado
-    const pill = document.getElementById('sira-status-pill');
-    if (pill) {
-      pill.textContent = 'SIRA en vivo · ' + (d.generado ? d.generado.slice(0,16).replace('T',' ') + ' UTC' : '—');
-      pill.className = 'status-pill live';
-    }
-
     // --- EAA-421 ---
     const eaa = d.calidad && d.calidad.find(e => e.cod === 'EAA-421');
     if (eaa && eaa.ok) {
@@ -1531,14 +1526,43 @@ async function intentarCargarSIRA() {
       }
     }
 
-    // --- E2-40 La Colada (embalse — solo ok/fail por ahora) ---
+    // --- E2-40 La Colada (embalse — ok=false por HTTP 401 pendiente) ---
     const col = d.embalses && d.embalses.find(e => e.cod === 'E2-40');
     const colPhEl = document.getElementById('sira-colada-ph');
     if (colPhEl && (!col || !col.ok)) colPhEl.textContent = 'S/D';
 
+    const coladaTbody = document.getElementById('sira-colada-tbody');
+    const coladaTs    = document.getElementById('sira-colada-ts');
+    if (!col || !col.ok) {
+      if (coladaTbody) coladaTbody.innerHTML = `
+        <tr><td colspan="5" style="text-align:center;color:var(--fg-muted);padding:18px 12px;font-size:13px">
+          ⚠️ Datos no disponibles — pendiente acceso API E2-40 (La Colada).
+        </td></tr>`;
+      if (coladaTs) coladaTs.textContent = '🕐 Sin datos en vivo';
+    }
+
+    // Actualizar pill con estado real
+    const pill = document.getElementById('sira-status-pill');
+    if (pill) {
+      const eaaOk = eaa && eaa.ok;
+      const colOk = col && col.ok;
+      if (eaaOk && !colOk) {
+        pill.textContent = 'EAA-421 en vivo · E2-40 sin datos · ' + (d.generado ? d.generado.slice(0,16).replace('T',' ') + ' UTC' : '—');
+        pill.className = 'status-pill';
+        pill.style.background = 'var(--ambar, #d97706)';
+        pill.style.color = '#fff';
+      } else if (eaaOk && colOk) {
+        pill.textContent = 'SIRA en vivo · ' + (d.generado ? d.generado.slice(0,16).replace('T',' ') + ' UTC' : '—');
+        pill.className = 'status-pill live';
+        pill.style = '';
+      }
+    }
+
   } catch(e) {
-    // fallback: renderSIRA() ya pintó datos hardcoded — no hacer nada
+    // fallback: renderSIRA() pintó datos hardcoded — marcar como ejemplo
     console.warn('sira.json no disponible, usando datos de ejemplo:', e.message);
+    const pill = document.getElementById('sira-status-pill');
+    if (pill) { pill.textContent = 'Datos de ejemplo'; pill.className = 'status-pill sample'; }
   }
 }
 
