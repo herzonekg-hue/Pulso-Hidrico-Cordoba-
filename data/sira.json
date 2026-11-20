@@ -1,0 +1,51 @@
+{
+  "generado": "2026-11-20T17:16:55Z",
+  "fuente": "SIRA Guadiana — siraguadiana.com (CHG)",
+  "aviso": "Datos automáticos sujetos a validación. No sustituyen avisos oficiales.",
+  "alerta_calidad": "critico",
+  "embalses": [
+    {
+      "cod": "E2-40",
+      "nombre": "La Colada",
+      "tipo": "embalse",
+      "rio": "Guadamatilla",
+      "nota": "Embalse de reserva comarca Los Pedroches. Cuenca CHG.",
+      "ok": false
+    }
+  ],
+  "calidad": [
+    {
+      "cod": "EAA-421",
+      "nombre": "El Viso — Guadarramilla",
+      "tipo": "calidad",
+      "rio": "Guadarramilla",
+      "nota": "Sonda SAICA. Mide fosfatos, amonio, pH antes de desembocar en La Colada. Datos usados en la denuncia ante Fiscalía (sep 2026).",
+      "hora_obs": "2026-11-20 17:00:00",
+      "fosfatos_mgl": 22.37,
+      "amonio_mgl": 20.0,
+      "ph": 8.62,
+      "oxigeno_mgl": 1.4,
+      "conductividad_uscm": 1901.14,
+      "turbidez_ntu": 57.93,
+      "temp_agua_c": 13.47,
+      "nitratos_mgl": null,
+      "sac_absm": null,
+      "clorofila_ugl": null,
+      "ficocianina_celll": null,
+      "nivel_alerta": "critico",
+      "umbral_fosfatos_alerta_mgl": 0.4,
+      "umbral_fosfatos_critico_mgl": 1.0,
+      "ok": true
+    }
+  ],
+  "aforos": [
+    {
+      "cod": "CR2-08",
+      "nombre": "Zújar en Guadamatilla",
+      "tipo": "aforo",
+      "rio": "Zújar / Guadamatilla",
+      "nota": "Aforo en El Viso. Caudal que entra a La Colada por el Guadamatilla.",
+      "ok": false
+    }
+  ]
+}

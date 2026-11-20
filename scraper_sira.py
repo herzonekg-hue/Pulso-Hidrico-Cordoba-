@@ -9,8 +9,11 @@ Integra datos que el SAIH del Guadalquivir no cubre:
   - Estación de aforo CR2-08 (Zújar en Guadamatilla, El Viso): caudal
 
 Endpoints descubiertos en siraguadiana.com:
-  GET /backend/Visor/estaciones  → catálogo de estaciones
-  GET /backend/Visor/resourceByID → datos en tiempo real por ID
+  GET  /backend/Visor/estaciones     → catálogo de estaciones
+  POST /backend/Visor/resourceByID   → datos en tiempo real
+       body: {"id":"<prefijo>","idEstacion":"<cod>","type":"ficha_redes_control_detalle"}
+  POST /backend/security/getProfile  → token sesión anónima (~12h)
+       body: {"COD_USUARIO":"public","ORIGIN":"...","APP":"VISOR","CASTICKET":null}
 
 Escribe: sira.json (leído por index.html y alertas.py)
 
@@ -37,6 +40,8 @@ SALIDA_DIR  = Path(os.environ.get("HIDRICO_SALIDA", SCRIPT_DIR))
 BASE_URL        = "https://siraguadiana.com/backend/Visor"
 URL_ESTACIONES  = f"{BASE_URL}/estaciones"
 URL_RESOURCE    = f"{BASE_URL}/resourceByID"
+URL_CALIDAD     = f"{BASE_URL}/calidad"     # POST — datos por estación EAA (body: consulta/estacion/tiempo)
+# URL_EMBALSES y URL_AFOROS: pendiente confirmar con DevTools E2-40 / CR2-08
 URL_GETPROFILE  = "https://siraguadiana.com/backend/security/getProfile"
 
 # Headers base que imitan al navegador — imprescindible para que el backend responda
@@ -144,7 +149,74 @@ def _get(url: str, params: dict = None, timeout: int = 20):
         return None
 
 
+def _post(url: str, body: dict, timeout: int = 20):
+    ctx = ssl._create_unverified_context()
+    payload = json.dumps(body).encode("utf-8")
+    req = urllib.request.Request(url, data=payload, headers=HEADERS, method="POST")
+    try:
+        with urllib.request.urlopen(req, context=ctx, timeout=timeout) as r:
+            return json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        log.warning("HTTP %s — %s", e.code, url)
+        return None
+    except Exception as e:
+        log.warning("Error POST %s — %s", url, e)
+        return None
+
+
 # ── Funciones de consulta ──────────────────────────────────────────────────────
+
+def obtener_calidad_eaa(cod: str) -> dict | None:
+    """
+    Consulta datos de calidad de una EAA via POST /calidad.
+    Body confirmado en DevTools (20-11-2026):
+      {"consulta": "EAA_DAT", "estacion": "<cod>", "tiempo": 7, "fInicial": null, "fFinal": null}
+
+    La respuesta es una lista de registros ordenada cronológicamente:
+      [{"Timestamp": "2026-11-19 02:00:00", "TA": 15.92, "PO": 9.76, "NH": 20.0,
+        "PH": 8.76, "OX": 5.87, "CD": 1650.75, "TB": 4.36, "NO": 0.0,
+        "Código Estación": "EAA-421"}, ...]
+    Devuelve el último registro envuelto en {"ult_res": {"valores": [<último>]}}
+    para que sea compatible con _extraer_valores_ult_res() y normalizar_calidad().
+    El campo timestamp se mapea desde "Timestamp".
+    """
+    log.info("POST /calidad para %s…", cod)
+    body = {
+        "consulta": "EAA_DAT",
+        "estacion": cod,
+        "tiempo":   7,
+        "fInicial": None,
+        "fFinal":   None,
+    }
+    data = _post(URL_CALIDAD, body)
+    if not data:
+        log.warning("Sin datos /calidad para %s", cod)
+        return None
+
+    # La respuesta es una lista; cogemos el último registro no vacío
+    registros = data if isinstance(data, list) else []
+    registro = None
+    for r in reversed(registros):
+        if isinstance(r, dict) and r.get("PO") is not None:
+            registro = r
+            break
+    if registro is None and registros:
+        registro = registros[-1]
+
+    if not registro:
+        log.warning("Lista /calidad vacía para %s", cod)
+        return None
+
+    # Normalizar campo timestamp (clave con mayúscula en /calidad)
+    if "Timestamp" in registro and "timestamp" not in registro:
+        registro = dict(registro)
+        registro["timestamp"] = registro["Timestamp"]
+
+    log.info("Datos /calidad obtenidos para %s — timestamp=%s PO=%s NH=%s",
+             cod, registro.get("timestamp"), registro.get("PO"), registro.get("NH"))
+    # Envolver para compatibilidad con _extraer_valores_ult_res
+    return {"ult_res": {"valores": [registro]}, "fuente": "calidad"}
+
 
 def obtener_catalogo_estaciones() -> dict:
     """Descarga el catálogo completo y extrae los IDs internos de nuestras estaciones."""
@@ -166,12 +238,11 @@ def obtener_catalogo_estaciones() -> dict:
                 cod = item.get("cod_estacion") or item.get("cod_embalse") or ""
                 if cod in ESTACIONES_OBJETIVO:
                     mapa[cod] = {
-                        "id_interno": item.get("id") or item.get("id_estacion") or cod,
+                        "id_interno": cod,
                         "nombre_sira": item.get("nombre", ""),
                         "cod": cod,
                     }
-                    log.info("Encontrada: %s — %s (id=%s)",
-                             cod, item.get("nombre",""), mapa[cod]["id_interno"])
+                    log.info("Encontrada: %s — %s", cod, item.get("nombre",""))
     elif isinstance(data, list):
         for item in data:
             cod = item.get("cod_estacion") or item.get("cod_embalse") or ""
@@ -186,41 +257,64 @@ def obtener_catalogo_estaciones() -> dict:
     return mapa
 
 
+def _prefijo_estacion(cod: str) -> str:
+    """Extrae el prefijo de tipo a partir del código de estación.
+    EAA-421 → "EAA", E2-40 → "E", CR2-08 → "CR"
+    """
+    return cod.split("-")[0] if "-" in cod else cod
+
+
 def obtener_datos_estacion(cod: str, id_interno: str) -> dict | None:
-    """Consulta los datos en tiempo real de una estación por su ID interno."""
-    log.info("Consultando datos %s (id=%s)…", cod, id_interno)
-    # Probamos los parámetros más comunes que usan estos backends
-    for params in [
-        {"id": id_interno},
-        {"cod": cod},
-        {"cod_estacion": cod},
-        {"id": id_interno, "tipo": ESTACIONES_OBJETIVO[cod]["tipo"]},
-    ]:
-        data = _get(URL_RESOURCE, params=params)
-        if data:
-            log.info("Datos obtenidos para %s con params %s", cod, params)
-            return data
-        time.sleep(0.3)
+    """Consulta los datos en tiempo real de una estación.
+    Endpoint: POST /backend/Visor/resourceByID
+    Body: {"id": "<prefijo>", "idEstacion": "<cod>", "type": "ficha_redes_control_detalle"}
+    """
+    log.info("Consultando datos %s…", cod)
+    prefijo = _prefijo_estacion(cod)
+    body = {
+        "id":         prefijo,
+        "idEstacion": cod,
+        "type":       "ficha_redes_control_detalle",
+    }
+    data = _post(URL_RESOURCE, body)
+    if data:
+        log.info("Datos obtenidos para %s", cod)
+        return data
     log.warning("Sin datos para %s", cod)
     return None
 
 
 def normalizar_embalse(cod: str, raw: dict) -> dict:
-    """Extrae campos relevantes de la respuesta de un embalse."""
-    # Intentamos varias rutas posibles según lo que vimos en la Preview
-    embalses = raw.get("embalses_volcap") or raw.get("est_res") or raw.get("ult_res") or raw
-    if isinstance(embalses, dict):
-        volumen    = embalses.get("volumen")
-        capacidad  = embalses.get("capacidad")
-        porcentaje = embalses.get("porcentajeVol")
-        nivel      = embalses.get("nivel") or embalses.get("cota")
-        q_salida   = embalses.get("caudal_salida") or embalses.get("Qsalida")
-    else:
-        volumen = capacidad = porcentaje = nivel = q_salida = None
+    """
+    Extrae campos relevantes de la respuesta de un embalse (tipo E).
+    Usamos _extraer_valores_ult_res como primer intento (misma estructura que EAA).
+    Si los campos no coinciden, probamos rutas alternativas del bloque raíz.
+    Pendiente: confirmar claves exactas con DevTools en E2-40 (aún no capturado).
+    """
+    v = _extraer_valores_ult_res(raw)
+
+    # Claves posibles en embalses SIRA (a confirmar con DevTools E2-40)
+    volumen    = v.get("VACT") or v.get("volumen") or v.get("VOL")
+    capacidad  = v.get("VCAP") or v.get("capacidad") or v.get("CAP")
+    porcentaje = v.get("PVOL") or v.get("porcentajeVol") or v.get("PCT")
+    nivel      = v.get("COTA") or v.get("nivel") or v.get("NMN")
+    q_salida   = v.get("QSAL") or v.get("caudal_salida") or v.get("QS")
+    hora       = v.get("timestamp") or ""
+
+    # Fallback a bloques raíz si ult_res no tiene los campos de embalse
+    if volumen is None:
+        alt = raw.get("embalses_volcap") or raw.get("est_res") or {}
+        if isinstance(alt, dict):
+            volumen    = alt.get("volumen") or alt.get("VACT")
+            capacidad  = alt.get("capacidad") or alt.get("VCAP")
+            porcentaje = alt.get("porcentajeVol") or alt.get("PVOL")
+            nivel      = alt.get("nivel") or alt.get("COTA")
+            q_salida   = alt.get("caudal_salida") or alt.get("QSAL")
 
     return {
         "cod":        cod,
         **ESTACIONES_OBJETIVO[cod],
+        "hora_obs":      hora,
         "nivel_msnm":    _float(nivel),
         "volumen_hm3":   _float(volumen),
         "capacidad_hm3": _float(capacidad),
@@ -230,31 +324,66 @@ def normalizar_embalse(cod: str, raw: dict) -> dict:
     }
 
 
-def normalizar_calidad(cod: str, raw: dict) -> dict:
-    """Extrae parámetros de calidad de la respuesta de una EAA."""
-    ult = raw.get("ult_res") or raw.get("est_res") or raw
+def _extraer_valores_ult_res(raw: dict) -> dict:
+    """
+    Extrae el primer objeto de valores del bloque ult_res.
+    Estructura real de SIRA:
+      {"ult_res": {"encabezado": [...], "valores": [{...}]}, "umbrales": [...]}
+    Los valores están en ult_res.valores[0] (dict con claves cortas: PO, NH, PH, OX, CD, TB, TA, NO…)
+    """
+    ult = raw.get("ult_res") or {}
     if isinstance(ult, dict):
-        fosfatos = ult.get("fosfatos") or ult.get("PO4") or ult.get("P")
-        amonio   = ult.get("amonio")   or ult.get("NH4") or ult.get("N")
-        ph       = ult.get("pH")       or ult.get("ph")
-        turbidez = ult.get("turbidez") or ult.get("SST")
-        cot      = ult.get("COT")      or ult.get("TOC")
-        hora     = ult.get("fecha")    or ult.get("hora") or ""
-    else:
-        fosfatos = amonio = ph = turbidez = cot = None
-        hora = ""
+        valores = ult.get("valores")
+        if isinstance(valores, list) and valores:
+            return valores[0]
+        # Fallback: a veces el dict de valores está directamente en ult_res
+        return ult
+    return {}
+
+
+def normalizar_calidad(cod: str, raw: dict) -> dict:
+    """
+    Extrae parámetros de calidad de la respuesta de una EAA (SAICA).
+    Claves reales confirmadas en DevTools (EAA-421, 2026-11-20):
+      PO  → Fosfatos (mg/l)
+      NH  → Amonio (mg/l)
+      PH  → pH (udph)
+      OX  → Oxígeno disuelto (mg/l)
+      CD  → Conductividad (µS/cm)
+      TB  → Turbidez (NTU)
+      TA  → Temperatura agua (°C)
+      NO  → Nitratos (mg/l)
+      SAC → SAC (Abs/m)
+      CLF → Clorofila (µg/l)
+      FIC → Ficocianina (Cell/l)
+      timestamp → hora de la observación
+    """
+    v = _extraer_valores_ult_res(raw)
+
+    fosfatos = v.get("PO")
+    amonio   = v.get("NH")
+    ph       = v.get("PH")
+    ox       = v.get("OX")
+    cd       = v.get("CD")
+    turbidez = v.get("TB")
+    temp     = v.get("TA")
+    nitratos = v.get("NO")
+    sac      = v.get("SAC")
+    clf      = v.get("CLF")
+    fic      = v.get("FIC")
+    hora     = v.get("timestamp") or ""
 
     fosfatos_v = _float(fosfatos)
     amonio_v   = _float(amonio)
 
-    # Nivel de alerta
-    if fosfatos_v and fosfatos_v >= UMBRAL_FOSFATOS_CRITICO:
+    # Nivel de alerta (interno — NO APTA nunca es público, solo alerta interna a Antonio)
+    if fosfatos_v is not None and fosfatos_v >= UMBRAL_FOSFATOS_CRITICO:
         nivel_alerta = "critico"
-    elif fosfatos_v and fosfatos_v >= UMBRAL_FOSFATOS_ALERTA:
+    elif fosfatos_v is not None and fosfatos_v >= UMBRAL_FOSFATOS_ALERTA:
         nivel_alerta = "alerta"
-    elif amonio_v and amonio_v >= UMBRAL_AMONIO_CRITICO:
+    elif amonio_v is not None and amonio_v >= UMBRAL_AMONIO_CRITICO:
         nivel_alerta = "critico"
-    elif amonio_v and amonio_v >= UMBRAL_AMONIO_ALERTA:
+    elif amonio_v is not None and amonio_v >= UMBRAL_AMONIO_ALERTA:
         nivel_alerta = "alerta"
     else:
         nivel_alerta = "normal"
@@ -262,37 +391,52 @@ def normalizar_calidad(cod: str, raw: dict) -> dict:
     return {
         "cod":          cod,
         **ESTACIONES_OBJETIVO[cod],
-        "hora_obs":     hora,
-        "fosfatos_mgl": fosfatos_v,
-        "amonio_mgl":   amonio_v,
-        "ph":           _float(ph),
-        "turbidez_ntu": _float(turbidez),
-        "cot_mgl":      _float(cot),
-        "nivel_alerta": nivel_alerta,
+        "hora_obs":          hora,
+        "fosfatos_mgl":      fosfatos_v,
+        "amonio_mgl":        amonio_v,
+        "ph":                _float(ph),
+        "oxigeno_mgl":       _float(ox),
+        "conductividad_uscm":_float(cd),
+        "turbidez_ntu":      _float(turbidez),
+        "temp_agua_c":       _float(temp),
+        "nitratos_mgl":      _float(nitratos),
+        "sac_absm":          _float(sac) if sac not in (None, "") else None,
+        "clorofila_ugl":     _float(clf) if clf not in (None, "") else None,
+        "ficocianina_celll": _float(fic) if fic not in (None, "") else None,
+        "nivel_alerta":      nivel_alerta,
         "umbral_fosfatos_alerta_mgl":  UMBRAL_FOSFATOS_ALERTA,
         "umbral_fosfatos_critico_mgl": UMBRAL_FOSFATOS_CRITICO,
-        "ok":           fosfatos is not None or amonio is not None,
+        "ok": fosfatos_v is not None or amonio_v is not None,
     }
 
 
 def normalizar_aforo(cod: str, raw: dict) -> dict:
-    """Extrae caudal de la respuesta de un aforo."""
-    ult = raw.get("ult_res") or raw.get("est_res") or raw
-    if isinstance(ult, dict):
-        caudal = ult.get("caudal") or ult.get("Q") or ult.get("valor")
-        nivel  = ult.get("nivel")  or ult.get("N")
-        hora   = ult.get("fecha")  or ult.get("hora") or ""
-    else:
-        caudal = nivel = None
-        hora = ""
+    """
+    Extrae caudal de la respuesta de un aforo (tipo CR).
+    Usamos _extraer_valores_ult_res como primer intento (misma estructura que EAA).
+    Pendiente: confirmar claves exactas con DevTools en CR2-08 (aún no capturado).
+    """
+    v = _extraer_valores_ult_res(raw)
+
+    # Claves posibles en aforos SIRA (a confirmar con DevTools CR2-08)
+    caudal = v.get("Q") or v.get("CAUD") or v.get("caudal") or v.get("valor")
+    nivel  = v.get("N") or v.get("NIVEL") or v.get("nivel")
+    hora   = v.get("timestamp") or ""
+
+    # Fallback
+    if caudal is None:
+        alt = raw.get("est_res") or {}
+        if isinstance(alt, dict):
+            caudal = alt.get("caudal") or alt.get("Q")
+            nivel  = alt.get("nivel")  or alt.get("N")
 
     return {
-        "cod":       cod,
+        "cod":        cod,
         **ESTACIONES_OBJETIVO[cod],
-        "hora_obs":  hora,
+        "hora_obs":   hora,
         "caudal_m3s": _float(caudal),
         "nivel_mla":  _float(nivel),
-        "ok":        caudal is not None,
+        "ok":         caudal is not None,
     }
 
 
@@ -335,21 +479,35 @@ def main():
     else:
         log.warning("Sin token SIRA — las peticiones podrían ser rechazadas (401/403)")
 
-    # 1. Obtener catálogo para resolver IDs internos
-    mapa = obtener_catalogo_estaciones()
+    # 1. Consultar cada estación con el endpoint correcto según tipo
+    #    EAA  → POST /calidad  (body confirmado DevTools 20-11-2026)
+    #    E/CR → POST /resourceByID (fallback; E2-40 y CR2-08 dan 401 con token público)
+    todos_datos: dict[str, dict] = {}
+
+    for cod, meta in ESTACIONES_OBJETIVO.items():
+        if meta["tipo"] == "calidad":
+            # POST /calidad — estructura confirmada (lista de registros con PO/NH/TA…)
+            raw = obtener_calidad_eaa(cod)
+            if raw is None:
+                # Fallback a resourceByID si /calidad falla
+                log.info("Fallback resourceByID para %s", cod)
+                raw = obtener_datos_estacion(cod, cod)
+        else:
+            # Embalses y aforos: resourceByID (E2-40 y CR2-08 dan 401 con token público)
+            raw = obtener_datos_estacion(cod, cod)
+        if raw:
+            todos_datos[cod] = raw
+        time.sleep(0.5)
 
     embalses = []
     calidad  = []
     aforos   = []
 
-    # 2. Consultar cada estación objetivo
+    # 2. Normalizar cada estación con sus datos
     for cod, meta in ESTACIONES_OBJETIVO.items():
-        id_interno = mapa.get(cod, {}).get("id_interno", cod)
-        raw = obtener_datos_estacion(cod, id_interno)
-        time.sleep(0.5)
+        raw = todos_datos.get(cod)
 
         if raw is None:
-            # Entrada vacía para mantener estructura
             entrada = {"cod": cod, **meta, "ok": False}
             if meta["tipo"] == "embalse":
                 embalses.append(entrada)
