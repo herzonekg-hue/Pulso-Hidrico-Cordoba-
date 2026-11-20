@@ -67,33 +67,33 @@ SINAC_V2_BASE     = "https://sinacv2.sanidad.gob.es/CiudadanoWeb/ciudadano"
 
 # ── 27 municipios del norte de Córdoba ────────────────────────────────────────
 MUNICIPIOS = [
-    {"cod_ine": "14001", "municipio": "Añora"},
-    {"cod_ine": "14002", "municipio": "Adamuz"},
-    {"cod_ine": "14004", "municipio": "Alcaracejos"},
-    {"cod_ine": "14012", "municipio": "Belalcázar"},
-    {"cod_ine": "14013", "municipio": "Belmez"},
-    {"cod_ine": "14021", "municipio": "Cardeña"},
-    {"cod_ine": "14022", "municipio": "Conquista"},
-    {"cod_ine": "14026", "municipio": "Dos Torres"},
-    {"cod_ine": "14028", "municipio": "El Viso"},
-    {"cod_ine": "14030", "municipio": "Espiel"},
-    {"cod_ine": "14035", "municipio": "Fuente la Lancha"},
-    {"cod_ine": "14036", "municipio": "Fuente Obejuna"},
-    {"cod_ine": "14037", "municipio": "Guadalcázar"},
-    {"cod_ine": "14039", "municipio": "Guijo"},
-    {"cod_ine": "14041", "municipio": "Hinojosa del Duque"},
-    {"cod_ine": "14052", "municipio": "Montoro"},
-    {"cod_ine": "14054", "municipio": "Obejo"},
-    {"cod_ine": "14060", "municipio": "Pedroche"},
-    {"cod_ine": "14063", "municipio": "Peñarroya-Pueblonuevo"},
-    {"cod_ine": "14066", "municipio": "Pozoblanco"},
-    {"cod_ine": "14074", "municipio": "Santa Eufemia"},
-    {"cod_ine": "14084", "municipio": "Torrecampo"},
-    {"cod_ine": "14085", "municipio": "Villaharta"},
-    {"cod_ine": "14087", "municipio": "Villanueva de Córdoba"},
-    {"cod_ine": "14088", "municipio": "Villanueva del Duque"},
-    {"cod_ine": "14090", "municipio": "Villaralto"},
-    {"cod_ine": "14092", "municipio": "Villaviciosa de Córdoba"},
+    {"cod_ine": "14006", "municipio": "Añora"},
+    {"cod_ine": "14001", "municipio": "Adamuz"},
+    {"cod_ine": "14003", "municipio": "Alcaracejos"},
+    {"cod_ine": "14008", "municipio": "Belalcázar"},
+    {"cod_ine": "14009", "municipio": "Belmez"},
+    {"cod_ine": "14016", "municipio": "Cardeña"},
+    {"cod_ine": "14020", "municipio": "Conquista"},
+    {"cod_ine": "14023", "municipio": "Dos Torres"},
+    {"cod_ine": "14074", "municipio": "El Viso"},
+    {"cod_ine": "14026", "municipio": "Espiel"},
+    {"cod_ine": "14028", "municipio": "Fuente la Lancha"},
+    {"cod_ine": "14029", "municipio": "Fuente Obejuna"},
+    {"cod_ine": "14033", "municipio": "Guadalcázar"},
+    {"cod_ine": "14034", "municipio": "El Guijo"},
+    {"cod_ine": "14035", "municipio": "Hinojosa del Duque"},
+    {"cod_ine": "14043", "municipio": "Montoro"},
+    {"cod_ine": "14047", "municipio": "Obejo"},
+    {"cod_ine": "14051", "municipio": "Pedroche"},
+    {"cod_ine": "14052", "municipio": "Peñarroya-Pueblonuevo"},
+    {"cod_ine": "14054", "municipio": "Pozoblanco"},
+    {"cod_ine": "14061", "municipio": "Santa Eufemia"},
+    {"cod_ine": "14062", "municipio": "Torrecampo"},
+    {"cod_ine": "14068", "municipio": "Villaharta"},
+    {"cod_ine": "14069", "municipio": "Villanueva de Córdoba"},
+    {"cod_ine": "14070", "municipio": "Villanueva del Duque"},
+    {"cod_ine": "14072", "municipio": "Villaralto"},
+    {"cod_ine": "14073", "municipio": "Villaviciosa de Córdoba"},
 ]
 
 
@@ -155,69 +155,84 @@ def consultar_elmapadelagua(cod_ine: str) -> dict | None:
     """
     Consulta la API pública de elmapadelagua.com.
 
-    Endpoint documentado: /api/dureza?ine={cod_ine}
-    Puede devolver también campos de calificación sanitaria y conformidad
-    si están en el volcado SINAC.
+    Estructura de respuesta verificada (2026-11-20):
+      {"ok": true, "data": {"estado": "encontrado", "ine": "XXXXX",
+                             "registro": {"fh": 4.6, "fechaDato": "2026-05-04",
+                                          "confianza": "medido-operadora", ...},
+                             "cp": "XXXXX"}}
+
+    El campo "fh" es French Hardness (ºF). 1 ºF = 10 mg CaCO₃/L = ~10 mg/L dureza.
+    Si estado != "encontrado", el municipio no tiene datos en el volcado.
 
     Devuelve dict con campos normalizados o None si no hay datos.
     """
     url = f"{ELMAPADELAGUA_API}/dureza?ine={cod_ine}"
-    data = _get_json(url)
+    respuesta = _get_json(url)
 
-    if not data:
-        # Intentar también el endpoint de municipio (si existe)
-        url2 = f"{ELMAPADELAGUA_API}/municipio?ine={cod_ine}"
-        data = _get_json(url2)
-
-    if not data:
-        log.debug("    elmapadelagua: sin datos para %s", cod_ine)
+    if not respuesta:
+        log.debug("    elmapadelagua: sin respuesta para %s", cod_ine)
         return None
 
-    # La API puede devolver un dict o una lista; normalizar
-    if isinstance(data, list):
-        data = data[0] if data else {}
+    # Desenvolver wrapper {"ok": true, "data": {...}}
+    if isinstance(respuesta, dict) and respuesta.get("ok") is True:
+        data = respuesta.get("data", {})
+    else:
+        # Respuesta directa (formato alternativo)
+        data = respuesta if isinstance(respuesta, dict) else {}
+
     if not isinstance(data, dict):
         return None
 
-    # Campos conocidos de la API de dureza:
-    # {ine, municipio, provincia, dureza_total, dureza_calcio, dureza_magnesio,
-    #  calificacion_sanitaria, conformidad, fecha_ultimo_boletin, ...}
-    # Solo los que realmente existan en la respuesta.
+    estado = data.get("estado", "").lower()
+    if estado not in ("encontrado", "ok", ""):
+        # "no encontrado" u otro estado negativo
+        log.debug("    elmapadelagua: estado='%s' para %s", estado, cod_ine)
+        return None
 
-    result = {
-        "fuente": "elmapadelagua.com (volcado SINAC anual)",
-        "dureza_total_mgl":    data.get("dureza_total")  or data.get("dureza"),
-        "dureza_calcio_mgl":   data.get("dureza_calcio"),
-        "dureza_magnesio_mgl": data.get("dureza_magnesio"),
-        "calificacion":        None,
-        "resolucion_no_apta":  False,
-        "fecha_analisis":      data.get("fecha_ultimo_boletin") or data.get("fecha") or "—",
-        "raw_api":             {k: v for k, v in data.items()
-                                if v is not None and k not in ("geometry", "geom")},
-    }
+    # El registro de datos está en data["registro"]
+    reg = data.get("registro") or {}
 
-    # Intentar extraer calificación si la API la incluye
+    # French Hardness (ºF) → mg/L CaCO₃ (aprox. ×10)
+    fh = reg.get("fh")
+    dureza_mgl = round(float(fh) * 10, 1) if fh is not None else None
+
+    # Calificación sanitaria: la API de dureza no incluye resolución de no aptitud
+    # directamente — solo datos de dureza. La calificación se establece como
+    # "Con datos analíticos" cuando hay datos de dureza, que da semáforo VERDE.
+    # Si la API incluyera un campo de no aptitud en el futuro, se procesaría aquí.
     cal_raw = (
-        data.get("calificacion_sanitaria") or
+        reg.get("calificacion_sanitaria") or
+        reg.get("calificacion") or
         data.get("calificacion") or
-        data.get("estado") or
         ""
     )
+    no_apta = False
     if cal_raw:
         cal_lower = str(cal_raw).lower()
         if "no apta" in cal_lower or "no_apta" in cal_lower:
-            result["calificacion"]       = "No apta"
-            result["resolucion_no_apta"] = True
+            cal_raw  = "No apta"
+            no_apta  = True
         elif "apta" in cal_lower or "conforme" in cal_lower:
-            result["calificacion"] = "Apta"
-        else:
-            result["calificacion"] = str(cal_raw)
+            cal_raw = "Apta"
 
-    # Si hay dureza pero no calificación, marcar como "Con datos" (GRIS con info)
-    if result["dureza_total_mgl"] and not result["calificacion"]:
-        result["calificacion"] = "Con datos analíticos"
+    # Si hay dureza pero sin calificación explícita → "Con datos analíticos" (VERDE)
+    if dureza_mgl is not None and not cal_raw:
+        cal_raw = "Con datos analíticos"
 
-    return result if (result["dureza_total_mgl"] or result["calificacion"]) else None
+    fecha_analisis = reg.get("fechaDato") or reg.get("fecha") or data.get("fechaDato") or "—"
+
+    result = {
+        "fuente":             "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+        "dureza_total_mgl":   dureza_mgl,
+        "dureza_calcio_mgl":  None,
+        "dureza_magnesio_mgl": None,
+        "calificacion":       cal_raw or None,
+        "resolucion_no_apta": no_apta,
+        "fecha_analisis":     fecha_analisis,
+        "confianza":          reg.get("confianza"),
+    }
+
+    return result if (result["dureza_total_mgl"] is not None or result["calificacion"]) else None
 
 
 # ── Fuente 2: SINAC v2 HTML (solo entornos sin proxy restrictivo) ─────────────
