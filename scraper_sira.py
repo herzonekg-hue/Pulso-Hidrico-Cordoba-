@@ -456,12 +456,9 @@ def main():
     todos_datos: dict[str, dict] = {}
 
     for cod, meta in ESTACIONES_OBJETIVO.items():
-        if meta["tipo"] == "calidad":
-            raw = obtener_calidad_eaa(cod)
-        else:
-            # Embalses y aforos: intentar resourceByID
-            # (pendiente confirmar endpoint correcto con DevTools E2-40 / CR2-08)
-            raw = obtener_datos_estacion(cod, cod)
+        # Todos los tipos usan resourceByID — confirmado que funciona para EAA-421.
+        # /calidad tiene estructura diferente pendiente de confirmar con DevTools.
+        raw = obtener_datos_estacion(cod, cod)
         if raw:
             todos_datos[cod] = raw
         time.sleep(0.5)
