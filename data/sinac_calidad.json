@@ -1,370 +1,397 @@
 {
   "meta": {
-    "generado": "2026-11-20T18:34:19Z",
-    "fecha_consulta_legible": "20 noviembre 2026 18:34",
+    "generado": "2026-11-20T18:43:05Z",
+    "fecha_consulta_legible": "20 noviembre 2026 18:43",
     "fuentes": [
-      "Sin fuente disponible"
+      "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)"
     ],
-    "fuente_principal": "SINAC v2 (sinacv2.sanidad.gob.es — Ministerio de Sanidad)",
+    "fuente_principal": "elmapadelagua.com (volcado SINAC anual — Ministerio de Sanidad)",
     "logica_semaforo": "VERDE=apta o con datos analíticos, ROJO=resolución no aptitud vigente (solo vista técnica interna), GRIS=sin datos.",
     "municipios_total": 27
   },
   "resumen": {
-    "VERDE": 0,
+    "VERDE": 27,
     "ROJO": 0,
-    "GRIS": 27
+    "GRIS": 0
   },
   "municipios": [
     {
       "municipio": "Añora",
-      "cod_ine": "14001",
-      "calificacion": "Sin datos",
+      "cod_ine": "14006",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Adamuz",
-      "cod_ine": "14002",
-      "calificacion": "Sin datos",
+      "cod_ine": "14001",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-04",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 46.0
     },
     {
       "municipio": "Alcaracejos",
-      "cod_ine": "14004",
-      "calificacion": "Sin datos",
+      "cod_ine": "14003",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Belalcázar",
-      "cod_ine": "14012",
-      "calificacion": "Sin datos",
+      "cod_ine": "14008",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Belmez",
-      "cod_ine": "14013",
-      "calificacion": "Sin datos",
+      "cod_ine": "14009",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Cardeña",
-      "cod_ine": "14021",
-      "calificacion": "Sin datos",
+      "cod_ine": "14016",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Conquista",
-      "cod_ine": "14022",
-      "calificacion": "Sin datos",
+      "cod_ine": "14020",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-08-14",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 116.0
     },
     {
       "municipio": "Dos Torres",
-      "cod_ine": "14026",
-      "calificacion": "Sin datos",
+      "cod_ine": "14023",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "El Viso",
-      "cod_ine": "14028",
-      "calificacion": "Sin datos",
+      "cod_ine": "14074",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Espiel",
-      "cod_ine": "14030",
-      "calificacion": "Sin datos",
+      "cod_ine": "14026",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Fuente la Lancha",
-      "cod_ine": "14035",
-      "calificacion": "Sin datos",
+      "cod_ine": "14028",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Fuente Obejuna",
-      "cod_ine": "14036",
-      "calificacion": "Sin datos",
+      "cod_ine": "14029",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Guadalcázar",
-      "cod_ine": "14037",
-      "calificacion": "Sin datos",
+      "cod_ine": "14033",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-12",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 303.0
     },
     {
-      "municipio": "Guijo",
-      "cod_ine": "14039",
-      "calificacion": "Sin datos",
+      "municipio": "El Guijo",
+      "cod_ine": "14034",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Hinojosa del Duque",
-      "cod_ine": "14041",
-      "calificacion": "Sin datos",
+      "cod_ine": "14035",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Montoro",
-      "cod_ine": "14052",
-      "calificacion": "Sin datos",
+      "cod_ine": "14043",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-04",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 46.0
     },
     {
       "municipio": "Obejo",
-      "cod_ine": "14054",
-      "calificacion": "Sin datos",
+      "cod_ine": "14047",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-14",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 195.0
     },
     {
       "municipio": "Pedroche",
-      "cod_ine": "14060",
-      "calificacion": "Sin datos",
+      "cod_ine": "14051",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Peñarroya-Pueblonuevo",
-      "cod_ine": "14063",
-      "calificacion": "Sin datos",
+      "cod_ine": "14052",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Pozoblanco",
-      "cod_ine": "14066",
-      "calificacion": "Sin datos",
+      "cod_ine": "14054",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-07-14",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 116.0
     },
     {
       "municipio": "Santa Eufemia",
-      "cod_ine": "14074",
-      "calificacion": "Sin datos",
+      "cod_ine": "14061",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Torrecampo",
-      "cod_ine": "14084",
-      "calificacion": "Sin datos",
+      "cod_ine": "14062",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Villaharta",
-      "cod_ine": "14085",
-      "calificacion": "Sin datos",
+      "cod_ine": "14068",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-14",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 113.0
     },
     {
       "municipio": "Villanueva de Córdoba",
-      "cod_ine": "14087",
-      "calificacion": "Sin datos",
+      "cod_ine": "14069",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Villanueva del Duque",
-      "cod_ine": "14088",
-      "calificacion": "Sin datos",
+      "cod_ine": "14070",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Villaralto",
-      "cod_ine": "14090",
-      "calificacion": "Sin datos",
+      "cod_ine": "14072",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-06",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 96.0
     },
     {
       "municipio": "Villaviciosa de Córdoba",
-      "cod_ine": "14092",
-      "calificacion": "Sin datos",
+      "cod_ine": "14073",
+      "calificacion": "Con datos analíticos",
       "resolucion_no_apta": false,
-      "fecha_analisis": "—",
+      "fecha_analisis": "2026-05-14",
       "semaforo": {
-        "color": "GRIS",
-        "icono": "⚫",
-        "texto": "Sin datos"
+        "color": "VERDE",
+        "icono": "🟢",
+        "texto": "Apta"
       },
-      "fuente_datos": "Sin fuente disponible"
+      "fuente_datos": "elmapadelagua.com (volcado SINAC — Ministerio de Sanidad)",
+      "dureza_total_mgl": 113.0
     }
   ]
 }
