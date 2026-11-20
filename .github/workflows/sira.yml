@@ -26,6 +26,9 @@ jobs:
       - name: Ejecutar scraper SIRA
         env:
           HIDRICO_SALIDA: data
+          # SIRA_AUTHJWT ya no es necesario: el scraper obtiene el token
+          # automáticamente vía POST /backend/security/getProfile (sesión pública).
+          # Si se configura como secreto, tiene prioridad (útil para debugging).
           SIRA_AUTHJWT: ${{ secrets.SIRA_AUTHJWT }}
         run: python scraper_sira.py
 
