@@ -1,0 +1,17 @@
+name: Diagnóstico red
+on:
+  workflow_dispatch:
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11"}
+      - name: Test DNS y HTTP
+        run: python test_sinac_network.py
+      - name: nslookup directo
+        run: |
+          nslookup elmapadelagua.com || true
+          nslookup sinacv2.sanidad.gob.es || true
+          curl -v --max-time 10 https://elmapadelagua.com/api/dureza?ine=14066 2>&1 | head -40 || true
