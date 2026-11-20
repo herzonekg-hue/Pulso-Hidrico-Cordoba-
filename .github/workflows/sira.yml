@@ -26,6 +26,7 @@ jobs:
       - name: Ejecutar scraper SIRA
         env:
           HIDRICO_SALIDA: data
+          SIRA_AUTHJWT: ${{ secrets.SIRA_AUTHJWT }}
         run: python scraper_sira.py
 
       - name: Validar y guardar

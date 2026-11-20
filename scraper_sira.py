@@ -47,6 +47,10 @@ HEADERS = {
     "Origin":      "https://siraguadiana.com",
     "Accept-Language": "es-ES,es;q=0.9",
 }
+# El backend exige la cabecera AUTHJWT (token de sesión anónima que emite el propio sitio).
+# Se pasa como secreto de GitHub Actions: SIRA_AUTHJWT. Nunca escribirlo en el código.
+if os.environ.get("SIRA_AUTHJWT"):
+    HEADERS["Authjwt"] = os.environ["SIRA_AUTHJWT"]
 
 # Estaciones del norte de Córdoba que nos interesan
 # cod_estacion tal como aparece en /estaciones
