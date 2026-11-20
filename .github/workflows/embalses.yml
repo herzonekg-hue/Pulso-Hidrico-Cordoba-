@@ -1,0 +1,54 @@
+name: Actualizar embalses (SAIH Guadalquivir)
+
+# Lee Sierra Boyera (E33) y Puente Nuevo (E34) del SAIH Guadalquivir y guarda
+# data/embalses.json y data/embalses_serie.json solo si llega Sierra Boyera.
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - scraper_embalses.py
+      - .github/workflows/embalses.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: embalses
+  cancel-in-progress: false
+
+jobs:
+  embalses:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install requests beautifulsoup4 lxml
+
+      - name: Leer SAIH Guadalquivir
+        run: python scraper_embalses.py
+
+      - name: Guardar
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/embalses.json data/embalses_serie.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios en embalses"
+            exit 0
+          fi
+          git commit -m "datos: actualizar embalses SAIH (automático)"
+          for i in 1 2 3; do
+            git pull --rebase -q origin main && git push && break
+            sleep 5
+          done
