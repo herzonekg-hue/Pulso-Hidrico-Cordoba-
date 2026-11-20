@@ -30,8 +30,9 @@ jobs:
           python -m py_compile scraper_sentinel2.py
           python -m py_compile scraper_aemet.py
           python -m py_compile scraper_sira.py
+          python -m py_compile scraper_embalses.py
           python -m py_compile alertas.py
-          echo "Sintaxis correcta en los 6 scrapers + alertas.py"
+          echo "Sintaxis correcta en los 7 scrapers + alertas.py"
 
       - name: Verificar que config.json no está en el repositorio
         run: |
@@ -49,26 +50,22 @@ jobs:
           fi
           echo "OK: datos de explotación no están en el repositorio"
 
-      - name: Ejecutar scraper SAIH con fixture (sin red)
+      # scraper_saih.py y alertas.py son para el servidor AGS (necesitan config.json,
+      # que nunca va a GitHub): aquí solo se comprueba su sintaxis.
+      # En GitHub Actions los embalses los lee scraper_embalses.py.
+      - name: Probar scraper_embalses.py con fixture (sin red)
         run: |
-          mkdir -p pruebas
-          [ -f pruebas/EmbalNiv.html ] || cp EmbalNiv.html pruebas/
-          [ -f pruebas/AforosTabla.html ] || cp AforosTabla.html pruebas/
-          mkdir -p /tmp/salida
-          HIDRICO_SALIDA=/tmp/salida python scraper_saih.py --fixture-dir pruebas
-
-      - name: Verificar estructura de datos SAIH
-        run: |
+          mkdir -p /tmp/emb && cd /tmp/emb
+          python "$GITHUB_WORKSPACE/scraper_embalses.py" --fixture "$GITHUB_WORKSPACE/EmbalNiv.html"
           python - <<'PY'
-          import json, sys
-          d = json.load(open('/tmp/salida/datos.json', encoding='utf-8'))
-          emb = d['embalses']; rios = d['aforos']
-          assert len(emb) == 15, f"Embalses: {len(emb)} en vez de 15"
-          assert any(e['id'] == 'COLADA' for e in emb), "Falta La Colada"
-          print(f"OK: {len(emb)} embalses y {len(rios)} puntos de río")
+          import json
+          d = json.load(open('data/embalses.json', encoding='utf-8'))
+          por = {e['id']: e for e in d['embalses']}
+          assert 'E33' in por, 'Falta Sierra Boyera'
+          assert 'E34' in por, 'Falta Puente Nuevo'
+          assert por['E2-40']['capacidad'] == 57.7, 'Capacidad de La Colada incorrecta'
+          for k in ('E33', 'E34'):
+              e = por[k]
+              assert abs(e['volumen'] / e['capacidad'] * 100 - e['pct']) <= 1.0, k
+          print('OK:', ', '.join(f"{e['nombre']} {e['pct']}" for e in d['embalses']))
           PY
-
-      - name: Ejecutar motor de avisos con datos fixture
-        run: |
-          cp config.example.json /tmp/salida/config.json || cp config.example.json config.json
-          HIDRICO_SALIDA=/tmp/salida python alertas.py
