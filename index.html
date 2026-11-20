@@ -468,12 +468,14 @@ html, body {
 
 .saih-embalse-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   margin-bottom: 16px;
 }
-@media (max-width: 600px) {
+@media (max-width: 900px) {
   .saih-embalse-row { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
   .app { grid-template-columns: 1fr; }
   .sidebar { position: static; height: auto; }
 }
@@ -519,6 +521,22 @@ html, body {
   font-size: 11.5px;
   color: var(--fg-muted);
   font-variant-numeric: tabular-nums;
+}
+.embalse-papel {
+  font-size: 11.5px;
+  color: var(--fg-muted);
+  line-height: 1.45;
+  margin-bottom: 10px;
+  min-height: 33px;
+}
+.embalse-sindato {
+  font-size: 12px;
+  color: var(--fg-muted);
+  background: var(--gris-bg);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 4px 0 8px;
+  line-height: 1.4;
 }
 .nivel-pct {
   font-family: var(--font-display);
@@ -894,53 +912,70 @@ body.perfil-tecnico .ciudadano-only { display: none; }
     <section class="section" id="sec-saih">
       <div class="section-header">
         <div class="section-title">
-          <span class="capa-label">Capa 1 · SAIH Guadalquivir</span>
-          Embalses AGS Norte de Córdoba
+          <span class="capa-label">Capa 1 · SAIH Guadalquivir · SIRA Guadiana</span>
+          Embalses del abastecimiento Norte de Córdoba
         </div>
         <div class="section-meta">
-          <span class="status-pill live">En vivo · cada 15 min</span>
+          <span class="status-pill pending" id="emb-status-pill">Cargando…</span>
         </div>
       </div>
 
       <div class="saih-embalse-row">
         <div class="embalse-card">
+          <div class="embalse-nombre">Sierra Boyera</div>
+          <div class="embalse-codigo">E33 · SAIH Guadalquivir · río Guadiato</div>
+          <div class="embalse-papel">Embalse de la ETAP de Sierra Boyera (Bélmez). Abastece Los Pedroches y el Alto Guadiato.</div>
+          <div class="nivel-pct" id="sboyera-pct">—</div>
+          <div class="nivel-bar-wrap">
+            <div class="nivel-bar" id="sboyera-bar" style="width:0%"></div>
+          </div>
+          <div class="nivel-stats">
+            <span id="sboyera-vol">— hm³</span>
+            <span id="sboyera-cap">Capacidad: —</span>
+          </div>
+          <div class="data-ts" id="sboyera-ts">🕐 —</div>
+        </div>
+        <div class="embalse-card">
           <div class="embalse-nombre">La Colada</div>
-          <div class="embalse-codigo">E2-40 · CHG-SAIH</div>
+          <div class="embalse-codigo">E2-40 · SIRA Guadiana · río Guadamatilla</div>
+          <div class="embalse-papel">Conectada a la ETAP de Sierra Boyera. Recibe el río Guadarramilla.</div>
           <div class="nivel-pct" id="colada-pct">—</div>
           <div class="nivel-bar-wrap">
-            <div class="nivel-bar medio" id="colada-bar" style="width:0%"></div>
+            <div class="nivel-bar" id="colada-bar" style="width:0%"></div>
           </div>
           <div class="nivel-stats">
             <span id="colada-vol">— hm³</span>
-            <span>Capacidad: 4,20 hm³</span>
+            <span id="colada-cap">Capacidad: —</span>
           </div>
           <div class="data-ts" id="colada-ts">🕐 —</div>
         </div>
         <div class="embalse-card">
           <div class="embalse-nombre">Puente Nuevo</div>
-          <div class="embalse-codigo">E-02 · CHG-SAIH</div>
+          <div class="embalse-codigo">E34 · SAIH Guadalquivir · río Guadiato</div>
+          <div class="embalse-papel">Reserva de la cuenca del Guadiato. Conexión con Sierra Boyera no ejecutada.</div>
           <div class="nivel-pct" id="pnuevo-pct">—</div>
           <div class="nivel-bar-wrap">
-            <div class="nivel-bar alto" id="pnuevo-bar" style="width:0%"></div>
+            <div class="nivel-bar" id="pnuevo-bar" style="width:0%"></div>
           </div>
           <div class="nivel-stats">
             <span id="pnuevo-vol">— hm³</span>
-            <span>Capacidad: 56,0 hm³</span>
+            <span id="pnuevo-cap">Capacidad: —</span>
           </div>
           <div class="data-ts" id="pnuevo-ts">🕐 —</div>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-title"><span class="icon">📈</span> Evolución — últimas 48h (simulado)</div>
-        <div class="sparkline-title">Nivel La Colada (hm³)</div>
+        <div class="card-title"><span class="icon">📈</span> Evolución del volumen — últimos 7 días (lecturas horarias del SAIH)</div>
+        <div class="sparkline-title">Sierra Boyera (hm³)</div>
         <div class="sparkline-wrap">
-          <svg id="spark-colada" width="100%" height="80" viewBox="0 0 600 80" preserveAspectRatio="none"></svg>
+          <svg id="spark-sboyera" width="100%" height="80" viewBox="0 0 600 80" preserveAspectRatio="none"></svg>
         </div>
-        <div class="sparkline-title" style="margin-top:14px">Nivel Puente Nuevo (hm³)</div>
+        <div class="sparkline-title" style="margin-top:14px">Puente Nuevo (hm³)</div>
         <div class="sparkline-wrap">
           <svg id="spark-pnuevo" width="100%" height="80" viewBox="0 0 600 80" preserveAspectRatio="none"></svg>
         </div>
+        <div class="nota-legal" id="emb-nota" style="margin-top:12px">Fuente: SAIH Guadalquivir (tabla pública de niveles de embalse; aviso oficial: datos en tiempo real no contrastados) y MITECO para la capacidad de La Colada (57,7 hm³). La Colada pertenece a la cuenca del Guadiana y su volumen depende de la estación SIRA E2-40, que hoy exige autenticación.</div>
       </div>
 
       <div class="nota-legal">
@@ -983,7 +1018,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
         <div class="kpi-card">
           <div class="kpi-label">Fosfatos EAA-421</div>
           <div class="kpi-value rojo" id="sira-fosf">—</div>
-          <div class="kpi-sub">mg P/L · Guadarramilla</div>
+          <div class="kpi-sub">mg/L fosfatos · Guadarramilla</div>
         </div>
       </div>
 
@@ -1022,7 +1057,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
       </div>
 
       <div class="nota-legal tecnico-only">
-        <strong>Nota:</strong> EAA-421 (Guadarramilla a.ab. La Colada) registró fosfatos de 22,03 mg P/L (20 nov 2026). Límite bueno/moderado RD 817/2015 R-T01: 0,4 mg PO₄/L; límite muy bueno: 0,2 mg PO₄/L. Datos scraper SIRA activo (cron 30 min). Consulta SIRA: <a href="https://siraguadiana.com" target="_blank" style="color:var(--agua)">siraguadiana.com</a>. E2-40 (La Colada) y CR2-08 (Zújar) pendientes de autenticación (HTTP 401).
+        <strong>Nota:</strong> EAA-421 (Guadarramilla a.ab. La Colada) registró 22,03 mg/L de fosfatos (20 nov 2026). La unidad la declara SIRA como «fosfatos»; está pendiente de confirmar con la CHG si se expresa como PO₄ o como P. Límite bueno/moderado RD 817/2015 R-T01: 0,4 mg PO₄/L; límite muy bueno: 0,2 mg PO₄/L. Datos scraper SIRA activo (cron 30 min). Consulta SIRA: <a href="https://siraguadiana.com" target="_blank" style="color:var(--agua)">siraguadiana.com</a>. E2-40 (La Colada) y CR2-08 (Zújar) pendientes de autenticación (HTTP 401).
       </div>
     </section>
 
@@ -1166,10 +1201,7 @@ const SINAC_DATA = {
   ]
 };
 
-const SAIH_DATA = {
-  colada:  { pct: 61.4, vol: 2.58, cap: 4.20, ts: "14/11/2026 08:45" },
-  pnuevo:  { pct: 48.2, vol: 27.0, cap: 56.0, ts: "14/11/2026 08:30" },
-};
+// Embalses: data/embalses.json (scraper_embalses.py, GitHub Actions cada hora)
 
 const SIRA_DATA = {
   colada: {
@@ -1193,7 +1225,7 @@ const SIRA_DATA = {
       { param:"Conductividad",valor:1247,  unidad:"µS/cm",  ref:"< 2500 · orientativo",                     estado:"warn"},
       { param:"Turbidez",     valor:6.3,   unidad:"NTU",    ref:"< 4 NTU · orientativo",                    estado:"warn"},
       { param:"Nitratos",     valor:18.7,  unidad:"mg/L",   ref:"< 25 NO₃ (mb: < 10) · RD 817/2015 R-T01", estado:"ok"  },
-      { param:"Fosfatos",     valor:22.73, unidad:"mg P/L", ref:"< 0.4 PO₄ (mb: < 0.2) · RD 817/2015 R-T01",estado:"bad"},
+      { param:"Fosfatos",     valor:22.73, unidad:"mg/L", ref:"< 0.4 PO₄ (mb: < 0.2) · RD 817/2015 R-T01",estado:"bad"},
       { param:"DBO₅",         valor:4.8,   unidad:"mg/L",   ref:"< 5 · Dir. 91/271/CEE zona sensible",      estado:"ok"  },
     ]
   }
@@ -1293,36 +1325,72 @@ function openModal(m) {
 }
 function closeModal() { document.getElementById('muni-modal').classList.remove('open'); }
 
-function renderSAIH() {
-  const { colada, pnuevo } = SAIH_DATA;
-  // La Colada
-  document.getElementById('colada-pct').textContent = colada.pct.toFixed(1) + '%';
-  document.getElementById('colada-vol').textContent = colada.vol.toFixed(2) + ' hm³';
-  document.getElementById('colada-ts').textContent  = '🕐 ' + colada.ts;
-  const cbar = document.getElementById('colada-bar');
-  cbar.style.width = colada.pct + '%';
-  cbar.className = 'nivel-bar ' + (colada.pct >= 60 ? 'alto' : colada.pct >= 30 ? 'medio' : 'bajo');
-  // Puente Nuevo
-  document.getElementById('pnuevo-pct').textContent = pnuevo.pct.toFixed(1) + '%';
-  document.getElementById('pnuevo-vol').textContent = pnuevo.vol.toFixed(1) + ' hm³';
-  document.getElementById('pnuevo-ts').textContent  = '🕐 ' + pnuevo.ts;
-  const pbar = document.getElementById('pnuevo-bar');
-  pbar.style.width = pnuevo.pct + '%';
-  pbar.className = 'nivel-bar ' + (pnuevo.pct >= 60 ? 'alto' : pnuevo.pct >= 30 ? 'medio' : 'bajo');
-  // Sparklines
-  drawSparkline('spark-colada', generateFakeTS(colada.vol, 48, 0.08, 4.20), '#1F7A8C');
-  drawSparkline('spark-pnuevo', generateFakeTS(pnuevo.vol, 48, 0.4, 56.0),  '#3E6B2F');
+function pintarEmbalse(key, e) {
+  const fmt = (v, d) => v == null ? '—' : v.toLocaleString('es-ES', {minimumFractionDigits:d, maximumFractionDigits:d});
+  const pct = document.getElementById(key + '-pct');
+  const bar = document.getElementById(key + '-bar');
+  document.getElementById(key + '-cap').textContent = 'Capacidad: ' + e.capacidad.toLocaleString('es-ES', {minimumFractionDigits:1, maximumFractionDigits:2}) + ' hm³';
+  if (e.volumen == null) {
+    pct.textContent = 'S/D';
+    pct.style.color = 'var(--fg-light)';
+    document.getElementById(key + '-vol').textContent = 'Volumen sin dato';
+    bar.style.width = '0%';
+    const aviso = document.createElement('div');
+    aviso.className = 'embalse-sindato';
+    aviso.textContent = e.sin_dato || 'Sin dato disponible.';
+    bar.parentElement.after(aviso);
+    document.getElementById(key + '-ts').textContent = '🕐 Sin lectura en vivo';
+    return;
+  }
+  pct.textContent = fmt(e.pct, 1) + ' %';
+  document.getElementById(key + '-vol').textContent = fmt(e.volumen, e.volumen >= 100 ? 1 : 2) + ' hm³';
+  bar.style.width = Math.min(100, e.pct) + '%';
+  bar.className = 'nivel-bar ' + (e.pct >= 60 ? 'alto' : e.pct >= 30 ? 'medio' : 'bajo');
+  const f = e.fecha ? new Date(e.fecha) : null;
+  document.getElementById(key + '-ts').textContent = '🕐 ' + (f ? f.toLocaleString('es-ES', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' · SAIH' : '—');
 }
 
-function generateFakeTS(last, n, noise, cap) {
-  const vals = [];
-  let v = last;
-  for (let i = n; i >= 0; i--) {
-    v = Math.max(0.1, Math.min(cap, v + (Math.random()-0.5)*noise));
-    vals.unshift(v);
+function pintarSerie(id, pts, color) {
+  const svg = document.getElementById(id);
+  if (!svg) return;
+  if (!pts || pts.length < 2) {
+    svg.innerHTML = '<text x="300" y="44" text-anchor="middle" font-size="12" fill="#8a8a8a">Serie en construcción: se añade una lectura cada hora</text>';
+    return;
   }
-  vals[0] = last;
-  return vals;
+  drawSparkline(id, pts.map(p => p[1]), color);
+}
+
+async function intentarCargarEmbalses() {
+  const pill = document.getElementById('emb-status-pill');
+  try {
+    const [r1, r2] = await Promise.all([
+      fetch('./data/embalses.json', {cache: 'no-store'}),
+      fetch('./data/embalses_serie.json', {cache: 'no-store'})
+    ]);
+    if (!r1.ok) throw new Error('HTTP ' + r1.status);
+    const d = await r1.json();
+    const serie = r2.ok ? await r2.json() : {};
+    const por = Object.fromEntries(d.embalses.map(e => [e.id, e]));
+    if (por.E33) pintarEmbalse('sboyera', por.E33);
+    if (por['E2-40']) pintarEmbalse('colada', por['E2-40']);
+    if (por.E34) pintarEmbalse('pnuevo', por.E34);
+    pintarSerie('spark-sboyera', serie.E33, '#1F7A8C');
+    pintarSerie('spark-pnuevo', serie.E34, '#3E6B2F');
+    const f = d.fecha_saih ? new Date(d.fecha_saih) : null;
+    const horas = f ? (Date.now() - f.getTime()) / 3.6e6 : Infinity;
+    if (horas <= 6) {
+      pill.className = 'status-pill live';
+      pill.textContent = 'SAIH en vivo · ' + f.toLocaleString('es-ES', {day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'});
+    } else {
+      pill.className = 'status-pill sample';
+      pill.textContent = 'Última lectura SAIH: ' + (f ? f.toLocaleString('es-ES', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '—');
+    }
+  } catch (e) {
+    console.warn('embalses.json no disponible:', e.message);
+    pill.className = 'status-pill pending';
+    pill.textContent = 'Sin datos';
+    ['sboyera', 'colada', 'pnuevo'].forEach(k => { document.getElementById(k + '-pct').textContent = 'S/D'; });
+  }
 }
 
 function drawSparkline(id, vals, color) {
@@ -1487,9 +1555,9 @@ async function intentarCargarSIRA() {
         const params = [
           { param:'pH',            valor: eaa.ph,                unidad:'—',      ref:'5.5–9 (mb: 6–8.4) · RD 817/2015 R-T01',
             estado: eaa.ph !== null ? (eaa.ph>=5.5 && eaa.ph<=9 ? 'ok' : 'bad') : 'gris' },
-          { param:'Fosfatos',      valor: eaa.fosfatos_mgl,      unidad:'mg P/L', ref:'< 0.4 (mb: < 0.2) · RD 817/2015 R-T01',
+          { param:'Fosfatos',      valor: eaa.fosfatos_mgl,      unidad:'mg/L', ref:'< 0.4 (mb: < 0.2) · RD 817/2015 R-T01',
             estado: eaa.fosfatos_mgl !== null ? (eaa.fosfatos_mgl > 1.0 ? 'bad' : eaa.fosfatos_mgl > 0.4 ? 'warn' : 'ok') : 'gris' },
-          { param:'Amonio',        valor: eaa.amonio_mgl,        unidad:'mg N/L', ref:'< 1 mg/L orientativo cauce',
+          { param:'Amonio',        valor: eaa.amonio_mgl,        unidad:'mg/L', ref:'< 1 mg/L orientativo cauce',
             estado: eaa.amonio_mgl !== null ? (eaa.amonio_mgl > 2 ? 'bad' : eaa.amonio_mgl > 1 ? 'warn' : 'ok') : 'gris' },
           { param:'Oxígeno dis.',  valor: eaa.oxigeno_mgl,       unidad:'mg/L',   ref:'> 5 mg/L (> 7 mb) · RD 817/2015 R-T01',
             estado: eaa.oxigeno_mgl !== null ? (eaa.oxigeno_mgl < 2 ? 'bad' : eaa.oxigeno_mgl < 5 ? 'warn' : 'ok') : 'gris' },
@@ -1520,7 +1588,7 @@ async function intentarCargarSIRA() {
             const title = banner.querySelector('.alerta-title');
             const body  = banner.querySelector('.alerta-body');
             if (title) title.textContent = '🔒 INTERNO · EAA-421 Guadarramilla — Parámetros críticos';
-            if (body)  body.textContent  = `Fosfatos: ${eaa.fosfatos_mgl} mg P/L · Amonio: ${eaa.amonio_mgl} mg N/L · O₂: ${eaa.oxigeno_mgl} mg/L · ${eaa.hora_obs}`;
+            if (body)  body.textContent  = `Fosfatos: ${eaa.fosfatos_mgl} mg/L · Amonio: ${eaa.amonio_mgl} mg/L · O₂: ${eaa.oxigeno_mgl} mg/L · ${eaa.hora_obs}`;
           }
         }
       }
@@ -1606,7 +1674,7 @@ function updateTS() {
   updateTS();
   setInterval(updateTS, 60000);
   intentarCargarSINAC();
-  renderSAIH();
+  intentarCargarEmbalses();
   renderSIRA();
   intentarCargarSIRA();   // sobreescribe SIRA hardcoded con datos reales del JSON
   renderAEMET();
