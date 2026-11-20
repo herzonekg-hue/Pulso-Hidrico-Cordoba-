@@ -1,10 +1,12 @@
 {
   "meta": {
-    "generado": "2026-11-20T18:29:00Z",
-    "fecha_consulta_legible": "20 noviembre 2026 18:29",
-    "fuente": "SINAC v2 — Portal ciudadano Ministerio de Sanidad (sinacv2.sanidad.gob.es)",
-    "nota_legal": "Datos de calidad del agua de consumo. Publicación sujeta a autorización de AGS Norte de Córdoba y Salud Ambiental.",
-    "logica_semaforo": "VERDE=apta, ROJO=resolución no aptitud vigente (solo vista técnica), GRIS=sin datos o sin resolución definitiva.",
+    "generado": "2026-11-20T18:34:19Z",
+    "fecha_consulta_legible": "20 noviembre 2026 18:34",
+    "fuentes": [
+      "Sin fuente disponible"
+    ],
+    "fuente_principal": "SINAC v2 (sinacv2.sanidad.gob.es — Ministerio de Sanidad)",
+    "logica_semaforo": "VERDE=apta o con datos analíticos, ROJO=resolución no aptitud vigente (solo vista técnica interna), GRIS=sin datos.",
     "municipios_total": 27
   },
   "resumen": {
@@ -16,7 +18,6 @@
     {
       "municipio": "Añora",
       "cod_ine": "14001",
-      "red": "Añora",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -24,12 +25,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Adamuz",
       "cod_ine": "14002",
-      "red": "Adamuz",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -37,12 +38,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Alcaracejos",
       "cod_ine": "14004",
-      "red": "Alcaracejos",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -50,12 +51,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Belalcázar",
       "cod_ine": "14012",
-      "red": "Belalcázar",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -63,12 +64,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Belmez",
       "cod_ine": "14013",
-      "red": "Belmez",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -76,12 +77,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Cardeña",
       "cod_ine": "14021",
-      "red": "Cardeña",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -89,12 +90,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Conquista",
       "cod_ine": "14022",
-      "red": "Conquista",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -102,12 +103,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Dos Torres",
       "cod_ine": "14026",
-      "red": "Dos Torres",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -115,12 +116,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "El Viso",
       "cod_ine": "14028",
-      "red": "El Viso",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -128,12 +129,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Espiel",
       "cod_ine": "14030",
-      "red": "Espiel",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -141,12 +142,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Fuente la Lancha",
       "cod_ine": "14035",
-      "red": "Fuente la Lancha",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -154,12 +155,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Fuente Obejuna",
       "cod_ine": "14036",
-      "red": "F. Obejuna",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -167,12 +168,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Guadalcázar",
       "cod_ine": "14037",
-      "red": "Guadalcázar",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -180,12 +181,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Guijo",
       "cod_ine": "14039",
-      "red": "—",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -193,12 +194,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Hinojosa del Duque",
       "cod_ine": "14041",
-      "red": "Hinojosa",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -206,12 +207,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Montoro",
       "cod_ine": "14052",
-      "red": "Montoro",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -219,12 +220,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Obejo",
       "cod_ine": "14054",
-      "red": "Obejo",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -232,12 +233,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Pedroche",
       "cod_ine": "14060",
-      "red": "Pedroche",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -245,12 +246,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Peñarroya-Pueblonuevo",
       "cod_ine": "14063",
-      "red": "Peñarroya",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -258,12 +259,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Pozoblanco",
       "cod_ine": "14066",
-      "red": "Pozoblanco",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -271,12 +272,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Santa Eufemia",
       "cod_ine": "14074",
-      "red": "Sta. Eufemia",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -284,12 +285,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Torrecampo",
       "cod_ine": "14084",
-      "red": "Torrecampo",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -297,12 +298,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Villaharta",
       "cod_ine": "14085",
-      "red": "Villaharta",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -310,12 +311,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Villanueva de Córdoba",
       "cod_ine": "14087",
-      "red": "V. de Córdoba",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -323,12 +324,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Villanueva del Duque",
       "cod_ine": "14088",
-      "red": "—",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -336,12 +337,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Villaralto",
       "cod_ine": "14090",
-      "red": "Villaralto",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -349,12 +350,12 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     },
     {
       "municipio": "Villaviciosa de Córdoba",
       "cod_ine": "14092",
-      "red": "Villaviciosa",
       "calificacion": "Sin datos",
       "resolucion_no_apta": false,
       "fecha_analisis": "—",
@@ -362,7 +363,8 @@
         "color": "GRIS",
         "icono": "⚫",
         "texto": "Sin datos"
-      }
+      },
+      "fuente_datos": "Sin fuente disponible"
     }
   ]
 }
