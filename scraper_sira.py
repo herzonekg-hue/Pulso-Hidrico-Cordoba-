@@ -169,12 +169,14 @@ def _post(url: str, body: dict, timeout: int = 20):
 
 def obtener_datos_bulk(url: str, cod_objetivo: list[str]) -> dict[str, dict]:
     """
-    Llama a un endpoint bulk (GET /calidad, /embalses, /aforos) y extrae
+    Llama a un endpoint bulk (POST /calidad, /embalses, /aforos) y extrae
     los registros de las estaciones que nos interesan.
+    Confirmado en DevTools (20-11-2026): /calidad es POST 200 OK.
+    Body vacío {} — el servidor devuelve todas las estaciones del tipo.
     Devuelve {cod_estacion: raw_item} para las que coincidan.
     """
-    log.info("GET bulk %s…", url)
-    data = _get(url)
+    log.info("POST bulk %s…", url)
+    data = _post(url, {})
     if not data:
         return {}
 
