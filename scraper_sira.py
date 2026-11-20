@@ -40,9 +40,8 @@ SALIDA_DIR  = Path(os.environ.get("HIDRICO_SALIDA", SCRIPT_DIR))
 BASE_URL        = "https://siraguadiana.com/backend/Visor"
 URL_ESTACIONES  = f"{BASE_URL}/estaciones"
 URL_RESOURCE    = f"{BASE_URL}/resourceByID"
-URL_CALIDAD     = f"{BASE_URL}/calidad"     # GET — resumen todas las EAA (~121 kB)
-URL_EMBALSES    = f"{BASE_URL}/embalses"    # GET — a confirmar con DevTools
-URL_AFOROS      = f"{BASE_URL}/aforos"      # GET — a confirmar con DevTools
+URL_CALIDAD     = f"{BASE_URL}/calidad"     # POST — datos por estación EAA (body: consulta/estacion/tiempo)
+# URL_EMBALSES y URL_AFOROS: pendiente confirmar con DevTools E2-40 / CR2-08
 URL_GETPROFILE  = "https://siraguadiana.com/backend/security/getProfile"
 
 # Headers base que imitan al navegador — imprescindible para que el backend responda
@@ -167,38 +166,27 @@ def _post(url: str, body: dict, timeout: int = 20):
 
 # ── Funciones de consulta ──────────────────────────────────────────────────────
 
-def obtener_datos_bulk(url: str, cod_objetivo: list[str]) -> dict[str, dict]:
+def obtener_calidad_eaa(cod: str) -> dict | None:
     """
-    Llama a un endpoint bulk (POST /calidad, /embalses, /aforos) y extrae
-    los registros de las estaciones que nos interesan.
-    Confirmado en DevTools (20-11-2026): /calidad es POST 200 OK.
-    Body vacío {} — el servidor devuelve todas las estaciones del tipo.
-    Devuelve {cod_estacion: raw_item} para las que coincidan.
+    Consulta datos de calidad de una EAA via POST /calidad.
+    Body confirmado en DevTools (20-11-2026):
+      {"consulta": "EAA_DAT", "estacion": "<cod>", "tiempo": 7, "fInicial": null, "fFinal": null}
+    Devuelve el raw de la respuesta o None si falla.
     """
-    log.info("POST bulk %s…", url)
-    data = _post(url, {})
-    if not data:
-        return {}
-
-    resultado = {}
-    items = data if isinstance(data, list) else []
-    if isinstance(data, dict):
-        # Buscar cualquier lista que contenga objetos con cod_estacion
-        for v in data.values():
-            if isinstance(v, list) and v and isinstance(v[0], dict):
-                items = v
-                break
-
-    for item in items:
-        cod = (item.get("cod_estacion") or item.get("cod_embalse")
-               or item.get("estacion") or item.get("COD_ESTACION") or "")
-        if cod in cod_objetivo:
-            resultado[cod] = item
-            log.info("Bulk encontrada: %s", cod)
-
-    log.info("Bulk %s: %d/%d estaciones encontradas", url.split("/")[-1],
-             len(resultado), len(cod_objetivo))
-    return resultado
+    log.info("POST /calidad para %s…", cod)
+    body = {
+        "consulta": "EAA_DAT",
+        "estacion": cod,
+        "tiempo":   7,
+        "fInicial": None,
+        "fFinal":   None,
+    }
+    data = _post(URL_CALIDAD, body)
+    if data:
+        log.info("Datos /calidad obtenidos para %s", cod)
+        return data
+    log.warning("Sin datos /calidad para %s", cod)
+    return None
 
 
 def obtener_catalogo_estaciones() -> dict:
@@ -462,36 +450,29 @@ def main():
     else:
         log.warning("Sin token SIRA — las peticiones podrían ser rechazadas (401/403)")
 
-    # 1. Endpoints bulk — un GET trae todas las estaciones del tipo
-    #    Estrategia: bulk primero (evita 401 individuales), resourceByID como fallback
-    cods_calidad  = [c for c, m in ESTACIONES_OBJETIVO.items() if m["tipo"] == "calidad"]
-    cods_embalse  = [c for c, m in ESTACIONES_OBJETIVO.items() if m["tipo"] == "embalse"]
-    cods_aforo    = [c for c, m in ESTACIONES_OBJETIVO.items() if m["tipo"] == "aforo"]
+    # 1. Consultar cada estación con el endpoint correcto según tipo
+    #    EAA  → POST /calidad  (body confirmado DevTools 20-11-2026)
+    #    E/CR → POST /resourceByID (fallback; E2-40 y CR2-08 dan 401 con token público)
+    todos_datos: dict[str, dict] = {}
 
-    bulk_calidad  = obtener_datos_bulk(URL_CALIDAD,  cods_calidad)
-    bulk_embalses = obtener_datos_bulk(URL_EMBALSES, cods_embalse)
-    bulk_aforos   = obtener_datos_bulk(URL_AFOROS,   cods_aforo)
-
-    # 2. Para estaciones no encontradas en bulk, intentar resourceByID
-    mapa = obtener_catalogo_estaciones()
-    todos_bulk = {**bulk_calidad, **bulk_embalses, **bulk_aforos}
-    sin_datos = [c for c in ESTACIONES_OBJETIVO if c not in todos_bulk]
-    if sin_datos:
-        log.info("Fallback resourceByID para: %s", sin_datos)
-    for cod in sin_datos:
-        id_interno = mapa.get(cod, {}).get("id_interno", cod)
-        raw = obtener_datos_estacion(cod, id_interno)
+    for cod, meta in ESTACIONES_OBJETIVO.items():
+        if meta["tipo"] == "calidad":
+            raw = obtener_calidad_eaa(cod)
+        else:
+            # Embalses y aforos: intentar resourceByID
+            # (pendiente confirmar endpoint correcto con DevTools E2-40 / CR2-08)
+            raw = obtener_datos_estacion(cod, cod)
         if raw:
-            todos_bulk[cod] = raw
+            todos_datos[cod] = raw
         time.sleep(0.5)
 
     embalses = []
     calidad  = []
     aforos   = []
 
-    # 3. Normalizar cada estación con sus datos
+    # 2. Normalizar cada estación con sus datos
     for cod, meta in ESTACIONES_OBJETIVO.items():
-        raw = todos_bulk.get(cod)
+        raw = todos_datos.get(cod)
 
         if raw is None:
             entrada = {"cod": cod, **meta, "ok": False}
