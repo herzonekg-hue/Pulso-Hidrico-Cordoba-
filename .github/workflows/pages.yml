@@ -11,6 +11,14 @@ on:
       - "data/**"
       - ".nojekyll"
   workflow_dispatch:
+  # Los commits que hace github-actions[bot] con GITHUB_TOKEN no disparan "push",
+  # así que sin esto los datos que guardan los workflows de datos no llegan a la web.
+  workflow_run:
+    workflows:
+      - "Actualizar datos SIRA"
+      - "Actualizar datos SINAC"
+      - "Actualizar embalses (SAIH Guadalquivir)"
+    types: [completed]
 
 permissions:
   contents: read
@@ -24,6 +32,7 @@ concurrency:
 
 jobs:
   desplegar:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -32,6 +41,8 @@ jobs:
     steps:
       - name: Descargar repositorio
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Configurar GitHub Pages
         uses: actions/configure-pages@v5
