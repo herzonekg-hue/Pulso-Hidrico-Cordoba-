@@ -171,7 +171,14 @@ def obtener_calidad_eaa(cod: str) -> dict | None:
     Consulta datos de calidad de una EAA via POST /calidad.
     Body confirmado en DevTools (20-11-2026):
       {"consulta": "EAA_DAT", "estacion": "<cod>", "tiempo": 7, "fInicial": null, "fFinal": null}
-    Devuelve el raw de la respuesta o None si falla.
+
+    La respuesta es una lista de registros ordenada cronológicamente:
+      [{"Timestamp": "2026-11-19 02:00:00", "TA": 15.92, "PO": 9.76, "NH": 20.0,
+        "PH": 8.76, "OX": 5.87, "CD": 1650.75, "TB": 4.36, "NO": 0.0,
+        "Código Estación": "EAA-421"}, ...]
+    Devuelve el último registro envuelto en {"ult_res": {"valores": [<último>]}}
+    para que sea compatible con _extraer_valores_ult_res() y normalizar_calidad().
+    El campo timestamp se mapea desde "Timestamp".
     """
     log.info("POST /calidad para %s…", cod)
     body = {
@@ -182,11 +189,33 @@ def obtener_calidad_eaa(cod: str) -> dict | None:
         "fFinal":   None,
     }
     data = _post(URL_CALIDAD, body)
-    if data:
-        log.info("Datos /calidad obtenidos para %s", cod)
-        return data
-    log.warning("Sin datos /calidad para %s", cod)
-    return None
+    if not data:
+        log.warning("Sin datos /calidad para %s", cod)
+        return None
+
+    # La respuesta es una lista; cogemos el último registro no vacío
+    registros = data if isinstance(data, list) else []
+    registro = None
+    for r in reversed(registros):
+        if isinstance(r, dict) and r.get("PO") is not None:
+            registro = r
+            break
+    if registro is None and registros:
+        registro = registros[-1]
+
+    if not registro:
+        log.warning("Lista /calidad vacía para %s", cod)
+        return None
+
+    # Normalizar campo timestamp (clave con mayúscula en /calidad)
+    if "Timestamp" in registro and "timestamp" not in registro:
+        registro = dict(registro)
+        registro["timestamp"] = registro["Timestamp"]
+
+    log.info("Datos /calidad obtenidos para %s — timestamp=%s PO=%s NH=%s",
+             cod, registro.get("timestamp"), registro.get("PO"), registro.get("NH"))
+    # Envolver para compatibilidad con _extraer_valores_ult_res
+    return {"ult_res": {"valores": [registro]}, "fuente": "calidad"}
 
 
 def obtener_catalogo_estaciones() -> dict:
@@ -456,9 +485,16 @@ def main():
     todos_datos: dict[str, dict] = {}
 
     for cod, meta in ESTACIONES_OBJETIVO.items():
-        # Todos los tipos usan resourceByID — confirmado que funciona para EAA-421.
-        # /calidad tiene estructura diferente pendiente de confirmar con DevTools.
-        raw = obtener_datos_estacion(cod, cod)
+        if meta["tipo"] == "calidad":
+            # POST /calidad — estructura confirmada (lista de registros con PO/NH/TA…)
+            raw = obtener_calidad_eaa(cod)
+            if raw is None:
+                # Fallback a resourceByID si /calidad falla
+                log.info("Fallback resourceByID para %s", cod)
+                raw = obtener_datos_estacion(cod, cod)
+        else:
+            # Embalses y aforos: resourceByID (E2-40 y CR2-08 dan 401 con token público)
+            raw = obtener_datos_estacion(cod, cod)
         if raw:
             todos_datos[cod] = raw
         time.sleep(0.5)
