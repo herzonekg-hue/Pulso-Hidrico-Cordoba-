@@ -1,0 +1,45 @@
+name: Actualizar datos SIRA
+
+# Ejecuta scraper_sira.py en GitHub Actions y guarda data/sira.json en el repositorio.
+# Alternativa al cron del servidor AGS: no usar ambos a la vez.
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sira:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Ejecutar scraper SIRA
+        env:
+          HIDRICO_SALIDA: data
+        run: python scraper_sira.py
+
+      - name: Guardar si hay cambios
+        run: |
+          if [ ! -f data/sira.json ]; then
+            echo "No se generó data/sira.json: revisar el log del scraper."
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/sira.json
+          if git diff --cached --quiet; then
+            echo "Sin cambios en sira.json"
+          else
+            git commit -m "datos: actualizar SIRA (automático)"
+            git push
+          fi
