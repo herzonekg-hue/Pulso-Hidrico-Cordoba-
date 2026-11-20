@@ -159,16 +159,24 @@ def obtener_catalogo_estaciones() -> dict:
     # El catálogo tiene varios arrays: estaciones (EAA), embalses, aforos…
     # Exploramos todos los que haya
     if isinstance(data, dict):
+        # Debug: mostrar claves del catálogo para entender la estructura
+        log.info("Claves catálogo: %s", list(data.keys())[:10])
         for clave, lista in data.items():
             if not isinstance(lista, list):
                 continue
+            if lista:
+                log.info("Muestra [%s][0] claves: %s", clave, list(lista[0].keys()) if isinstance(lista[0], dict) else type(lista[0]))
             for item in lista:
                 cod = item.get("cod_estacion") or item.get("cod_embalse") or ""
                 if cod in ESTACIONES_OBJETIVO:
+                    # Capturar TODOS los campos id-like para debug
+                    id_fields = {k: v for k, v in item.items() if "id" in k.lower()}
+                    log.info("Encontrada: %s — %s | campos id: %s", cod, item.get("nombre",""), id_fields)
                     mapa[cod] = {
                         "id_interno": item.get("id") or item.get("id_estacion") or cod,
                         "nombre_sira": item.get("nombre", ""),
                         "cod": cod,
+                        "_item": item,  # guardar item completo para debug
                     }
                     log.info("Encontrada: %s — %s (id=%s)",
                              cod, item.get("nombre",""), mapa[cod]["id_interno"])
