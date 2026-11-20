@@ -1220,7 +1220,9 @@ function renderSINAC(data) {
   document.getElementById('kpi-rojo').textContent  = resumen.ROJO  || 0;
   document.getElementById('kpi-gris').textContent  = resumen.GRIS  || 0;
   document.getElementById('nb-alerta').textContent = resumen.ROJO  || 0;
-  document.getElementById('sinac-ts').textContent  = '🕐 ' + (meta.fecha_consulta_legible || '—');
+  // Solo mostrar timestamp si los datos son reales (no de ejemplo)
+  const esDatoReal = meta.generado && meta.generado !== null && !meta.fuente.includes('ejemplo');
+  document.getElementById('sinac-ts').textContent = esDatoReal ? ('🕐 ' + (meta.fecha_consulta_legible || '—')) : '';
 
   // Banner alertas
   const alertas = municipios.filter(m => m.resolucion_no_apta || m.semaforo.color === 'ROJO');
