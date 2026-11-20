@@ -955,7 +955,16 @@ body.perfil-tecnico .ciudadano-only { display: none; }
           Estaciones de Calidad
         </div>
         <div class="section-meta">
-          <span class="status-pill live">Activo</span>
+          <span class="status-pill live" id="sira-status-pill">Cargando…</span>
+        </div>
+      </div>
+
+      <!-- Banner alerta interna SIRA — solo vista técnica -->
+      <div class="alerta-banner tecnico-only" id="sira-alerta-banner" style="display:none">
+        <div class="alerta-icon">🔴</div>
+        <div>
+          <div class="alerta-title">—</div>
+          <div class="alerta-body">—</div>
         </div>
       </div>
 
@@ -1444,6 +1453,94 @@ function aplicarReglaRojo(perfil) {
 }
 
 // ============================================================
+//  CARGA SIRA REAL (data/sira.json)
+// ============================================================
+async function intentarCargarSIRA() {
+  try {
+    const r = await fetch('./data/sira.json');
+    if (!r.ok) throw new Error('no sira');
+    const d = await r.json();
+    if (!d || !d.calidad) throw new Error('empty');
+
+    // Actualizar KPIs y pill de estado
+    const pill = document.getElementById('sira-status-pill');
+    if (pill) {
+      pill.textContent = 'SIRA en vivo · ' + (d.generado ? d.generado.slice(0,16).replace('T',' ') + ' UTC' : '—');
+      pill.className = 'status-pill live';
+    }
+
+    // --- EAA-421 ---
+    const eaa = d.calidad && d.calidad.find(e => e.cod === 'EAA-421');
+    if (eaa && eaa.ok) {
+      // KPI fosfatos
+      const fEl = document.getElementById('sira-fosf');
+      if (fEl) fEl.textContent = eaa.fosfatos_mgl !== null ? eaa.fosfatos_mgl.toFixed(2) : '—';
+
+      // KPI conductividad
+      const cEl = document.getElementById('sira-eaa-cond');
+      if (cEl) cEl.textContent = eaa.conductividad_uscm !== null ? Math.round(eaa.conductividad_uscm) : '—';
+
+      // Timestamp
+      const tsEl = document.getElementById('sira-eaa-ts');
+      if (tsEl) tsEl.textContent = '🕐 ' + (eaa.hora_obs || '—');
+
+      // Tabla EAA-421 — parámetros reales
+      const eaaTbody = document.getElementById('sira-eaa-tbody');
+      if (eaaTbody) {
+        const params = [
+          { param:'pH',            valor: eaa.ph,                unidad:'—',      ref:'5.5–9 (mb: 6–8.4) · RD 817/2015 R-T01',
+            estado: eaa.ph !== null ? (eaa.ph>=5.5 && eaa.ph<=9 ? 'ok' : 'bad') : 'gris' },
+          { param:'Fosfatos',      valor: eaa.fosfatos_mgl,      unidad:'mg P/L', ref:'< 0.4 (mb: < 0.2) · RD 817/2015 R-T01',
+            estado: eaa.fosfatos_mgl !== null ? (eaa.fosfatos_mgl > 1.0 ? 'bad' : eaa.fosfatos_mgl > 0.4 ? 'warn' : 'ok') : 'gris' },
+          { param:'Amonio',        valor: eaa.amonio_mgl,        unidad:'mg N/L', ref:'< 1 mg/L orientativo cauce',
+            estado: eaa.amonio_mgl !== null ? (eaa.amonio_mgl > 2 ? 'bad' : eaa.amonio_mgl > 1 ? 'warn' : 'ok') : 'gris' },
+          { param:'Oxígeno dis.',  valor: eaa.oxigeno_mgl,       unidad:'mg/L',   ref:'> 5 mg/L (> 7 mb) · RD 817/2015 R-T01',
+            estado: eaa.oxigeno_mgl !== null ? (eaa.oxigeno_mgl < 2 ? 'bad' : eaa.oxigeno_mgl < 5 ? 'warn' : 'ok') : 'gris' },
+          { param:'Conductividad', valor: eaa.conductividad_uscm, unidad:'µS/cm', ref:'< 2500 orientativo',
+            estado: eaa.conductividad_uscm !== null ? (eaa.conductividad_uscm > 2500 ? 'bad' : eaa.conductividad_uscm > 1500 ? 'warn' : 'ok') : 'gris' },
+          { param:'Turbidez',      valor: eaa.turbidez_ntu,      unidad:'NTU',    ref:'< 4 NTU orientativo',
+            estado: eaa.turbidez_ntu !== null ? (eaa.turbidez_ntu > 10 ? 'bad' : eaa.turbidez_ntu > 4 ? 'warn' : 'ok') : 'gris' },
+          { param:'Temperatura',   valor: eaa.temp_agua_c,       unidad:'°C',     ref:'< 25 orientativo',
+            estado: eaa.temp_agua_c !== null ? (eaa.temp_agua_c > 25 ? 'warn' : 'ok') : 'gris' },
+        ].filter(p => p.valor !== null && p.valor !== undefined);
+
+        eaaTbody.innerHTML = params.map(p => `
+          <tr>
+            <td>${p.param}</td>
+            <td style="font-family:var(--font-mono);font-weight:600">${typeof p.valor === 'number' ? (Number.isInteger(p.valor) ? p.valor : p.valor.toFixed(2)) : p.valor}</td>
+            <td style="color:var(--fg-muted)">${p.unidad}</td>
+            <td style="color:var(--fg-muted)">${p.ref}</td>
+            <td><span class="param-badge param-${p.estado}">${
+              p.estado==='ok' ? '✓ OK' : p.estado==='warn' ? '⚠ Alerta' : p.estado==='bad' ? '✕ Excede' : '— S/D'
+            }</span></td>
+          </tr>`).join('');
+
+        // Alerta crítica en banner si nivel_alerta = critico
+        if (eaa.nivel_alerta === 'critico') {
+          const banner = document.getElementById('sira-alerta-banner');
+          if (banner) {
+            banner.style.display = 'flex';
+            const title = banner.querySelector('.alerta-title');
+            const body  = banner.querySelector('.alerta-body');
+            if (title) title.textContent = '🔒 INTERNO · EAA-421 Guadarramilla — Parámetros críticos';
+            if (body)  body.textContent  = `Fosfatos: ${eaa.fosfatos_mgl} mg P/L · Amonio: ${eaa.amonio_mgl} mg N/L · O₂: ${eaa.oxigeno_mgl} mg/L · ${eaa.hora_obs}`;
+          }
+        }
+      }
+    }
+
+    // --- E2-40 La Colada (embalse — solo ok/fail por ahora) ---
+    const col = d.embalses && d.embalses.find(e => e.cod === 'E2-40');
+    const colPhEl = document.getElementById('sira-colada-ph');
+    if (colPhEl && (!col || !col.ok)) colPhEl.textContent = 'S/D';
+
+  } catch(e) {
+    // fallback: renderSIRA() ya pintó datos hardcoded — no hacer nada
+    console.warn('sira.json no disponible, usando datos de ejemplo:', e.message);
+  }
+}
+
+// ============================================================
 //  CARGA DE DATOS REALES (si existe sinac_calidad.json)
 // ============================================================
 async function intentarCargarSINAC() {
@@ -1485,6 +1582,7 @@ function updateTS() {
   intentarCargarSINAC();
   renderSAIH();
   renderSIRA();
+  intentarCargarSIRA();   // sobreescribe SIRA hardcoded con datos reales del JSON
   renderAEMET();
 })();
 </script>
