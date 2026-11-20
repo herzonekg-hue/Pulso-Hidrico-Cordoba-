@@ -1,6 +1,6 @@
 name: Actualizar datos SIRA
 
-# Ejecuta scraper_sira.py en GitHub Actions y guarda data/sira.json en el repositorio.
+# Ejecuta scraper_sira.py en GitHub Actions y guarda data/sira.json solo si llega al menos una estación con datos.
 # Alternativa al cron del servidor AGS: no usar ambos a la vez.
 
 on:
@@ -26,12 +26,21 @@ jobs:
       - name: Ejecutar scraper SIRA
         env:
           HIDRICO_SALIDA: data
+          # SIRA_AUTHJWT ya no es necesario: el scraper obtiene el token
+          # automáticamente vía POST /backend/security/getProfile (sesión pública).
+          # Si se configura como secreto, tiene prioridad (útil para debugging).
+          SIRA_AUTHJWT: ${{ secrets.SIRA_AUTHJWT }}
         run: python scraper_sira.py
 
-      - name: Guardar si hay cambios
+      - name: Validar y guardar
         run: |
           if [ ! -f data/sira.json ]; then
             echo "No se generó data/sira.json: revisar el log del scraper."
+            exit 1
+          fi
+          if ! python3 -c "import json,sys; d=json.load(open('data/sira.json',encoding='utf-8')); sys.exit(0 if any(x.get('ok') for k in ('embalses','calidad','aforos') for x in d.get(k,[])) else 1)"; then
+            echo "SIRA no devolvió datos válidos (401/404 en el log). No se guarda nada."
+            rm -f data/sira.json
             exit 1
           fi
           git config user.name "github-actions[bot]"

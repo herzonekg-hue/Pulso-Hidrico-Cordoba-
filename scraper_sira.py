@@ -34,19 +34,57 @@ from pathlib import Path
 SCRIPT_DIR  = Path(__file__).parent
 SALIDA_DIR  = Path(os.environ.get("HIDRICO_SALIDA", SCRIPT_DIR))
 
-BASE_URL    = "https://siraguadiana.com/backend/Visor"
+BASE_URL        = "https://siraguadiana.com/backend/Visor"
 URL_ESTACIONES  = f"{BASE_URL}/estaciones"
 URL_RESOURCE    = f"{BASE_URL}/resourceByID"
+URL_GETPROFILE  = "https://siraguadiana.com/backend/security/getProfile"
 
-# Headers que imitan al navegador — imprescindible para que el backend responda
+# Headers base que imitan al navegador — imprescindible para que el backend responda
 HEADERS = {
-    "User-Agent":  "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                   "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
-    "Accept":      "application/json, text/plain, */*",
-    "Referer":     "https://siraguadiana.com/E/DATOS",
-    "Origin":      "https://siraguadiana.com",
+    "User-Agent":    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                     "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36",
+    "Accept":        "application/json, text/plain, */*",
+    "Referer":       "https://www.siraguadiana.com/",
+    "Origin":        "https://www.siraguadiana.com",
     "Accept-Language": "es-ES,es;q=0.9",
+    "Content-Type":  "application/json",
 }
+
+
+def obtener_token_sira() -> str | None:
+    """
+    Solicita un token de sesión anónima a SIRA Guadiana.
+    Endpoint: POST /backend/security/getProfile
+    Body: {"COD_USUARIO":"public","ORIGIN":"https://www.siraguadiana.com","APP":"VISOR","CASTICKET":null}
+    Respuesta: {"sesionId": "eyJ...", ...}
+    El token tiene ~12 h de validez (43200 s).
+    No contiene credenciales privadas — es una sesión pública de solo lectura.
+    """
+    ctx = ssl._create_unverified_context()
+    payload = json.dumps({
+        "COD_USUARIO": "public",
+        "ORIGIN":      "https://www.siraguadiana.com",
+        "APP":         "VISOR",
+        "CASTICKET":   None,
+    }).encode("utf-8")
+    req = urllib.request.Request(
+        URL_GETPROFILE,
+        data=payload,
+        headers=HEADERS,
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(req, context=ctx, timeout=15) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        token = data.get("sesionId") or data.get("token") or data.get("jwt")
+        if token:
+            log.info("Token SIRA obtenido (exp ~12h)")
+            return token
+        log.warning("getProfile respondió pero sin sesionId: %s", list(data.keys()))
+        return None
+    except Exception as e:
+        log.warning("No se pudo obtener token SIRA: %s", e)
+        return None
 
 # Estaciones del norte de Córdoba que nos interesan
 # cod_estacion tal como aparece en /estaciones
@@ -286,6 +324,16 @@ def main():
             return
 
     ahora = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    # 0. Obtener token de sesión SIRA (sesión anónima pública, ~12h validez)
+    #    Prioridad: variable de entorno SIRA_AUTHJWT (GitHub Actions secret) →
+    #              llamada automática a getProfile (token público, sin credenciales)
+    token = os.environ.get("SIRA_AUTHJWT") or obtener_token_sira()
+    if token:
+        HEADERS["Authjwt"] = token
+        log.info("Authjwt configurado en headers")
+    else:
+        log.warning("Sin token SIRA — las peticiones podrían ser rechazadas (401/403)")
 
     # 1. Obtener catálogo para resolver IDs internos
     mapa = obtener_catalogo_estaciones()
