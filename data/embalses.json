@@ -1,8 +1,8 @@
 {
- "generado": "2026-11-23T01:19:44+00:00",
+ "generado": "2026-11-23T03:00:40+00:00",
  "fuente": "SAIH Guadalquivir (EmbalNiv.aspx) · MITECO (capacidad de La Colada)",
  "aviso": "Datos del SAIH en tiempo real no contrastados (aviso oficial de la CHG).",
- "fecha_saih": "2026-11-23T02:18",
+ "fecha_saih": "2026-11-23T03:59",
  "embalses": [
   {
    "id": "E33",
@@ -16,7 +16,7 @@
    "capacidad": 39.476,
    "volumen": 27.791,
    "pct": 70.4,
-   "fecha": "2026-11-23T02:18"
+   "fecha": "2026-11-23T03:59"
   },
   {
    "id": "E2-40",
@@ -42,9 +42,9 @@
    "nmn": 445.0,
    "nivel": 440.69,
    "capacidad": 281.259,
-   "volumen": 202.055,
-   "pct": 71.84,
-   "fecha": "2026-11-23T02:18"
+   "volumen": 202.031,
+   "pct": 71.83,
+   "fecha": "2026-11-23T03:59"
   }
  ]
 }
