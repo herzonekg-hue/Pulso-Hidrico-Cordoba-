@@ -1,8 +1,8 @@
 {
- "generado": "2026-11-23T05:26:20+00:00",
+ "generado": "2026-11-23T07:41:19+00:00",
  "fuente": "SAIH Guadalquivir (EmbalNiv.aspx) · MITECO (capacidad de La Colada)",
  "aviso": "Datos del SAIH en tiempo real no contrastados (aviso oficial de la CHG).",
- "fecha_saih": "2026-11-23T06:25",
+ "fecha_saih": "2026-11-23T08:40",
  "embalses": [
   {
    "id": "E33",
@@ -12,11 +12,11 @@
    "fuente": "SAIH Guadalquivir",
    "papel": "Embalse de la ETAP de Sierra Boyera (Bélmez): abastecimiento de Los Pedroches y el Alto Guadiato",
    "nmn": 500.0,
-   "nivel": 497.4,
+   "nivel": 497.41,
    "capacidad": 39.476,
-   "volumen": 27.791,
-   "pct": 70.4,
-   "fecha": "2026-11-23T06:25"
+   "volumen": 27.827,
+   "pct": 70.49,
+   "fecha": "2026-11-23T08:40"
   },
   {
    "id": "E2-40",
@@ -42,9 +42,9 @@
    "nmn": 445.0,
    "nivel": 440.68,
    "capacidad": 281.259,
-   "volumen": 201.915,
-   "pct": 71.79,
-   "fecha": "2026-11-23T06:25"
+   "volumen": 201.847,
+   "pct": 71.77,
+   "fecha": "2026-11-23T08:40"
   }
  ]
 }
