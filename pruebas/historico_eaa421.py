@@ -20,37 +20,33 @@ if tok:
 mejor, mejor_t = [], None
 for t in (7, 30, 90, 180, 365, 730):
     d = s._post(s.URL_CALIDAD, {"consulta": "EAA_DAT", "estacion": "EAA-421", "tiempo": t, "fInicial": None, "fFinal": None}, timeout=90)
-    print(f"tiempo={t}: tipo={type(d).__name__}", (list(d.keys())[:8] if isinstance(d, dict) else (len(d) if isinstance(d, list) else d)))
-    if isinstance(d, dict):
-        for k, v in d.items():
-            desc = (type(v).__name__, len(v)) if hasattr(v, "__len__") else type(v).__name__
-            muestra = (v[0] if isinstance(v, list) and v else (list(v.keys())[:10] if isinstance(v, dict) else v))
-            print(f"   {k}: {desc} muestra={str(muestra)[:260]}")
-        for k in ("datos", "datosCR"):
-            v = d.get(k)
-            if isinstance(v, list) and v and isinstance(v[0], dict) and "Timestamp" in v[0]:
-                d = v
-                break
-    reg = d if isinstance(d, list) else []
-    reg = [r for r in reg if isinstance(r, dict) and r.get("Timestamp")]
-    print(f"tiempo={t}: {len(reg)} registros", (reg[0]["Timestamp"], reg[-1]["Timestamp"]) if reg else "")
+    reg = d.get("datos") if isinstance(d, dict) else (d if isinstance(d, list) else [])
+    reg = [r for r in (reg or []) if isinstance(r, dict) and r.get("timestamp")]
+    print(f"tiempo={t}: {len(reg)} registros", (reg[0]["timestamp"], reg[-1]["timestamp"]) if reg else "")
     if len(reg) > len(mejor):
         mejor, mejor_t = reg, t
 if not mejor:
     sys.exit("sin datos")
 
-cols = ["Timestamp", "TA", "PO", "NH", "PH", "OX", "CD", "TB", "NO"]
+cols = ["timestamp", "TA", "PO", "NH", "PH", "OX", "CD", "TB", "NO"]
 Path("historico").mkdir(exist_ok=True)
 with open("historico/eaa421_historico.csv", "w", newline="", encoding="utf-8") as f:
     w = csv.writer(f)
     w.writerow(cols)
     for r in mejor:
         w.writerow([r.get(c) for c in cols])
-print(f"\nCSV guardado con tiempo={mejor_t}: {len(mejor)} filas, de {mejor[0]['Timestamp']} a {mejor[-1]['Timestamp']}")
+print(f"\nCSV guardado con tiempo={mejor_t}: {len(mejor)} filas, de {mejor[0]['timestamp']} a {mejor[-1]['timestamp']}")
+
+
+def _f(x):
+    try:
+        return float(x)
+    except (TypeError, ValueError):
+        return np.nan
 
 
 def col(c):
-    return np.array([np.nan if r.get(c) in (None, "") else float(r[c]) for r in mejor])
+    return np.array([_f(r.get(c)) for r in mejor])
 
 
 V = {c: col(c) for c in cols[1:]}

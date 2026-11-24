@@ -194,7 +194,10 @@ def obtener_calidad_eaa(cod: str) -> dict | None:
         return None
 
     # La respuesta es una lista; cogemos el último registro no vacío
-    registros = data if isinstance(data, list) else []
+    if isinstance(data, dict):
+        registros = data.get("datos") or []   # formato real: {"datos":[{timestamp,...}],"datosCR":[],"cabecera":[...]}
+    else:
+        registros = data if isinstance(data, list) else []
     registro = None
     for r in reversed(registros):
         if isinstance(r, dict) and r.get("PO") is not None:
@@ -208,7 +211,7 @@ def obtener_calidad_eaa(cod: str) -> dict | None:
         return None
 
     # Normalizar campo timestamp (clave con mayúscula en /calidad)
-    if "Timestamp" in registro and "timestamp" not in registro:
+    if "Timestamp" in registro and "timestamp" not in registro:  # (formato antiguo)
         registro = dict(registro)
         registro["timestamp"] = registro["Timestamp"]
 
