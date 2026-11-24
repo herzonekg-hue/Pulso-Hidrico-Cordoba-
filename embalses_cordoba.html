@@ -121,6 +121,9 @@ function calidad(){
   const dt=c?utc(c.hora_obs):null, de=e?utc(e.hora_obs):null;
   const caja=(t,v,u)=>`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--text3)">${t}</div><div style="font-size:17px;font-weight:800">${v}<span style="font-size:10px;color:var(--text3)"> ${u}</span></div></div>`;
   let h='<div class="zh" style="display:block"><h2 style="color:var(--water)">La Colada (E2-40) y la sonda del Viso (EAA-421) · SIRA Guadiana</h2>';
+  const lc=LISTA.find(x=>x.id==='E2-40');
+  if(lc){const tr=lc.pct>90?'más del 90 %':lc.pct>=60?'tramo 60-90 %':lc.pct>=40?'tramo 40-60 %':'menos del 40 %';
+    h+=`<div style="display:flex;align-items:center;gap:10px;margin:6px 0 8px"><span style="background:${col(lc.pct)};color:#06121c;font-weight:800;padding:4px 10px;border-radius:14px;font-size:13px">${fmt(lc.pct,1)} %</span><span style="font-size:12px;color:var(--text2)">Estado en tiempo real: ${tr} · ${fmt(lc.volumen,1)} de ${fmt(lc.capacidad,1)} hm³</span></div>`;}
   if(e) h+=`<p style="margin:3px 0 8px"><b>La Colada (estación E2-40 de SIRA)</b>, se mide cada 10 min: nivel ${fmt(e.nivel_msnm,2)} msnm · ${fmt(e.volumen_hm3,2)} hm³ · salida ${fmt(e.q_salida_m3s,4)} m³/s · medido ${hora(de)} (${hace(de)})</p>`;
   if(c){
     h+=`<p style="margin:3px 0 8px"><b>Sonda del Viso (EAA-421)</b>, Guadarramilla en El Viso, aguas arriba del embalse, se mide cada 15 min · medido ${hora(dt)} (${hace(dt)})</p>

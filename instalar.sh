@@ -83,6 +83,9 @@ cat > "$CRON" <<CRONEOF
 
 # Embalses de Córdoba (SAIH Guadalquivir + La Colada): cada 10 minutos
 */10 * * * * $USUARIO HIDRICO_SALIDA=$WEB_DIR/data HIDRICO_CONFIG=$CONF $PYTHON $APP_DIR/scraper_embalses.py >> $APP_DIR/embalses.log 2>&1
+
+# Actualización automática diaria (03:30) desde la rama produccion
+30 3 * * * $USUARIO cd $ORIGEN && ./actualizar.sh
 CRONEOF
 chmod 644 "$CRON"
 

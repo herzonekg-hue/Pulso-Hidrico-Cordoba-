@@ -221,3 +221,5 @@ El repositorio contiene el código fuente pero **nunca** `config.json`, `datos.j
 **Cómo se actualiza después:** no hay que rehacer nada a mano. Para recibir cambios, ejecutar `git pull` en la carpeta del repositorio y volver a lanzar `sudo ./instalar.sh` (no pisa `config.json`). Los datos se renuevan solos por cron. Alternativa sin servidor propio: la página ya está publicada en GitHub Pages y se actualiza sola.
 
 **Comprobación de zonas de embalses:** `python pruebas/test_zonas.py` (debe imprimir «Zonas correctas»).
+
+**Actualización automática (sin intervención):** `instalar.sh` deja un cron diario (03:30) que ejecuta `actualizar.sh`: descarga la rama `produccion` y, si hay cambios, los aplica sin tocar `config.json`. Solo se publica en `produccion` lo ya probado, así que el servidor nunca recibe cambios a medias. Registro en `actualizar.log`. Si no se quiere automático, borrar esa línea de `/etc/cron.d/aquasalud-norte`.
