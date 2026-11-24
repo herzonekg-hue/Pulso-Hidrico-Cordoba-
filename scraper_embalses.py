@@ -49,6 +49,19 @@ LA_COLADA = {"id": "E2-40", "nombre": "La Colada", "rio": "Guadamatilla", "cuenc
              "sin_dato": "Volumen no disponible: la estación E2-40 de SIRA exige autenticación"}
 
 
+# Embalses cordobeses de la tabla del SAIH Guadalquivir (porcentaje de llenado de la provincia).
+# La zona es una agrupación del panel (Norte / Capital / Sur), no una división oficial.
+# Derivación Retortillo (E40) es de Sevilla y no se incluye; La Colada se añade desde SIRA.
+PROVINCIA = {
+    "E33": ("Sierra Boyera", "norte"), "E34": ("Puente Nuevo", "norte"),
+    "E35": ("Guadanuño", "norte"), "E38": ("Hornachuelos", "norte"),
+    "E29": ("Guadalmellato", "capital"), "E30": ("San Rafael de Navallana", "capital"),
+    "E32": ("Vadomojón", "capital"), "E28": ("Arenoso", "capital"), "E27": ("Martín Gonzalo", "capital"),
+    "E48": ("Iznájar", "sur"), "E36": ("La Breña II", "sur"), "E37": ("Bembézar", "sur"),
+    "E39": ("Retortillo", "sur"), "E26": ("Yeguas", "sur"),
+}
+
+
 def num(t):
     t = (t or "").replace("\xa0", " ").strip()
     if not t or t in {"-", "—"}:
@@ -91,6 +104,28 @@ def parse(html):
     return out
 
 
+def parse_provincia(html):
+    """Todos los embalses cordobeses de la tabla del SAIH, con el mismo control de coherencia."""
+    soup = BeautifulSoup(html, "lxml")
+    patron = re.compile(r"^(E\d+)\s+(.+?)\s+\(([A-Z]{2})\)\s*$")
+    out = {}
+    for tr in soup.find_all("tr"):
+        tds = [c.get_text(" ", strip=True) for c in tr.find_all(["td", "th"])]
+        m = patron.match(tds[0]) if tds else None
+        if not m or m.group(1) not in PROVINCIA:
+            continue
+        vals = [v for v in (num(x) for x in tds[1:]) if v is not None]
+        if len(vals) < 5:
+            continue
+        _, _, cap, vol, pct = vals[:5]
+        if cap <= 0 or abs(vol / cap * 100 - pct) > 1.0:
+            continue
+        nombre, zona = PROVINCIA[m.group(1)]
+        out[m.group(1)] = {"id": m.group(1), "nombre": nombre, "zona": zona,
+                           "capacidad": cap, "volumen": vol, "pct": pct}
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--fixture")
@@ -129,10 +164,15 @@ def main():
             colada.update({"fuente": "SIRA Guadiana (E2-40)", "volumen": e2["volumen_hm3"],
                            "pct": e2.get("pct_capacidad"), "nivel": e2.get("nivel_msnm"),
                            "capacidad": e2.get("capacidad_hm3") or colada["capacidad"],
-                           "q_salida": e2.get("q_salida_m3s"), "fecha": hora or None})
+                           "q_salida": e2.get("q_salida_m3s"), "fecha": (hora + "Z") if hora else None})
             colada.pop("sin_dato", None)
     except Exception as ex:  # noqa: BLE001
         print(f"La Colada sin lectura de SIRA: {ex}", file=sys.stderr)
+
+    provincia = list(parse_provincia(html).values())
+    if colada.get("volumen") is not None:
+        provincia.append({"id": "E2-40", "nombre": "La Colada", "zona": "norte",
+                          "capacidad": colada["capacidad"], "volumen": colada["volumen"], "pct": colada["pct"]})
 
     ahora = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
     for e in leidos.values():
@@ -143,6 +183,7 @@ def main():
         "aviso": "Datos del SAIH en tiempo real no contrastados (aviso oficial de la CHG).",
         "fecha_saih": fecha,
         "embalses": [leidos["E33"], colada, leidos.get("E34")],
+        "provincia": provincia,
     }
     datos["embalses"] = [e for e in datos["embalses"] if e]
 
