@@ -18,4 +18,4 @@ jobs:
         with:
           python-version: "3.11"
       - name: Sondear SIRA
-        run: python pruebas/sonda_sira_embalse.py
+        run: python pruebas/sonda_sira_embalse2.py
