@@ -1,0 +1,33 @@
+name: Histórico EAA-421 y sensor virtual (diagnóstico)
+
+# Descarga el histórico público de la EAA-421 desde SIRA, lo guarda en historico/ y prueba
+# si un sensor virtual (regresión simple) estima amonio y fosfatos a partir de variables baratas.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  historico:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install numpy
+      - name: Descargar histórico y probar el sensor virtual
+        run: python pruebas/historico_eaa421.py
+      - name: Guardar el CSV
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add historico/eaa421_historico.csv
+          if git diff --cached --quiet; then echo "Sin cambios"; exit 0; fi
+          git commit -m "datos: histórico EAA-421 (SIRA, diagnóstico)"
+          for i in 1 2 3; do
+            git pull --rebase -q origin main && git push && break
+            sleep 5
+          done
