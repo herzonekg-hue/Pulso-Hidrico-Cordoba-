@@ -8,6 +8,7 @@ on:
     branches: [main]
     paths:
       - "index.html"
+      - "embalses_cordoba.html"
       - "data/**"
       - ".nojekyll"
   workflow_dispatch:
@@ -60,6 +61,7 @@ jobs:
         run: |
           mkdir -p _site
           cp index.html _site/
+          cp embalses_cordoba.html _site/
           cp .nojekyll _site/
           if [ -d data ] && [ "$(ls -A data)" ]; then
             cp -r data _site/

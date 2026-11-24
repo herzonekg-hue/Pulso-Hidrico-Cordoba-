@@ -164,7 +164,7 @@ def main():
             colada.update({"fuente": "SIRA Guadiana (E2-40)", "volumen": e2["volumen_hm3"],
                            "pct": e2.get("pct_capacidad"), "nivel": e2.get("nivel_msnm"),
                            "capacidad": e2.get("capacidad_hm3") or colada["capacidad"],
-                           "q_salida": e2.get("q_salida_m3s"), "fecha": (hora + "Z") if hora else None})
+                           "q_salida": e2.get("q_salida_m3s"), "fecha": hora or None})
             colada.pop("sin_dato", None)
     except Exception as ex:  # noqa: BLE001
         print(f"La Colada sin lectura de SIRA: {ex}", file=sys.stderr)

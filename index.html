@@ -966,16 +966,6 @@ body.perfil-tecnico .ciudadano-only { display: none; }
       </div>
 
       <div class="card">
-        <div class="card-title"><span class="icon">💧</span> Embalses de la provincia de Córdoba — % de llenado</div>
-        <div id="prov-resumen" class="nota-legal" style="margin:0 0 10px">Cargando…</div>
-        <div id="prov-lista"></div>
-        <div class="nota-legal" style="margin-top:10px">
-          <strong>Origen de las cifras:</strong> porcentaje, volumen y capacidad de cada embalse vienen tal cual del SAIH Guadalquivir (14 embalses) y de SIRA Guadiana (La Colada). La suma provincial y la agrupación en zonas (Norte, Capital, Sur) son cálculo del panel, no un dato oficial.
-          Color de la barra: ≥ 75 % verde, 50-75 % azul, 25-50 % naranja, &lt; 25 % rojo (referencia visual propia, no el escenario oficial de sequía).
-        </div>
-      </div>
-
-      <div class="card">
         <div class="card-title"><span class="icon">📈</span> Evolución del volumen — últimos 7 días (lecturas horarias del SAIH)</div>
         <div class="sparkline-title">Sierra Boyera (hm³)</div>
         <div class="sparkline-wrap">
@@ -989,7 +979,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
       </div>
 
       <div class="nota-legal">
-        <strong>Fuente:</strong> SAIH Confederación Hidrográfica del Guadalquivir. El panel consulta el SAIH cada hora y SIRA cada 30 minutos mediante GitHub Actions. Código: github.com/herzonekg-hue/Pulso-Hidrico-Cordoba-
+        <strong>Fuente:</strong> SAIH Confederación Hidrográfica del Guadalquivir. GitHub Actions scraping cada 15 minutos. Código: github.com/herzonekg-hue/Pulso-Hidrico-Cordoba-
       </div>
     </section>
 
@@ -1360,32 +1350,6 @@ function pintarEmbalse(key, e) {
   document.getElementById(key + '-ts').textContent = '🕐 ' + (f ? f.toLocaleString('es-ES', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' · ' + (e.fuente || 'SAIH') : '—');
 }
 
-
-function pintarProvincia(lista) {
-  const cont = document.getElementById('prov-lista');
-  const res = document.getElementById('prov-resumen');
-  if (!cont || !lista || !lista.length) { if (res) res.textContent = 'Sin datos provinciales.'; return; }
-  const fmt = (v, d) => v.toLocaleString('es-ES', {minimumFractionDigits:d, maximumFractionDigits:d});
-  const col = p => p >= 75 ? '#2e8b57' : p >= 50 ? '#3a78b5' : p >= 25 ? '#d98a2b' : '#c0402f';
-  const zonas = [['norte','Zona Norte'], ['capital','Zona Capital'], ['sur','Zona Sur']];
-  let vol = 0, cap = 0, html = '';
-  lista.forEach(e => { vol += e.volumen; cap += e.capacidad; });
-  zonas.forEach(([z, titulo]) => {
-    const g = lista.filter(e => e.zona === z).sort((a, b) => a.pct - b.pct);
-    if (!g.length) return;
-    const v = g.reduce((s, e) => s + e.volumen, 0), c = g.reduce((s, e) => s + e.capacidad, 0);
-    html += '<div style="font-weight:600;margin:12px 0 4px">' + titulo + ' · ' + fmt(v / c * 100, 1) + ' % <span style="font-weight:400;color:var(--fg-light)">(' + fmt(v, 0) + ' / ' + fmt(c, 0) + ' hm³)</span></div>';
-    g.forEach(e => {
-      html += '<div style="display:grid;grid-template-columns:150px 1fr 56px;gap:8px;align-items:center;margin:3px 0;font-size:13px">'
-        + '<span>' + e.nombre + '</span>'
-        + '<span style="background:rgba(0,0,0,.08);border-radius:4px;height:9px;overflow:hidden"><span style="display:block;height:100%;width:' + Math.min(100, e.pct) + '%;background:' + col(e.pct) + '"></span></span>'
-        + '<span style="text-align:right;font-weight:600;color:' + col(e.pct) + '">' + fmt(e.pct, 1) + ' %</span></div>';
-    });
-  });
-  cont.innerHTML = html;
-  res.innerHTML = '<strong>' + fmt(vol / cap * 100, 1) + ' %</strong> del conjunto (' + fmt(vol, 0) + ' / ' + fmt(cap, 0) + ' hm³, ' + lista.length + ' embalses) · cálculo del panel';
-}
-
 function pintarSerie(id, pts, color) {
   const svg = document.getElementById(id);
   if (!svg) return;
@@ -1410,7 +1374,6 @@ async function intentarCargarEmbalses() {
     if (por.E33) pintarEmbalse('sboyera', por.E33);
     if (por['E2-40']) pintarEmbalse('colada', por['E2-40']);
     if (por.E34) pintarEmbalse('pnuevo', por.E34);
-    pintarProvincia(d.provincia);
     pintarSerie('spark-sboyera', serie.E33, '#1F7A8C');
     pintarSerie('spark-pnuevo', serie.E34, '#3E6B2F');
     const f = d.fecha_saih ? new Date(d.fecha_saih) : null;

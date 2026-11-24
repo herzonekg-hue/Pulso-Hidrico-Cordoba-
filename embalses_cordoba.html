@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Embalses de Córdoba · % de llenado</title>
+<style>
+:root{--bg:#07111c;--s1:#0d1f30;--water:#2ec4b6;--warn:#f4a261;--crit:#e76f51;--med:#60a5fa;--ok:#3db87a;
+--text:#e4f0fa;--text2:#7aaac8;--text3:#5a8199;--border:rgba(46,196,182,.12);
+--norte:#3db87a;--capital:#60a5fa;--sur:#f4a261}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.hero{background:linear-gradient(135deg,#071a2a,#0a2a3a 60%,#0a3a2a);padding:14px 18px;display:flex;align-items:center;gap:12px;position:relative}
+.hero::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--norte),var(--capital),var(--sur))}
+.hero h1{font-size:15px;font-weight:800}
+.hero p{font-size:11px;color:var(--text3);margin-top:2px}
+.hero-r{margin-left:auto;text-align:right}
+.hero-pct{font-size:28px;font-weight:900;color:var(--water);line-height:1}
+.hero-sub{font-size:10px;color:var(--text3);margin-top:3px}
+.sbar{padding:7px 18px;font-size:11px;color:var(--text2);border-bottom:1px solid var(--border);display:flex;gap:8px;align-items:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--text3)}.dot.ok{background:var(--water)}.dot.err{background:var(--crit)}
+.tabs{display:flex;border-bottom:1px solid var(--border)}
+.tab{flex:1;padding:11px 4px;font:700 12px inherit;font-family:inherit;color:var(--text3);background:none;border:0;border-bottom:3px solid transparent;cursor:pointer}
+.tab.active{color:var(--text);background:rgba(255,255,255,.03)}
+.wrap{max-width:860px;margin:0 auto}
+.content{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.zh{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px}
+.zh h2{font-size:13px}.zh p{font-size:11px;color:var(--text2);margin-top:2px}
+.zh .n{margin-left:auto;text-align:right}.zh .n b{font-size:21px;font-weight:900;display:block;line-height:1}.zh .n span{font-size:10px;color:var(--text3)}
+.tabla{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.row{display:grid;grid-template-columns:1fr 62px 90px 96px;gap:8px;align-items:center;padding:9px 13px;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.row:last-child{border:0}.row.head{background:rgba(255,255,255,.04);font-size:10px;color:var(--text3);text-transform:uppercase;font-weight:700}
+.nom small{display:block;color:var(--text3);font-size:10px;margin-top:1px}
+.pct{text-align:right;font-weight:800;font-size:13px}.vol{text-align:right;color:var(--text2)}
+.bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;border-radius:3px;width:0;transition:width 1s}
+.sb{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:4px}
+.nota{font-size:11px;color:var(--text3);line-height:1.55;padding:2px 2px 14px}
+.nota b{color:var(--text2)}
+@media(max-width:520px){.row{grid-template-columns:1fr 54px 78px}.row .vol{display:none}.row.head .vol{display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="hero">
+  <div style="font-size:24px">💧</div>
+  <div><h1>Embalses de Córdoba · % de llenado</h1><p>SAIH Guadalquivir (14 embalses) · SIRA Guadiana (La Colada)</p></div>
+  <div class="hero-r"><div class="hero-pct" id="h-pct">—</div><div class="hero-sub" id="h-sub">cargando…</div></div>
+</div>
+<div class="sbar"><span class="dot" id="dot"></span><span id="estado">Cargando datos…</span></div>
+<div class="tabs" id="tabs"></div>
+<div class="content" id="content"></div>
+<div class="content" style="padding-top:0">
+  <div class="nota">
+    <b>De dónde sale cada cifra.</b> Porcentaje, volumen y capacidad de cada embalse proceden tal cual de la tabla pública de niveles del SAIH Guadalquivir (datos en tiempo real, no contrastados según el aviso de la CHG) y, para La Colada, de la estación E2-40 de SIRA (CHG Guadiana). El SAIH se consulta cada hora; SIRA cada 30 minutos. La suma de la provincia y la agrupación en zonas Norte, Capital y Sur son cálculo de este panel, no un dato oficial. Los colores son una referencia visual propia, no el escenario oficial de sequía.
+    <br><br>Edición recuperada del panel de embalses del 4 de noviembre, ahora con lectura automática. Panel principal: <a href="./" style="color:var(--water)">AQUASALUD NORTE</a>.
+  </div>
+</div>
+</div>
+<script>
+const ZONAS = {
+  norte:  {t:'Zona Norte',  ico:'🏔', color:'var(--norte)',   desc:'Guadiato y Los Pedroches. Cuencas del Guadalquivir y del Guadiana'},
+  capital:{t:'Zona Capital',ico:'🏛', color:'var(--capital)', desc:'Córdoba capital y Campiña Norte'},
+  sur:    {t:'Zona Sur',    ico:'🌾', color:'var(--sur)',     desc:'Campiña Sur, Subbética, Genil y Bembézar'}
+};
+const fmt=(v,d)=>v.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+const col=p=>p>=75?'#2ec4b6':p>=50?'#60a5fa':p>=25?'#f4a261':'#e76f51';
+const lbl=p=>p>=75?'Alto':p>=50?'Moderado':p>=25?'Bajo':'Crítico';
+let LISTA=[], ACTUAL='norte';
+function suma(l){const v=l.reduce((s,e)=>s+e.volumen,0),c=l.reduce((s,e)=>s+e.capacidad,0);return {v,c,p:v/c*100}}
+function render(){
+  const z=ZONAS[ACTUAL], g=LISTA.filter(e=>e.zona===ACTUAL).sort((a,b)=>a.pct-b.pct), s=suma(g);
+  let h=`<div class="zh"><div style="font-size:18px">${z.ico}</div><div><h2 style="color:${z.color}">${z.t} (${g.length})</h2><p>${z.desc}</p></div>
+  <div class="n"><b style="color:${z.color}">${fmt(s.p,1)} %</b><span>${fmt(s.v,0)} / ${fmt(s.c,0)} hm³</span></div></div>
+  <div class="tabla"><div class="row head"><div>Embalse</div><div style="text-align:right">Llenado</div><div class="vol">Volumen</div><div>Nivel</div></div>`;
+  g.forEach(e=>{h+=`<div class="row"><div class="nom">${e.nombre}</div><div class="pct" style="color:${col(e.pct)}">${fmt(e.pct,1)} %</div>
+  <div class="vol">${fmt(e.volumen,e.volumen>=100?0:1)} / ${fmt(e.capacidad,e.capacidad>=100?0:1)} hm³</div>
+  <div><div class="bar"><i style="background:${col(e.pct)}" data-w="${Math.min(100,e.pct)}"></i></div></div></div>`});
+  h+='</div>';
+  document.getElementById('content').innerHTML=h;
+  setTimeout(()=>document.querySelectorAll('.bar i').forEach(i=>i.style.width=i.dataset.w+'%'),60);
+  document.querySelectorAll('.tab').forEach(t=>{const a=t.dataset.z===ACTUAL;t.classList.toggle('active',a);t.style.borderBottomColor=a?ZONAS[t.dataset.z].color:'transparent'});
+}
+function tabs(){
+  document.getElementById('tabs').innerHTML=Object.keys(ZONAS).map(k=>`<button class="tab" data-z="${k}">${ZONAS[k].t.replace('Zona ','')} (${LISTA.filter(e=>e.zona===k).length})</button>`).join('');
+  document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{ACTUAL=t.dataset.z;render()});
+}
+(async()=>{
+  const dot=document.getElementById('dot'),est=document.getElementById('estado');
+  try{
+    const r=await fetch('./data/embalses.json',{cache:'no-store'});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    const d=await r.json();
+    LISTA=d.provincia||[];
+    if(!LISTA.length) throw new Error('sin lista provincial');
+    const s=suma(LISTA);
+    document.getElementById('h-pct').textContent=fmt(s.p,1)+' %';
+    document.getElementById('h-sub').textContent=fmt(s.v,0)+' / '+fmt(s.c,0)+' hm³ · '+LISTA.length+' embalses';
+    const f=d.fecha_saih?new Date(d.fecha_saih):null;
+    const col2=d.embalses.find(e=>e.id==='E2-40');
+    dot.className='dot ok';
+    est.textContent='Última lectura SAIH: '+(f?f.toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—')
+      +(col2&&col2.fecha?' · La Colada (SIRA): '+col2.fecha.replace('T',' ').slice(0,16)+' (hora tal como la publica SIRA)':'');
+    tabs();render();
+  }catch(e){
+    dot.className='dot err';est.textContent='Sin datos: '+e.message;
+  }
+})();
+</script>
+</body>
+</html>
