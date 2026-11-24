@@ -209,3 +209,15 @@ El repositorio contiene el código fuente pero **nunca** `config.json`, `datos.j
 ---
 
 *AQUASALUD NORTE — AGS Norte de Córdoba — Antonio González Caballero*
+
+---
+
+## Actualización 24/11/2026: página de embalses y cómo se mantiene
+
+**Qué se instala:** `instalar.sh` copia los scrapers (incluido `scraper_embalses.py`) y las páginas `index.html` y `embalses_cordoba.html` a la web del área, y crea un cron cada 10 minutos para `scraper_sira.py` y `scraper_embalses.py`. Solo Python 3 y servidor web estático; no hay base de datos ni procesos permanentes.
+
+**Qué necesita de Antonio:** un `config.json` con sus claves (nunca a GitHub). Sin claves, los embalses y SIRA funcionan igual; solo Sentinel-2 y AEMET las requieren.
+
+**Cómo se actualiza después:** no hay que rehacer nada a mano. Para recibir cambios, ejecutar `git pull` en la carpeta del repositorio y volver a lanzar `sudo ./instalar.sh` (no pisa `config.json`). Los datos se renuevan solos por cron. Alternativa sin servidor propio: la página ya está publicada en GitHub Pages y se actualiza sola.
+
+**Comprobación de zonas de embalses:** `python pruebas/test_zonas.py` (debe imprimir «Zonas correctas»).
