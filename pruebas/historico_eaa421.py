@@ -20,6 +20,12 @@ if tok:
 mejor, mejor_t = [], None
 for t in (7, 30, 90, 180, 365, 730):
     d = s._post(s.URL_CALIDAD, {"consulta": "EAA_DAT", "estacion": "EAA-421", "tiempo": t, "fInicial": None, "fFinal": None}, timeout=90)
+    print(f"tiempo={t}: tipo={type(d).__name__}", (list(d.keys())[:8] if isinstance(d, dict) else (len(d) if isinstance(d, list) else d)))
+    if isinstance(d, dict):
+        for k, v in d.items():
+            if isinstance(v, list) and v and isinstance(v[0], dict) and "Timestamp" in v[0]:
+                d = v
+                break
     reg = d if isinstance(d, list) else []
     reg = [r for r in reg if isinstance(r, dict) and r.get("Timestamp")]
     print(f"tiempo={t}: {len(reg)} registros", (reg[0]["Timestamp"], reg[-1]["Timestamp"]) if reg else "")
