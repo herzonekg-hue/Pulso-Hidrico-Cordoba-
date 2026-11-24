@@ -62,14 +62,19 @@ const ZONAS = {
   capital:{t:'Zona Capital',ico:'🏛', color:'var(--capital)', desc:'Córdoba capital y Campiña Norte'},
   sur:    {t:'Zona Sur',    ico:'🌾', color:'var(--sur)',     desc:'Campiña Sur, Subbética, Genil y Bembézar'}
 };
-// Semáforo: < 40 % rojo · 40-60 % amarillo pistacho · ≥ 60 % verde
-const VERDE='#34b36b', PISTACHO='#c9d646', ROJO='#e5483a';
-const col=p=>p>=60?VERDE:p>=40?PISTACHO:ROJO;
+// Semáforo: > 90 % verde · 60-90 % azul · 40-60 % amarillo pistacho · < 40 % rojo
+const VERDE='#34b36b', AZUL='#3b8de0', PISTACHO='#c9d646', ROJO='#e5483a';
+const col=p=>p>90?VERDE:p>=60?AZUL:p>=40?PISTACHO:ROJO;
+const LEYENDA=`<div style="display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;font-size:11px;color:var(--text2);margin:0 0 10px"><b style="color:var(--text)">Semáforo de llenado:</b>
+ <span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${VERDE};vertical-align:-1px"></i> Más del 90 %</span>
+ <span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${AZUL};vertical-align:-1px"></i> 60 – 90 %</span>
+ <span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${PISTACHO};vertical-align:-1px"></i> 40 – 60 %</span>
+ <span><i style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${ROJO};vertical-align:-1px"></i> Menos del 40 %</span></div>`;
 const fmt=(v,d)=>v.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
 const hora=d=>d.toLocaleString('es-ES',{timeZone:'Europe/Madrid',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
 const utc=s=>new Date(s.replace(' ','T').replace(/Z?$/,'Z'));
 const hace=d=>{const m=Math.round((Date.now()-d.getTime())/60000);return m<1?'ahora':m<90?'hace '+m+' min':'hace '+fmt(m/60,1)+' h'};
-let LISTA=[], SERIE={}, SIRA=null, ACTUAL='norte';
+let LISTA=[], SERIE={}, SIRA=null, EAA=null, ACTUAL='norte';
 function suma(l){const v=l.reduce((s,e)=>s+e.volumen,0),c=l.reduce((s,e)=>s+e.capacidad,0);return {v,c,p:v/c*100}}
 
 // Variación frente a hace N horas, con la lectura más cercana (tolerancia 20 % del plazo)
@@ -94,7 +99,7 @@ function spark(id){
 }
 function render(){
   const z=ZONAS[ACTUAL], g=LISTA.filter(e=>e.zona===ACTUAL).sort((a,b)=>a.pct-b.pct), s=suma(g);
-  let h=`<div class="zh"><div style="font-size:18px">${z.ico}</div><div><h2 style="color:${z.color}">${z.t} (${g.length})</h2><p>${z.desc}</p></div>
+  let h=LEYENDA+`<div class="zh"><div style="font-size:18px">${z.ico}</div><div><h2 style="color:${z.color}">${z.t} (${g.length})</h2><p>${z.desc}</p></div>
   <div class="n"><b style="color:${col(s.p)}">${fmt(s.p,1)} %</b><span>${fmt(s.v,0)} / ${fmt(s.c,0)} hm³</span></div></div>
   <div class="tabla"><div class="row head"><div>Embalse</div><div style="text-align:right">Llenado</div><div class="vol">24 h</div><div class="vol">7 días</div><div>Tendencia 7 d</div></div>`;
   g.forEach(e=>{
@@ -124,9 +129,31 @@ function calidad(){
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:6px">
     ${caja('Fosfatos',fmt(c.fosfatos_mgl,2),'mg/L')}${caja('Amonio',fmt(c.amonio_mgl,2),'mg/L')}${caja('Oxígeno',fmt(c.oxigeno_mgl,2),'mg/L')}
     ${caja('Turbidez',fmt(c.turbidez_ntu,1),'NTU')}${caja('pH',fmt(c.ph,2),'')}${caja('Temp. agua',fmt(c.temp_agua_c,1),'°C')}</div>
-    <p style="margin-top:8px;font-size:11px;color:var(--text2)">Fosfatos: umbral de alerta ${fmt(c.umbral_fosfatos_alerta_mgl,1)} mg/L y crítico ${fmt(c.umbral_fosfatos_critico_mgl,1)} mg/L (valores del panel principal). Dato puntual de una sonda, sin validar.</p>`;
+    <p style="margin-top:8px;font-size:11px;color:var(--text2)">Fosfatos: umbral de alerta ${fmt(c.umbral_fosfatos_alerta_mgl,1)} mg/L y crítico ${fmt(c.umbral_fosfatos_critico_mgl,1)} mg/L (valores del panel principal). Dato puntual de una sonda, sin validar.</p>`+cruce(c);
   }
   return h+'</div>';
+}
+
+// Cruce fosfatos (EAA-421) ↔ La Colada: variación del fosfato frente al nivel del embalse en el mismo periodo
+function cruce(c){
+  const f=(EAA&&EAA.serie||[]).filter(r=>r[1]!=null);
+  if(f.length<8) return '';
+  const ult=f[f.length-1], t=new Date(ult[0]).getTime();
+  const cerca=h=>{let b=null,bd=1e18;f.forEach(r=>{const d=Math.abs(new Date(r[0]).getTime()-(t-h*3.6e6));if(d<bd){bd=d;b=r}});return bd<h*3.6e6*0.2?b:null};
+  const p24=cerca(24), p7=cerca(168);
+  const dd=(b)=>b?(ult[1]-b[1]):null;
+  const max24=Math.max(...f.filter(r=>new Date(r[0]).getTime()>=t-24*3.6e6).map(r=>r[1]));
+  const col_=(SERIE['E2-40']||[]).length?delta('E2-40',24):null, col7=(SERIE['E2-40']||[]).length?delta('E2-40',168):null;
+  const sg=v=>v==null?'—':(v>0?'+':'')+fmt(v,2)+' mg/L';
+  const al=c?c.umbral_fosfatos_alerta_mgl:0.4;
+  const marca=ult[1]>=al?'<b style="color:'+ROJO+'">por encima del umbral de alerta del panel ('+fmt(al,1)+' mg/L)</b>; la unidad del parámetro PO (fosfato o fósforo) está pendiente de verificar':'por debajo del umbral de alerta del panel';
+  return `<p style="margin:10px 0 4px;font-size:12px"><b>Cruce fosfatos ↔ La Colada</b> (serie 15 min de la sonda, ${f.length} lecturas)</p>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px">
+  <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;font-size:11px">Fosfatos Δ 24 h<br><b style="font-size:15px">${sg(dd(p24))}</b></div>
+  <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;font-size:11px">Fosfatos Δ 7 d<br><b style="font-size:15px">${sg(dd(p7))}</b></div>
+  <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;font-size:11px">Máx. fosfatos 24 h<br><b style="font-size:15px">${fmt(max24,2)} mg/L</b></div>
+  <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;font-size:11px">La Colada Δ 24 h / 7 d<br><b style="font-size:15px">${col_?fmt(col_.pp,2)+' pp':'—'} / ${col7?fmt(col7.pp,2)+' pp':'—'}</b></div></div>
+  <p style="margin-top:6px;font-size:11px;color:var(--text2)">Último fosfato: ${fmt(ult[1],2)} mg/L, ${marca}. La sonda mide río aguas arriba, no dentro del embalse: es un indicador de aporte, no de calidad del agua embalsada. El nivel de La Colada acumula histórico desde el despliegue; la variación aparece cuando hay lectura de hace 24 h / 7 d.</p>`;
 }
 function tabs(){
   document.getElementById('tabs').innerHTML=Object.keys(ZONAS).map(k=>`<button class="tab" data-z="${k}">${ZONAS[k].t.replace('Zona ','')} (${LISTA.filter(e=>e.zona===k).length})</button>`).join('');
@@ -135,9 +162,9 @@ function tabs(){
 async function j(u){try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch(e){return null}}
 async function cargar(){
   const dot=document.getElementById('dot'),est=document.getElementById('estado');
-  const [d,sp,sira]=await Promise.all([j('./data/embalses.json'),j('./data/embalses_serie_prov.json'),j('./data/sira.json')]);
+  const [d,sp,sira,eaa]=await Promise.all([j('./data/embalses.json'),j('./data/embalses_serie_prov.json'),j('./data/sira.json'),j('./data/eaa_EAA421_serie.json')]);
   if(!d||!(d.provincia||[]).length){dot.className='dot err';est.textContent='Sin datos de embalses';return}
-  LISTA=d.provincia; SERIE=sp||{}; SIRA=sira;
+  LISTA=d.provincia; SERIE=sp||{}; SIRA=sira; EAA=eaa;
   const s=suma(LISTA);
   document.getElementById('h-pct').textContent=fmt(s.p,1)+' %';
   document.getElementById('h-pct').style.color=col(s.p);

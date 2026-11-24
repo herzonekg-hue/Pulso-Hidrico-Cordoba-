@@ -166,6 +166,41 @@ def _post(url: str, body: dict, timeout: int = 20):
 
 # ── Funciones de consulta ──────────────────────────────────────────────────────
 
+def _guardar_serie_eaa(cod: str, data) -> None:
+    """Acumula la serie 15-min de una EAA en eaa_<cod>_serie.json (ventana 30 días, hora UTC)."""
+    try:
+        regs = data.get("datos") if isinstance(data, dict) else data
+        if not isinstance(regs, list):
+            return
+        ruta = SALIDA_DIR / f"eaa_{cod.replace('-', '')}_serie.json"
+        previo = {}
+        if ruta.exists():
+            try:
+                previo = {r[0]: r for r in json.load(open(ruta, encoding="utf-8")).get("serie", [])}
+            except Exception:
+                previo = {}
+        def num(v):
+            try:
+                return float(str(v).replace(",", "."))
+            except Exception:
+                return None
+        for r in regs:
+            if not isinstance(r, dict):
+                continue
+            ts = r.get("timestamp") or r.get("Timestamp")
+            if not ts:
+                continue
+            ts = str(ts).replace(" ", "T")[:16] + "Z"
+            previo[ts] = [ts, num(r.get("PO")), num(r.get("NH")), num(r.get("OX")), num(r.get("TB"))]
+        serie = [previo[k] for k in sorted(previo)][-2880:]   # 30 días a 15 min
+        ruta.parent.mkdir(parents=True, exist_ok=True)
+        with open(ruta, "w", encoding="utf-8") as f:
+            json.dump({"estacion": cod, "campos": ["ts_utc", "fosfatos_mgl", "amonio_mgl", "oxigeno_mgl", "turbidez_ntu"],
+                       "serie": serie}, f, separators=(",", ":"))
+    except Exception as e:
+        log.warning("No se pudo guardar serie %s: %s", cod, e)
+
+
 def obtener_calidad_eaa(cod: str) -> dict | None:
     """
     Consulta datos de calidad de una EAA via POST /calidad.
@@ -194,6 +229,7 @@ def obtener_calidad_eaa(cod: str) -> dict | None:
         return None
 
     # La respuesta es una lista; cogemos el último registro no vacío
+    _guardar_serie_eaa(cod, data)
     if isinstance(data, dict):
         registros = data.get("datos") or []   # formato real: {"datos":[{timestamp,...}],"datosCR":[],"cabecera":[...]}
     else:
