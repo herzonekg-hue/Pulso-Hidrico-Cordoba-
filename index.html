@@ -966,6 +966,23 @@ body.perfil-tecnico .ciudadano-only { display: none; }
       </div>
 
       <div class="card">
+        <div class="card-title"><span class="icon">💧</span> Estado del embalse en tiempo real — Sierra Boyera E33 (SAIH Guadalquivir)</div>
+        <div class="sira-table-wrap">
+          <table class="sira-table" id="sira-table-sboyera">
+            <thead><tr>
+              <th>Parámetro</th>
+              <th>Último valor</th>
+              <th>Unidad</th>
+              <th>Referencia</th>
+              <th>Estado</th>
+            </tr></thead>
+            <tbody id="sira-sboyera-tbody"></tbody>
+          </table>
+        </div>
+        <div class="data-ts" id="sira-sboyera-ts">🕐 —</div>
+      </div>
+
+      <div class="card">
         <div class="card-title"><span class="icon">📈</span> Evolución del volumen — últimos 7 días (lecturas horarias del SAIH)</div>
         <div class="sparkline-title">Sierra Boyera (hm³)</div>
         <div class="sparkline-wrap">
@@ -1037,23 +1054,6 @@ body.perfil-tecnico .ciudadano-only { display: none; }
           </table>
         </div>
         <div class="data-ts" id="sira-colada-ts">🕐 —</div>
-      </div>
-
-      <div class="card">
-        <div class="card-title"><span class="icon">💧</span> Estado del embalse en tiempo real — Sierra Boyera E33</div>
-        <div class="sira-table-wrap">
-          <table class="sira-table" id="sira-table-sboyera">
-            <thead><tr>
-              <th>Parámetro</th>
-              <th>Último valor</th>
-              <th>Unidad</th>
-              <th>Referencia</th>
-              <th>Estado</th>
-            </tr></thead>
-            <tbody id="sira-sboyera-tbody"></tbody>
-          </table>
-        </div>
-        <div class="data-ts" id="sira-sboyera-ts">🕐 —</div>
       </div>
 
       <div class="card">
@@ -1342,15 +1342,13 @@ function openModal(m) {
 }
 function closeModal() { document.getElementById('muni-modal').classList.remove('open'); }
 
-// Semáforo de llenado de embalses (criterio AGS Norte)
-const SEM_LLENADO_REF = 'Semáforo: >90 % verde · 60–90 % azul · 40–60 % amarillo · <40 % rojo';
+// Estado de llenado de embalses (formato estándar del panel)
+const SEM_LLENADO_REF = 'Normal ≥ 60 % · vigilancia 40–60 % · bajo < 40 %';
 function badgeLlenado(p) {
   if (p == null) return '<span class="param-badge param-gris">— S/D</span>';
-  const s = p > 90 ? ['#34b36b', '#fff', 'Verde · más del 90 %']
-          : p >= 60 ? ['#3b8de0', '#fff', 'Azul · 60–90 %']
-          : p >= 40 ? ['#c9d646', '#3b4200', 'Amarillo · 40–60 %']
-          : ['#e5483a', '#fff', 'Rojo · menos del 40 %'];
-  return `<span class="param-badge" style="background:${s[0]};color:${s[1]}">● ${s[2]}</span>`;
+  return p >= 60 ? '<span class="param-badge param-ok">✓ Normal</span>'
+       : p >= 40 ? '<span class="param-badge param-warn">⚠ Vigilancia</span>'
+       :           '<span class="param-badge param-bad">✕ Bajo</span>';
 }
 function filasEmbalse(tbodyId, filas) {
   const tb = document.getElementById(tbodyId);
@@ -1605,21 +1603,26 @@ async function intentarCargarSIRA() {
       // Tabla EAA-421 — parámetros reales
       const eaaTbody = document.getElementById('sira-eaa-tbody');
       if (eaaTbody) {
+        const RD = ' · RD 817/2015 R-T01';
+        const SINRD = 'Sin límite en el RD 817/2015 · informativo';
         const params = [
-          { param:'pH',            valor: eaa.ph,                unidad:'—',      ref:'5.5–9 (mb: 6–8.4) · RD 817/2015 R-T01',
+          { param:'pH',            valor: eaa.ph,                unidad:'—',     ref:'5,5–9 (muy bueno: 6–8,4)' + RD,
             estado: eaa.ph !== null ? (eaa.ph>=5.5 && eaa.ph<=9 ? 'ok' : 'bad') : 'gris' },
-          { param:'Fosfatos',      valor: eaa.fosfatos_mgl,      unidad:'mg/L', ref:'< 0.4 (mb: < 0.2) · RD 817/2015 R-T01',
-            estado: eaa.fosfatos_mgl !== null ? (eaa.fosfatos_mgl > 1.0 ? 'bad' : eaa.fosfatos_mgl > 0.4 ? 'warn' : 'ok') : 'gris' },
-          { param:'Amonio',        valor: eaa.amonio_mgl,        unidad:'mg/L', ref:'< 1 mg/L orientativo cauce',
-            estado: eaa.amonio_mgl !== null ? (eaa.amonio_mgl > 2 ? 'bad' : eaa.amonio_mgl > 1 ? 'warn' : 'ok') : 'gris' },
-          { param:'Oxígeno dis.',  valor: eaa.oxigeno_mgl,       unidad:'mg/L',   ref:'> 5 mg/L (> 7 mb) · RD 817/2015 R-T01',
-            estado: eaa.oxigeno_mgl !== null ? (eaa.oxigeno_mgl < 2 ? 'bad' : eaa.oxigeno_mgl < 5 ? 'warn' : 'ok') : 'gris' },
-          { param:'Conductividad', valor: eaa.conductividad_uscm, unidad:'µS/cm', ref:'< 2500 orientativo',
-            estado: eaa.conductividad_uscm !== null ? (eaa.conductividad_uscm > 2500 ? 'bad' : eaa.conductividad_uscm > 1500 ? 'warn' : 'ok') : 'gris' },
-          { param:'Turbidez',      valor: eaa.turbidez_ntu,      unidad:'NTU',    ref:'< 4 NTU orientativo',
-            estado: eaa.turbidez_ntu !== null ? (eaa.turbidez_ntu > 10 ? 'bad' : eaa.turbidez_ntu > 4 ? 'warn' : 'ok') : 'gris' },
-          { param:'Temperatura',   valor: eaa.temp_agua_c,       unidad:'°C',     ref:'< 25 orientativo',
-            estado: eaa.temp_agua_c !== null ? (eaa.temp_agua_c > 25 ? 'warn' : 'ok') : 'gris' },
+          { param:'Fosfatos',      valor: eaa.fosfatos_mgl,      unidad:'mg/L',  ref:'≤ 0,4 mg PO₄/L (muy bueno: ≤ 0,2)' + RD,
+            estado: eaa.fosfatos_mgl !== null ? (eaa.fosfatos_mgl > 0.4 ? 'bad' : 'ok') : 'gris' },
+          { param:'Amonio',        valor: eaa.amonio_mgl,        unidad:'mg/L',  ref:'≤ 1 mg NH₄/L (muy bueno: ≤ 0,3)' + RD,
+            estado: eaa.amonio_mgl !== null ? (eaa.amonio_mgl > 1 ? 'bad' : 'ok') : 'gris' },
+          { param:'Nitratos',      valor: eaa.nitratos_mgl,      unidad:'mg/L',  ref:'≤ 25 mg NO₃/L (muy bueno: ≤ 10)' + RD + ' · unidad SIRA por confirmar',
+            estado: eaa.nitratos_mgl == null || eaa.nitratos_mgl === 0 ? 'gris' : (eaa.nitratos_mgl > 25 ? 'bad' : 'ok'),
+            lbl: eaa.nitratos_mgl === 0 ? '— Por validar' : null },
+          { param:'Oxígeno dis.',  valor: eaa.oxigeno_mgl,       unidad:'mg/L',  ref:'≥ 5 mg/L' + RD,
+            estado: eaa.oxigeno_mgl !== null ? (eaa.oxigeno_mgl < 5 ? 'bad' : 'ok') : 'gris', lbl: '✕ Bajo el límite' },
+          { param:'Conductividad', valor: eaa.conductividad_uscm, unidad:'µS/cm', ref: SINRD,
+            estado: eaa.conductividad_uscm !== null ? 'gris' : 'gris', lbl:'Informativo' },
+          { param:'Turbidez',      valor: eaa.turbidez_ntu,      unidad:'NTU',   ref: SINRD,
+            estado: 'gris', lbl:'Informativo' },
+          { param:'Temperatura',   valor: eaa.temp_agua_c,       unidad:'°C',    ref: SINRD,
+            estado: 'gris', lbl:'Informativo' },
         ].filter(p => p.valor !== null && p.valor !== undefined);
 
         eaaTbody.innerHTML = params.map(p => `
@@ -1629,7 +1632,7 @@ async function intentarCargarSIRA() {
             <td style="color:var(--fg-muted)">${p.unidad}</td>
             <td style="color:var(--fg-muted)">${p.ref}</td>
             <td><span class="param-badge param-${p.estado}">${
-              p.estado==='ok' ? '✓ OK' : p.estado==='warn' ? '⚠ Alerta' : p.estado==='bad' ? '✕ Excede' : '— S/D'
+              (p.estado==='bad' && p.lbl) ? p.lbl : (p.estado==='gris' && p.lbl) ? p.lbl : p.estado==='ok' ? '✓ OK' : p.estado==='warn' ? '⚠ Alerta' : p.estado==='bad' ? '✕ Excede' : '— S/D'
             }</span></td>
           </tr>`).join('');
 
