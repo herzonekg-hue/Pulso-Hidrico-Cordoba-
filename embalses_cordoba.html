@@ -28,7 +28,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .zh h2{font-size:13px}.zh p{font-size:11px;color:var(--text2);margin-top:2px}
 .zh .n{margin-left:auto;text-align:right}.zh .n b{font-size:21px;font-weight:900;display:block;line-height:1}.zh .n span{font-size:10px;color:var(--text3)}
 .tabla{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.row{display:grid;grid-template-columns:1fr 62px 90px 96px;gap:8px;align-items:center;padding:9px 13px;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.row{display:grid;grid-template-columns:1fr 62px 84px 84px 90px;gap:8px;align-items:center;padding:9px 13px;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
 .row:last-child{border:0}.row.head{background:rgba(255,255,255,.04);font-size:10px;color:var(--text3);text-transform:uppercase;font-weight:700}
 .nom small{display:block;color:var(--text3);font-size:10px;margin-top:1px}
 .pct{text-align:right;font-weight:800;font-size:13px}.vol{text-align:right;color:var(--text2)}
@@ -36,7 +36,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .sb{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:4px}
 .nota{font-size:11px;color:var(--text3);line-height:1.55;padding:2px 2px 14px}
 .nota b{color:var(--text2)}
-@media(max-width:520px){.row{grid-template-columns:1fr 54px 78px}.row .vol{display:none}.row.head .vol{display:none}}
+@media(max-width:560px){.row{grid-template-columns:1fr 56px 80px}.row>div:nth-child(3),.row>div:nth-child(4){display:none}}
 </style>
 </head>
 <body>
@@ -51,7 +51,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 <div class="content" id="content"></div>
 <div class="content" style="padding-top:0">
   <div class="nota">
-    <b>De dónde sale cada cifra.</b> Porcentaje, volumen y capacidad de cada embalse proceden tal cual de la tabla pública de niveles del SAIH Guadalquivir (datos en tiempo real, no contrastados según el aviso de la CHG) y, para La Colada, de la estación E2-40 de SIRA (CHG Guadiana). El SAIH se consulta cada hora; SIRA cada 30 minutos. La suma de la provincia y la agrupación en zonas Norte, Capital y Sur son cálculo de este panel, no un dato oficial. Los colores son una referencia visual propia, no el escenario oficial de sequía.
+    <b>De dónde sale cada cifra.</b> Porcentaje, volumen y capacidad de cada embalse proceden tal cual de la tabla pública de niveles del SAIH Guadalquivir (datos en tiempo real, no contrastados según el aviso de la CHG) y, para La Colada, de la estación E2-40 de SIRA (CHG Guadiana). El panel lee el SAIH y SIRA cada 10 minutos. El SAIH no publica la hora de su medida, así que se indica la hora de lectura; SIRA publica en hora UTC y aquí se muestra en hora de España. La suma de la provincia y la agrupación en zonas Norte, Capital y Sur son cálculo de este panel, no un dato oficial. Semáforo propio: verde desde el 60 %, amarillo pistacho del 40 al 60 %, rojo por debajo del 40 %; no es el escenario oficial de sequía. Las variaciones (pp = puntos porcentuales) las calcula este panel con su propio historial; las webs oficiales solo muestran el valor actual.
     <br><br>Edición recuperada del panel de embalses del 4 de noviembre, ahora con lectura automática. Panel principal: <a href="./" style="color:var(--water)">AQUASALUD NORTE</a>.
   </div>
 </div>
@@ -62,49 +62,93 @@ const ZONAS = {
   capital:{t:'Zona Capital',ico:'🏛', color:'var(--capital)', desc:'Córdoba capital y Campiña Norte'},
   sur:    {t:'Zona Sur',    ico:'🌾', color:'var(--sur)',     desc:'Campiña Sur, Subbética, Genil y Bembézar'}
 };
+// Semáforo: < 40 % rojo · 40-60 % amarillo pistacho · ≥ 60 % verde
+const VERDE='#34b36b', PISTACHO='#c9d646', ROJO='#e5483a';
+const col=p=>p>=60?VERDE:p>=40?PISTACHO:ROJO;
 const fmt=(v,d)=>v.toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
-const col=p=>p>=75?'#2ec4b6':p>=50?'#60a5fa':p>=25?'#f4a261':'#e76f51';
-const lbl=p=>p>=75?'Alto':p>=50?'Moderado':p>=25?'Bajo':'Crítico';
-let LISTA=[], ACTUAL='norte';
+const hora=d=>d.toLocaleString('es-ES',{timeZone:'Europe/Madrid',day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const utc=s=>new Date(s.replace(' ','T').replace(/Z?$/,'Z'));
+const hace=d=>{const m=Math.round((Date.now()-d.getTime())/60000);return m<1?'ahora':m<90?'hace '+m+' min':'hace '+fmt(m/60,1)+' h'};
+let LISTA=[], SERIE={}, SIRA=null, ACTUAL='norte';
 function suma(l){const v=l.reduce((s,e)=>s+e.volumen,0),c=l.reduce((s,e)=>s+e.capacidad,0);return {v,c,p:v/c*100}}
+
+// Variación frente a hace N horas, con la lectura más cercana (tolerancia 20 % del plazo)
+function delta(id,horas){
+  const pts=SERIE[id]; if(!pts||pts.length<2) return null;
+  const ult=pts[pts.length-1], tObj=new Date(ult[0]).getTime()-horas*3.6e6;
+  let best=null,bd=Infinity;
+  pts.forEach(p=>{const d=Math.abs(new Date(p[0]).getTime()-tObj); if(d<bd){bd=d;best=p}});
+  if(!best||bd>horas*3.6e6*0.2) return null;
+  return {pp:ult[2]-best[2], hm3:ult[1]-best[1]};
+}
+function dtxt(d,min){
+  if(!d) return '<span style="color:var(--text3)">—</span>';
+  const c=Math.abs(d.pp)<min?'var(--text2)':d.pp>0?VERDE:ROJO, f=Math.abs(d.pp)<min?'→':d.pp>0?'▲':'▼';
+  return `<span style="color:${c}">${f} ${d.pp>0?'+':''}${fmt(d.pp,2)} pp</span>`;
+}
+function spark(id){
+  const pts=(SERIE[id]||[]).slice(-340); if(pts.length<3) return '<span style="color:var(--text3);font-size:10px">en construcción</span>';
+  const v=pts.map(p=>p[2]), mn=Math.min(...v), mx=Math.max(...v), r=(mx-mn)||1;
+  const xy=v.map((y,i)=>(i/(v.length-1)*100).toFixed(1)+','+(18-((y-mn)/r)*16).toFixed(1)).join(' ');
+  return `<svg viewBox="0 0 100 20" preserveAspectRatio="none" width="100%" height="22"><polyline points="${xy}" fill="none" stroke="${col(v[v.length-1])}" stroke-width="1.6" vector-effect="non-scaling-stroke"/></svg>`;
+}
 function render(){
   const z=ZONAS[ACTUAL], g=LISTA.filter(e=>e.zona===ACTUAL).sort((a,b)=>a.pct-b.pct), s=suma(g);
   let h=`<div class="zh"><div style="font-size:18px">${z.ico}</div><div><h2 style="color:${z.color}">${z.t} (${g.length})</h2><p>${z.desc}</p></div>
-  <div class="n"><b style="color:${z.color}">${fmt(s.p,1)} %</b><span>${fmt(s.v,0)} / ${fmt(s.c,0)} hm³</span></div></div>
-  <div class="tabla"><div class="row head"><div>Embalse</div><div style="text-align:right">Llenado</div><div class="vol">Volumen</div><div>Nivel</div></div>`;
-  g.forEach(e=>{h+=`<div class="row"><div class="nom">${e.nombre}</div><div class="pct" style="color:${col(e.pct)}">${fmt(e.pct,1)} %</div>
-  <div class="vol">${fmt(e.volumen,e.volumen>=100?0:1)} / ${fmt(e.capacidad,e.capacidad>=100?0:1)} hm³</div>
-  <div><div class="bar"><i style="background:${col(e.pct)}" data-w="${Math.min(100,e.pct)}"></i></div></div></div>`});
+  <div class="n"><b style="color:${col(s.p)}">${fmt(s.p,1)} %</b><span>${fmt(s.v,0)} / ${fmt(s.c,0)} hm³</span></div></div>
+  <div class="tabla"><div class="row head"><div>Embalse</div><div style="text-align:right">Llenado</div><div class="vol">24 h</div><div class="vol">7 días</div><div>Tendencia 7 d</div></div>`;
+  g.forEach(e=>{
+    const d1=delta(e.id,24), d7=delta(e.id,168);
+    h+=`<div class="row"><div class="nom">${e.nombre}<small>${fmt(e.volumen,e.volumen>=100?0:1)} / ${fmt(e.capacidad,e.capacidad>=100?0:1)} hm³</small>
+    <div class="bar" style="margin-top:5px"><i style="background:${col(e.pct)}" data-w="${Math.min(100,e.pct)}"></i></div></div>
+    <div class="pct" style="color:${col(e.pct)}">${fmt(e.pct,1)} %</div>
+    <div class="vol">${dtxt(d1,0.05)}</div><div class="vol">${dtxt(d7,0.15)}</div><div>${spark(e.id)}</div></div>`;
+  });
   h+='</div>';
+  h+=calidad();
   document.getElementById('content').innerHTML=h;
   setTimeout(()=>document.querySelectorAll('.bar i').forEach(i=>i.style.width=i.dataset.w+'%'),60);
   document.querySelectorAll('.tab').forEach(t=>{const a=t.dataset.z===ACTUAL;t.classList.toggle('active',a);t.style.borderBottomColor=a?ZONAS[t.dataset.z].color:'transparent'});
+}
+// La Colada: nivel y calidad del río que la alimenta, en una sola vista (en las webs oficiales están en sistemas distintos)
+function calidad(){
+  if(!SIRA||ACTUAL!=='norte') return '';
+  const c=(SIRA.calidad||[]).find(x=>x.cod==='EAA-421'&&x.ok), e=(SIRA.embalses||[]).find(x=>x.cod==='E2-40'&&x.ok);
+  if(!c&&!e) return '';
+  const dt=c?utc(c.hora_obs):null, de=e?utc(e.hora_obs):null;
+  const caja=(t,v,u)=>`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--text3)">${t}</div><div style="font-size:17px;font-weight:800">${v}<span style="font-size:10px;color:var(--text3)"> ${u}</span></div></div>`;
+  let h='<div class="zh" style="display:block"><h2 style="color:var(--water)">La Colada y el río que la alimenta · SIRA Guadiana</h2>';
+  if(e) h+=`<p style="margin:3px 0 8px">Embalse (E2-40): nivel ${fmt(e.nivel_msnm,2)} msnm · ${fmt(e.volumen_hm3,2)} hm³ · salida ${fmt(e.q_salida_m3s,4)} m³/s · medido ${hora(de)} (${hace(de)})</p>`;
+  if(c){
+    h+=`<p style="margin:3px 0 8px">Sonda EAA-421, Guadarramilla en El Viso, aguas arriba del embalse · medido ${hora(dt)} (${hace(dt)})</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:6px">
+    ${caja('Fosfatos',fmt(c.fosfatos_mgl,2),'mg/L')}${caja('Amonio',fmt(c.amonio_mgl,2),'mg/L')}${caja('Oxígeno',fmt(c.oxigeno_mgl,2),'mg/L')}
+    ${caja('Turbidez',fmt(c.turbidez_ntu,1),'NTU')}${caja('pH',fmt(c.ph,2),'')}${caja('Temp. agua',fmt(c.temp_agua_c,1),'°C')}</div>
+    <p style="margin-top:8px;font-size:11px;color:var(--text2)">Fosfatos: umbral de alerta ${fmt(c.umbral_fosfatos_alerta_mgl,1)} mg/L y crítico ${fmt(c.umbral_fosfatos_critico_mgl,1)} mg/L (valores del panel principal). Dato puntual de una sonda, sin validar.</p>`;
+  }
+  return h+'</div>';
 }
 function tabs(){
   document.getElementById('tabs').innerHTML=Object.keys(ZONAS).map(k=>`<button class="tab" data-z="${k}">${ZONAS[k].t.replace('Zona ','')} (${LISTA.filter(e=>e.zona===k).length})</button>`).join('');
   document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{ACTUAL=t.dataset.z;render()});
 }
-(async()=>{
+async function j(u){try{const r=await fetch(u,{cache:'no-store'});return r.ok?await r.json():null}catch(e){return null}}
+async function cargar(){
   const dot=document.getElementById('dot'),est=document.getElementById('estado');
-  try{
-    const r=await fetch('./data/embalses.json',{cache:'no-store'});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const d=await r.json();
-    LISTA=d.provincia||[];
-    if(!LISTA.length) throw new Error('sin lista provincial');
-    const s=suma(LISTA);
-    document.getElementById('h-pct').textContent=fmt(s.p,1)+' %';
-    document.getElementById('h-sub').textContent=fmt(s.v,0)+' / '+fmt(s.c,0)+' hm³ · '+LISTA.length+' embalses';
-    const f=d.fecha_saih?new Date(d.fecha_saih):null;
-    const col2=d.embalses.find(e=>e.id==='E2-40');
-    dot.className='dot ok';
-    est.textContent='Última lectura SAIH: '+(f?f.toLocaleString('es-ES',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—')
-      +(col2&&col2.fecha?' · La Colada (SIRA): '+col2.fecha.replace('T',' ').slice(0,16)+' (hora tal como la publica SIRA)':'');
-    tabs();render();
-  }catch(e){
-    dot.className='dot err';est.textContent='Sin datos: '+e.message;
-  }
-})();
+  const [d,sp,sira]=await Promise.all([j('./data/embalses.json'),j('./data/embalses_serie_prov.json'),j('./data/sira.json')]);
+  if(!d||!(d.provincia||[]).length){dot.className='dot err';est.textContent='Sin datos de embalses';return}
+  LISTA=d.provincia; SERIE=sp||{}; SIRA=sira;
+  const s=suma(LISTA);
+  document.getElementById('h-pct').textContent=fmt(s.p,1)+' %';
+  document.getElementById('h-pct').style.color=col(s.p);
+  document.getElementById('h-sub').textContent=fmt(s.v,0)+' / '+fmt(s.c,0)+' hm³ · '+LISTA.length+' embalses';
+  const g=new Date(d.generado), col2=(d.embalses||[]).find(e=>e.id==='E2-40');
+  dot.className='dot ok';
+  est.textContent='SAIH leído '+hora(g)+' ('+hace(g)+')'+(col2&&col2.fecha?' · La Colada medida '+hora(utc(col2.fecha))+' ('+hace(utc(col2.fecha))+')':'');
+  if(!document.querySelector('.tab')) tabs();
+  render();
+}
+cargar(); setInterval(cargar,120000);
 </script>
 </body>
 </html>

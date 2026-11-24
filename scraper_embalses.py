@@ -204,6 +204,28 @@ def main():
         serie[cod] = [p for p in pts if p[0] >= corte][-200:]
     rs.write_text(json.dumps(serie, ensure_ascii=False), encoding="utf-8")
 
+    # serie 7 días de todos los embalses de la provincia (hora UTC; un punto cada 25 min como mínimo)
+    rp = SALIDA / "embalses_serie_prov.json"
+    try:
+        sp = json.loads(rp.read_text(encoding="utf-8"))
+    except Exception:
+        sp = {}
+    ahora_dt = dt.datetime.fromisoformat(ahora)
+    for e in provincia:
+        if e["id"] == "E2-40" and colada.get("fecha"):
+            ts = dt.datetime.fromisoformat(colada["fecha"]).replace(tzinfo=dt.timezone.utc)  # SIRA publica en UTC
+        else:
+            ts = ahora_dt  # el SAIH no publica hora de medida: se usa la de la lectura
+        pts = sp.setdefault(e["id"], [])
+        if pts:
+            ult = dt.datetime.fromisoformat(pts[-1][0].replace("Z", "+00:00"))
+            if (ts - ult).total_seconds() < 25 * 60:
+                continue
+        pts.append([ts.strftime("%Y-%m-%dT%H:%MZ"), e["volumen"], e["pct"]])
+        corte = (ahora_dt - dt.timedelta(days=8)).strftime("%Y-%m-%dT%H:%MZ")
+        sp[e["id"]] = [q for q in pts if q[0] >= corte]
+    rp.write_text(json.dumps(sp, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+
     for e in datos["embalses"]:
         print(f"{e['nombre']:14s} vol={e['volumen']} cap={e['capacidad']} pct={e['pct']} fecha={e.get('fecha')}")
     return 0
