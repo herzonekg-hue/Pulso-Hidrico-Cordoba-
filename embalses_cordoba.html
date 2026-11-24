@@ -111,6 +111,7 @@ function render(){
   });
   h+='</div>';
   h+=calidad();
+  h+=herramientas();
   document.getElementById('content').innerHTML=h;
   setTimeout(()=>document.querySelectorAll('.bar i').forEach(i=>i.style.width=i.dataset.w+'%'),60);
   document.querySelectorAll('.tab').forEach(t=>{const a=t.dataset.z===ACTUAL;t.classList.toggle('active',a);t.style.borderBottomColor=a?ZONAS[t.dataset.z].color:'transparent'});
@@ -122,10 +123,10 @@ function calidad(){
   if(!c&&!e) return '';
   const dt=c?utc(c.hora_obs):null, de=e?utc(e.hora_obs):null;
   const caja=(t,v,u)=>`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--text3)">${t}</div><div style="font-size:17px;font-weight:800">${v}<span style="font-size:10px;color:var(--text3)"> ${u}</span></div></div>`;
-  let h='<div class="zh" style="display:block"><h2 style="color:var(--water)">La Colada y el río que la alimenta · SIRA Guadiana</h2>';
-  if(e) h+=`<p style="margin:3px 0 8px">Embalse (E2-40): nivel ${fmt(e.nivel_msnm,2)} msnm · ${fmt(e.volumen_hm3,2)} hm³ · salida ${fmt(e.q_salida_m3s,4)} m³/s · medido ${hora(de)} (${hace(de)})</p>`;
+  let h='<div class="zh" style="display:block"><h2 style="color:var(--water)">La Colada (E2-40) y la sonda del Viso (EAA-421) · SIRA Guadiana</h2>';
+  if(e) h+=`<p style="margin:3px 0 8px"><b>La Colada (estación E2-40 de SIRA)</b>, se mide cada 10 min: nivel ${fmt(e.nivel_msnm,2)} msnm · ${fmt(e.volumen_hm3,2)} hm³ · salida ${fmt(e.q_salida_m3s,4)} m³/s · medido ${hora(de)} (${hace(de)})</p>`;
   if(c){
-    h+=`<p style="margin:3px 0 8px">Sonda EAA-421, Guadarramilla en El Viso, aguas arriba del embalse · medido ${hora(dt)} (${hace(dt)})</p>
+    h+=`<p style="margin:3px 0 8px"><b>Sonda del Viso (EAA-421)</b>, Guadarramilla en El Viso, aguas arriba del embalse, se mide cada 15 min · medido ${hora(dt)} (${hace(dt)})</p>
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:6px">
     ${caja('Fosfatos',fmt(c.fosfatos_mgl,2),'mg/L')}${caja('Amonio',fmt(c.amonio_mgl,2),'mg/L')}${caja('Oxígeno',fmt(c.oxigeno_mgl,2),'mg/L')}
     ${caja('Turbidez',fmt(c.turbidez_ntu,1),'NTU')}${caja('pH',fmt(c.ph,2),'')}${caja('Temp. agua',fmt(c.temp_agua_c,1),'°C')}</div>
@@ -155,6 +156,20 @@ function cruce(c){
   <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;font-size:11px">La Colada Δ 24 h / 7 d<br><b style="font-size:15px">${col_?fmt(col_.pp,2)+' pp':'—'} / ${col7?fmt(col7.pp,2)+' pp':'—'}</b></div></div>
   <p style="margin-top:6px;font-size:11px;color:var(--text2)">Último fosfato: ${fmt(ult[1],2)} mg/L, ${marca}. La sonda mide río aguas arriba, no dentro del embalse: es un indicador de aporte, no de calidad del agua embalsada. El nivel de La Colada acumula histórico desde el despliegue; la variación aparece cuando hay lectura de hace 24 h / 7 d.</p>`;
 }
+
+function herramientas(){
+  const f=(a,b,c)=>`<tr><td style="padding:4px 8px 4px 0"><b>${a}</b></td><td style="padding:4px 8px">${b}</td><td style="padding:4px 0;color:var(--text2)">${c}</td></tr>`;
+  return `<div class="zh" style="display:block;margin-top:10px"><h2 style="color:var(--water)">Qué medimos, cada cuánto y qué queremos añadir</h2>
+  <table style="width:100%;font-size:11px;border-collapse:collapse"><tr style="color:var(--text3)"><td>Fuente</td><td>Qué da</td><td>Frecuencia de medida</td></tr>
+  ${f('SAIH Guadalquivir (14 embalses)','Nivel, volumen y %','Instantáneo; la web lo lee cada 10 min. Datos no contrastados')}
+  ${f('La Colada · estación E2-40 (SIRA)','Nivel, volumen, %, caudal de salida','Cada 10 min')}
+  ${f('Sonda del Viso · EAA-421 (SIRA)','Fosfatos, amonio, oxígeno, turbidez, pH, temperatura','Cada 15 min')}
+  ${f('Satélites Sentinel-2A y 2B (Copernicus)','Turbidez y clorofila de La Colada desde el espacio','Una imagen cada ~5 días (los dos satélites juntos); solo útil sin nubes')}
+  ${f('Por conectar: sonda dentro de La Colada','Calidad del agua embalsada','No figura en las fuentes públicas')}
+  ${f('Por conectar: sonda en Sierra Boyera','Calidad del agua embalsada','No figura en las fuentes públicas')}
+  ${f('Por conectar: aforo CR2-08','Caudal del río','Acceso restringido (401)')}</table>
+  <p style="margin-top:6px;font-size:11px;color:var(--text2)">Esta página vuelve a leer los datos cada 30 segundos; el dato solo cambia cuando la fuente publica una medida nueva.</p></div>`;
+}
 function tabs(){
   document.getElementById('tabs').innerHTML=Object.keys(ZONAS).map(k=>`<button class="tab" data-z="${k}">${ZONAS[k].t.replace('Zona ','')} (${LISTA.filter(e=>e.zona===k).length})</button>`).join('');
   document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{ACTUAL=t.dataset.z;render()});
@@ -175,7 +190,7 @@ async function cargar(){
   if(!document.querySelector('.tab')) tabs();
   render();
 }
-cargar(); setInterval(cargar,120000);
+cargar(); setInterval(cargar,30000);
 </script>
 </body>
 </html>
