@@ -1,0 +1,19 @@
+name: Trazado de drenaje de EDAR
+on:
+  push:
+    branches: [analisis-drenaje]
+    paths: ["analisis/trazar_drenaje.py", ".github/workflows/drenaje.yml"]
+permissions:
+  contents: write
+jobs:
+  trazar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install pyproj
+      - run: cd analisis && python trazar_drenaje.py
+      - run: |
+          git config user.name "aquasalud-bot"; git config user.email "bot@users.noreply.github.com"
+          git add analisis/drenaje_edar.json && git commit -m "analisis: drenaje de EDAR (automático)" && git push origin HEAD:analisis-drenaje
