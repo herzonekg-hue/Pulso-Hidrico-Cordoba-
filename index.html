@@ -975,7 +975,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
         <div class="sparkline-wrap">
           <svg id="spark-pnuevo" width="100%" height="80" viewBox="0 0 600 80" preserveAspectRatio="none"></svg>
         </div>
-        <div class="nota-legal" id="emb-nota" style="margin-top:12px">Fuente: SAIH Guadalquivir (tabla pública de niveles de embalse; aviso oficial: datos en tiempo real no contrastados) y MITECO para la capacidad de La Colada (57,7 hm³). La Colada pertenece a la cuenca del Guadiana y su volumen depende de la estación SIRA E2-40, que hoy exige autenticación.</div>
+        <div class="nota-legal" id="emb-nota" style="margin-top:12px">Fuente: SAIH Guadalquivir (tabla pública de niveles de embalse; aviso oficial: datos en tiempo real no contrastados) y SIRA Guadiana (CHG, estación E2-40) para La Colada, que pertenece a la cuenca del Guadiana. La capacidad de La Colada se deduce del volumen y el porcentaje que publica SIRA.</div>
       </div>
 
       <div class="nota-legal">
@@ -1008,7 +1008,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
         <div class="kpi-card">
           <div class="kpi-label">La Colada E2-40</div>
           <div class="kpi-value agua" id="sira-colada-ph">—</div>
-          <div class="kpi-sub">pH último registro</div>
+          <div class="kpi-sub" id="sira-colada-sub">% llenado último registro</div>
         </div>
         <div class="kpi-card">
           <div class="kpi-label">Guadarramilla EAA-421</div>
@@ -1023,7 +1023,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
       </div>
 
       <div class="card">
-        <div class="card-title"><span class="icon">🧪</span> Parámetros en tiempo real — La Colada E2-40</div>
+        <div class="card-title"><span class="icon">💧</span> Estado del embalse en tiempo real — La Colada E2-40</div>
         <div class="sira-table-wrap">
           <table class="sira-table" id="sira-table-colada">
             <thead><tr>
@@ -1057,7 +1057,7 @@ body.perfil-tecnico .ciudadano-only { display: none; }
       </div>
 
       <div class="nota-legal tecnico-only">
-        <strong>Nota:</strong> EAA-421 (Guadarramilla a.ab. La Colada) registró 22,03 mg/L de fosfatos (20 nov 2026). La unidad la declara SIRA como «fosfatos»; está pendiente de confirmar con la CHG si se expresa como PO₄ o como P. Límite bueno/moderado RD 817/2015 R-T01: 0,4 mg PO₄/L; límite muy bueno: 0,2 mg PO₄/L. Datos scraper SIRA activo (cron 30 min). Consulta SIRA: <a href="https://siraguadiana.com" target="_blank" style="color:var(--agua)">siraguadiana.com</a>. E2-40 (La Colada) y CR2-08 (Zújar) pendientes de autenticación (HTTP 401).
+        <strong>Nota:</strong> EAA-421 (Guadarramilla a.ab. La Colada) registró 22,03 mg/L de fosfatos (20 nov 2026). La unidad la declara SIRA como «fosfatos»; está pendiente de confirmar con la CHG si se expresa como PO₄ o como P. Límite bueno/moderado RD 817/2015 R-T01: 0,4 mg PO₄/L; límite muy bueno: 0,2 mg PO₄/L. Datos scraper SIRA activo (cron 30 min). Consulta SIRA: <a href="https://siraguadiana.com" target="_blank" style="color:var(--agua)">siraguadiana.com</a>. La Colada (E2-40) se lee de la tabla pública de embalses de SIRA. CR2-08 (Zújar) sigue pendiente de autenticación (HTTP 401).
       </div>
     </section>
 
@@ -1347,7 +1347,7 @@ function pintarEmbalse(key, e) {
   bar.style.width = Math.min(100, e.pct) + '%';
   bar.className = 'nivel-bar ' + (e.pct >= 60 ? 'alto' : e.pct >= 30 ? 'medio' : 'bajo');
   const f = e.fecha ? new Date(e.fecha) : null;
-  document.getElementById(key + '-ts').textContent = '🕐 ' + (f ? f.toLocaleString('es-ES', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' · SAIH' : '—');
+  document.getElementById(key + '-ts').textContent = '🕐 ' + (f ? f.toLocaleString('es-ES', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) + ' · ' + (e.fuente || 'SAIH') : '—');
 }
 
 function pintarSerie(id, pts, color) {
@@ -1597,11 +1597,27 @@ async function intentarCargarSIRA() {
     // --- E2-40 La Colada (embalse — ok=false por HTTP 401 pendiente) ---
     const col = d.embalses && d.embalses.find(e => e.cod === 'E2-40');
     const colPhEl = document.getElementById('sira-colada-ph');
+    const fmtC = (v, dd) => v == null ? '—' : Number(v).toLocaleString('es-ES', {minimumFractionDigits: dd, maximumFractionDigits: dd});
     if (colPhEl && (!col || !col.ok)) colPhEl.textContent = 'S/D';
+    if (colPhEl && col && col.ok) {
+      colPhEl.textContent = fmtC(col.pct_capacidad, 1) + ' %';
+      const sub = document.getElementById('sira-colada-sub');
+      if (sub) sub.textContent = 'llenado · ' + fmtC(col.volumen_hm3, 2) + ' hm³';
+    }
 
     const coladaTbody = document.getElementById('sira-colada-tbody');
     const coladaTs    = document.getElementById('sira-colada-ts');
-    if (!col || !col.ok) {
+    if (col && col.ok) {
+      const filas = [
+        ['Nivel', fmtC(col.nivel_msnm, 2), 'msnm'],
+        ['Volumen embalsado', fmtC(col.volumen_hm3, 2), 'hm³'],
+        ['Llenado', fmtC(col.pct_capacidad, 1), '%'],
+        ['Caudal de salida al río', fmtC(col.q_salida_m3s, 4), 'm³/s'],
+      ];
+      if (coladaTbody) coladaTbody.innerHTML = filas.map(f =>
+        `<tr><td>${f[0]}</td><td><strong>${f[1]}</strong></td><td>${f[2]}</td><td>—</td><td>—</td></tr>`).join('');
+      if (coladaTs) coladaTs.textContent = '🕐 ' + (col.hora_obs || '—') + ' · SIRA Guadiana (CHG). No incluye calidad del agua del embalse.';
+    } else {
       if (coladaTbody) coladaTbody.innerHTML = `
         <tr><td colspan="5" style="text-align:center;color:var(--fg-muted);padding:18px 12px;font-size:13px">
           ⚠️ Datos no disponibles — pendiente acceso API E2-40 (La Colada).
@@ -1615,7 +1631,7 @@ async function intentarCargarSIRA() {
       const eaaOk = eaa && eaa.ok;
       const colOk = col && col.ok;
       if (eaaOk && !colOk) {
-        pill.textContent = 'EAA-421 en vivo · E2-40 sin datos · ' + (d.generado ? d.generado.slice(0,16).replace('T',' ') + ' UTC' : '—');
+        pill.textContent = 'EAA-421 en vivo · La Colada sin datos · ' + (d.generado ? d.generado.slice(0,16).replace('T',' ') + ' UTC' : '—');
         pill.className = 'status-pill';
         pill.style.background = 'var(--ambar, #d97706)';
         pill.style.color = '#fff';

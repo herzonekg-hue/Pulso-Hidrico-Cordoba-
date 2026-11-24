@@ -23,6 +23,7 @@ import json
 import pathlib
 import re
 import sys
+import time
 
 import requests
 from bs4 import BeautifulSoup
@@ -98,10 +99,20 @@ def main():
     if a.fixture:
         html = pathlib.Path(a.fixture).read_text(encoding="utf-8", errors="ignore")
     else:
-        r = requests.get(URL, headers=HEADERS, timeout=40)
-        r.raise_for_status()
-        r.encoding = r.apparent_encoding or "utf-8"
-        html = r.text
+        html = None
+        for intento in range(3):  # la página de la CHG da 404/5xx de forma puntual
+            try:
+                r = requests.get(URL, headers=HEADERS, timeout=40)
+                r.raise_for_status()
+                r.encoding = r.apparent_encoding or "utf-8"
+                html = r.text
+                break
+            except requests.RequestException as ex:
+                print(f"Intento {intento + 1}/3 fallido: {ex}", file=sys.stderr)
+                time.sleep(20)
+        if html is None:
+            print("SAIH Guadalquivir no responde. No se escribe nada.", file=sys.stderr)
+            return 2
 
     leidos = parse(html)
     fecha = fecha_saih(html)
@@ -109,15 +120,29 @@ def main():
         print("No se ha podido leer Sierra Boyera (E33). No se escribe nada.", file=sys.stderr)
         return 2
 
+    colada = dict(LA_COLADA)
+    try:  # La Colada la lee scraper_sira.py (tabla pública de embalses de SIRA) en data/sira.json
+        sira = json.loads((SALIDA / "sira.json").read_text(encoding="utf-8"))
+        e2 = next(e for e in sira.get("embalses", []) if e.get("cod") == "E2-40")
+        if e2.get("ok") and e2.get("volumen_hm3") is not None:
+            hora = (e2.get("hora_obs") or "").replace(" ", "T")[:16]
+            colada.update({"fuente": "SIRA Guadiana (E2-40)", "volumen": e2["volumen_hm3"],
+                           "pct": e2.get("pct_capacidad"), "nivel": e2.get("nivel_msnm"),
+                           "capacidad": e2.get("capacidad_hm3") or colada["capacidad"],
+                           "q_salida": e2.get("q_salida_m3s"), "fecha": hora or None})
+            colada.pop("sin_dato", None)
+    except Exception as ex:  # noqa: BLE001
+        print(f"La Colada sin lectura de SIRA: {ex}", file=sys.stderr)
+
     ahora = dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
     for e in leidos.values():
         e["fecha"] = fecha
     datos = {
         "generado": ahora,
-        "fuente": "SAIH Guadalquivir (EmbalNiv.aspx) · MITECO (capacidad de La Colada)",
+        "fuente": "SAIH Guadalquivir (EmbalNiv.aspx) · SIRA Guadiana (La Colada)",
         "aviso": "Datos del SAIH en tiempo real no contrastados (aviso oficial de la CHG).",
         "fecha_saih": fecha,
-        "embalses": [leidos["E33"], LA_COLADA, leidos.get("E34")],
+        "embalses": [leidos["E33"], colada, leidos.get("E34")],
     }
     datos["embalses"] = [e for e in datos["embalses"] if e]
 

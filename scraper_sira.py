@@ -41,7 +41,7 @@ BASE_URL        = "https://siraguadiana.com/backend/Visor"
 URL_ESTACIONES  = f"{BASE_URL}/estaciones"
 URL_RESOURCE    = f"{BASE_URL}/resourceByID"
 URL_CALIDAD     = f"{BASE_URL}/calidad"     # POST — datos por estación EAA (body: consulta/estacion/tiempo)
-# URL_EMBALSES y URL_AFOROS: pendiente confirmar con DevTools E2-40 / CR2-08
+# Embalses: tabla pública vía resourceByID/ficha_redes_control. Aforos (CR2-08): pendiente confirmar con DevTools
 URL_GETPROFILE  = "https://siraguadiana.com/backend/security/getProfile"
 
 # Headers base que imitan al navegador — imprescindible para que el backend responda
@@ -284,6 +284,22 @@ def obtener_datos_estacion(cod: str, id_interno: str) -> dict | None:
     return None
 
 
+def obtener_tabla_embalses() -> dict:
+    """Tabla pública de todos los embalses del Guadiana (la misma que muestra la web de SIRA).
+    Endpoint: POST /backend/Visor/resourceByID
+    Body confirmado (sondeo del 24-11-2026, sin 401):
+      {"id": "E", "idEstacion": "E", "type": "ficha_redes_control"}
+    Devuelve {cod_estacion: fila}; cada fila trae NE1 (nivel, msnm), VE1 (volumen, hm3),
+    PV1 (% de llenado), QSR (caudal de salida, m3/s) y timestamp.
+    """
+    log.info("Descargando tabla de embalses SIRA (ficha_redes_control)…")
+    data = _post(URL_RESOURCE, {"id": "E", "idEstacion": "E", "type": "ficha_redes_control"})
+    if not data:
+        return {}
+    valores = (data.get("ult_res") or {}).get("valores") or []
+    return {f["cod_estacion"]: f for f in valores if isinstance(f, dict) and f.get("cod_estacion")}
+
+
 def normalizar_embalse(cod: str, raw: dict) -> dict:
     """
     Extrae campos relevantes de la respuesta de un embalse (tipo E).
@@ -294,11 +310,14 @@ def normalizar_embalse(cod: str, raw: dict) -> dict:
     v = _extraer_valores_ult_res(raw)
 
     # Claves posibles en embalses SIRA (a confirmar con DevTools E2-40)
-    volumen    = v.get("VACT") or v.get("volumen") or v.get("VOL")
+    # Claves reales de la tabla de embalses (confirmadas 24-11-2026): VE1, PV1, NE1, QSR
+    volumen    = v.get("VE1") if v.get("VE1") is not None else (v.get("VACT") or v.get("volumen") or v.get("VOL"))
     capacidad  = v.get("VCAP") or v.get("capacidad") or v.get("CAP")
-    porcentaje = v.get("PVOL") or v.get("porcentajeVol") or v.get("PCT")
-    nivel      = v.get("COTA") or v.get("nivel") or v.get("NMN")
-    q_salida   = v.get("QSAL") or v.get("caudal_salida") or v.get("QS")
+    porcentaje = v.get("PV1") if v.get("PV1") is not None else (v.get("PVOL") or v.get("porcentajeVol") or v.get("PCT"))
+    nivel      = v.get("NE1") if v.get("NE1") is not None else (v.get("COTA") or v.get("nivel") or v.get("NMN"))
+    q_salida   = v.get("QSR") if v.get("QSR") is not None else (v.get("QSAL") or v.get("caudal_salida") or v.get("QS"))
+    if capacidad is None and _float(volumen) and _float(porcentaje):
+        capacidad = round(_float(volumen) / _float(porcentaje) * 100, 2)  # SIRA no publica la capacidad: se deduce
     hora       = v.get("timestamp") or ""
 
     # Fallback a bloques raíz si ult_res no tiene los campos de embalse
@@ -483,9 +502,13 @@ def main():
     #    EAA  → POST /calidad  (body confirmado DevTools 20-11-2026)
     #    E/CR → POST /resourceByID (fallback; E2-40 y CR2-08 dan 401 con token público)
     todos_datos: dict[str, dict] = {}
+    tabla_embalses = obtener_tabla_embalses()
 
     for cod, meta in ESTACIONES_OBJETIVO.items():
-        if meta["tipo"] == "calidad":
+        if meta["tipo"] == "embalse":
+            fila = tabla_embalses.get(cod)
+            raw = {"ult_res": {"valores": [fila]}} if fila else None
+        elif meta["tipo"] == "calidad":
             # POST /calidad — estructura confirmada (lista de registros con PO/NH/TA…)
             raw = obtener_calidad_eaa(cod)
             if raw is None:
@@ -493,7 +516,7 @@ def main():
                 log.info("Fallback resourceByID para %s", cod)
                 raw = obtener_datos_estacion(cod, cod)
         else:
-            # Embalses y aforos: resourceByID (E2-40 y CR2-08 dan 401 con token público)
+            # Aforos: resourceByID (CR2-08 da 401 con token público)
             raw = obtener_datos_estacion(cod, cod)
         if raw:
             todos_datos[cod] = raw

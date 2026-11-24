@@ -11,6 +11,10 @@ on:
       - "data/**"
       - ".nojekyll"
   workflow_dispatch:
+  # Red de seguridad: GitHub Pages falla de forma intermitente («Deployment failed, try again
+  # later»). Un despliegue cada hora asegura que la web se pone al día aunque uno falle.
+  schedule:
+    - cron: "41 * * * *"
   # Los commits que hace github-actions[bot] con GITHUB_TOKEN no disparan "push",
   # así que sin esto los datos que guardan los workflows de datos no llegan a la web.
   workflow_run:
@@ -38,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment2.outputs.page_url || steps.deployment.outputs.page_url }}
 
     steps:
       - name: Descargar repositorio
@@ -72,4 +76,14 @@ jobs:
 
       - name: Desplegar en GitHub Pages
         id: deployment
+        continue-on-error: true
+        uses: actions/deploy-pages@v4
+
+      - name: Esperar antes de reintentar
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 60
+
+      - name: Reintentar el despliegue
+        id: deployment2
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
