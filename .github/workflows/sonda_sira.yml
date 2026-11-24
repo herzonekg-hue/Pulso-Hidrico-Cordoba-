@@ -1,0 +1,21 @@
+name: Sonda SIRA (diagnóstico de La Colada)
+
+# Diagnóstico manual: prueba qué endpoint de SIRA devuelve los datos del embalse E2-40.
+# No guarda nada en el repositorio; el resultado se lee en el registro de la ejecución.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Sondear SIRA
+        run: python pruebas/sonda_sira_embalse.py
