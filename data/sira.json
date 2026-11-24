@@ -1,5 +1,5 @@
 {
-  "generado": "2026-11-24T15:34:19Z",
+  "generado": "2026-11-24T16:42:34Z",
   "fuente": "SIRA Guadiana — siraguadiana.com (CHG)",
   "aviso": "Datos automáticos sujetos a validación. No sustituyen avisos oficiales.",
   "alerta_calidad": "critico",
@@ -10,7 +10,13 @@
       "tipo": "embalse",
       "rio": "Guadamatilla",
       "nota": "Embalse de reserva comarca Los Pedroches. Cuenca CHG.",
-      "ok": false
+      "hora_obs": "2026-11-24 16:20:00",
+      "nivel_msnm": 471.49,
+      "volumen_hm3": 47.65,
+      "capacidad_hm3": 58.0,
+      "pct_capacidad": 82.155,
+      "q_salida_m3s": 0.0129,
+      "ok": true
     }
   ],
   "calidad": [
@@ -20,14 +26,14 @@
       "tipo": "calidad",
       "rio": "Guadarramilla",
       "nota": "Sonda SAICA. Mide fosfatos, amonio, pH antes de desembocar en La Colada. Datos usados en la denuncia ante Fiscalía (sep 2026).",
-      "hora_obs": "2026-11-24 15:15:00",
-      "fosfatos_mgl": 11.21,
+      "hora_obs": "2026-11-24 16:15:00",
+      "fosfatos_mgl": 11.24,
       "amonio_mgl": 0.02,
       "ph": 8.68,
-      "oxigeno_mgl": 6.54,
-      "conductividad_uscm": 1552.98,
-      "turbidez_ntu": 3.8,
-      "temp_agua_c": 10.81,
+      "oxigeno_mgl": 6.55,
+      "conductividad_uscm": 1554.38,
+      "turbidez_ntu": 3.83,
+      "temp_agua_c": 10.9,
       "nitratos_mgl": null,
       "sac_absm": null,
       "clorofila_ugl": null,
