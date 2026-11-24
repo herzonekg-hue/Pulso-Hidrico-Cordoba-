@@ -72,7 +72,7 @@ def trazar(lat, lon):
             near += GRID.get((round(lat+da,2), round(lon+do,2)), [])
     cand = sorted(((hav((lat,lon),nodes[k]),k) for k in near), key=lambda t:t[0])[:1]
     if not cand: return None
-    d0, k = cand[0]; tramo=[]; dist=0.0; vistos=set(); embalse=None
+    d0, k = cand[0]; tramo=[]; dist=0.0; vistos=set(); embalse=None; camino=[(round(dist,0),)+nodes[k]]
     while k in out_e and k not in vistos and dist < 150000:
         vistos.add(k)
         opts = sorted(out_e[k], key=lambda o:(RANK.get(o[2],9), o[1]==""))
@@ -87,9 +87,11 @@ def trazar(lat, lon):
                 if bb[0] <= la <= bb[1] and bb[2] <= lo <= bb[3] and inpoly(nodes[k2], pg):
                     embalse = {"nombre": pn, "km": round(dist/1000,2)}; break
         k = k2
+        camino.append((round(dist), round(nodes[k][0],5), round(nodes[k][1],5)))
     fin = nodes[k]
     return {"distancia_ajuste_m": round(d0), "recorrido": tramo, "km_total": round(dist/1000,1),
-            "fin": {"lat": fin[0], "lon": fin[1]}, "entra_en_embalse": embalse}
+            "fin": {"lat": fin[0], "lon": fin[1]}, "entra_en_embalse": embalse,
+            "camino": [c for i,c in enumerate(camino) if i % 5 == 0 or i == len(camino)-1]}
 salida = {"generado": time.strftime("%Y-%m-%dT%H:%MZ", time.gmtime()), "fuente": "OpenStreetMap (Overpass); sentido de la vía = sentido del flujo",
           "puntos": [], "depuradoras_osm": []}
 for nm, X, Y, f in PUNTOS:
@@ -101,5 +103,35 @@ for e in plants["elements"]:
     salida["depuradoras_osm"].append({"nombre": e.get("tags",{}).get("name","(sin nombre)"), "operador": e.get("tags",{}).get("operator",""),
         "lat": c["lat"], "lon": c["lon"], "traza": trazar(c["lat"], c["lon"])})
 salida["embalses_osm"] = sorted({p[0] for p in polys})
+# área de los polígonos de La Colada (ha), para saber si el contorno es el de máximo embalse
+def area_ha(g):
+    import math
+    lat0 = sum(a for a,b in g)/len(g); kx = 111320*math.cos(math.radians(lat0)); ky = 110540
+    pts = [(b*kx, a*ky) for a,b in g]; s2 = 0
+    for i in range(len(pts)): x1,y1 = pts[i]; x2,y2 = pts[(i+1)%len(pts)]; s2 += x1*y2-x2*y1
+    return abs(s2)/2/10000
+salida["colada_poligonos_ha"] = [round(area_ha(g),1) for n,g,bb in polys if "Colada" in n]
+# catálogo de estaciones SIRA (coordenadas de EAA-421 y E2-40)
+try:
+    import sys; sys.path.insert(0, ".."); import scraper_sira as S
+    tok = S.obtener_token_sira()
+    if tok: S.HEADERS["Authjwt"] = tok
+    cat = None
+    for f in (lambda: S._get(S.URL_ESTACIONES), lambda: S._post(S.URL_ESTACIONES, {})):
+        try:
+            cat = f()
+            if cat: break
+        except Exception as e: print("catalogo", e)
+    hall = []
+    def busca(x):
+        if isinstance(x, dict):
+            if any(str(v) in ("EAA-421","E2-40","EAA421") for v in x.values()): hall.append(x)
+            for v in x.values(): busca(v)
+        elif isinstance(x, list):
+            for v in x: busca(v)
+    busca(cat); salida["sira_estaciones"] = hall[:10]
+    salida["sira_catalogo_muestra"] = (json.dumps(cat)[:1500] if cat else None)
+except Exception as e:
+    salida["sira_error"] = str(e)
 json.dump(salida, open("drenaje_edar.json","w"), ensure_ascii=False, indent=1)
 print("OK", len(nodes), "nodos;", len(salida["depuradoras_osm"]), "depuradoras OSM")
