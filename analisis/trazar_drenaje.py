@@ -54,6 +54,7 @@ for e in res_w["elements"]:
         for m in e.get("members", []):
             if m.get("role") == "outer" and m.get("geometry"):
                 polys.append((nm, [(p["lat"], p["lon"]) for p in m["geometry"]]))
+polys = [(n, g, (min(a for a,b in g), max(a for a,b in g), min(b for a,b in g), max(b for a,b in g))) for n, g in polys if n and len(g) > 2]
 def inpoly(pt, poly):
     x, y = pt[1], pt[0]; ins = False; n = len(poly)
     for i in range(n):
@@ -61,8 +62,15 @@ def inpoly(pt, poly):
         if (y1>y) != (y2>y) and x < (x2-x1)*(y-y1)/(y2-y1+1e-15)+x1: ins = not ins
     return ins
 RANK = {"river":0,"canal":1,"stream":2,"brook":3,"ditch":4,"drain":5}
+GRID = {}
+for k,v in nodes.items():
+    if k in out_e: GRID.setdefault((round(v[0],2), round(v[1],2)), []).append(k)
 def trazar(lat, lon):
-    cand = sorted(((hav((lat,lon),v),k) for k,v in nodes.items() if k in out_e), key=lambda t:t[0])[:1]
+    near = []
+    for da in (-0.02,-0.01,0,0.01,0.02):
+        for do in (-0.02,-0.01,0,0.01,0.02):
+            near += GRID.get((round(lat+da,2), round(lon+do,2)), [])
+    cand = sorted(((hav((lat,lon),nodes[k]),k) for k in near), key=lambda t:t[0])[:1]
     if not cand: return None
     d0, k = cand[0]; tramo=[]; dist=0.0; vistos=set(); embalse=None
     while k in out_e and k not in vistos and dist < 150000:
@@ -74,8 +82,10 @@ def trazar(lat, lon):
         if not tramo or tramo[-1]["cauce"] != nm:
             tramo.append({"cauce": nm, "tipo": ty, "km_inicio": round(dist/1000,2), "lat": nodes[k2][0], "lon": nodes[k2][1]})
         if embalse is None:
-            for pn, pg in polys:
-                if pn and inpoly(nodes[k2], pg): embalse = {"nombre": pn, "km": round(dist/1000,2)}; break
+            la, lo = nodes[k2]
+            for pn, pg, bb in polys:
+                if bb[0] <= la <= bb[1] and bb[2] <= lo <= bb[3] and inpoly(nodes[k2], pg):
+                    embalse = {"nombre": pn, "km": round(dist/1000,2)}; break
         k = k2
     fin = nodes[k]
     return {"distancia_ajuste_m": round(d0), "recorrido": tramo, "km_total": round(dist/1000,1),
@@ -90,6 +100,6 @@ for e in plants["elements"]:
     if c.get("lat") is None: continue
     salida["depuradoras_osm"].append({"nombre": e.get("tags",{}).get("name","(sin nombre)"), "operador": e.get("tags",{}).get("operator",""),
         "lat": c["lat"], "lon": c["lon"], "traza": trazar(c["lat"], c["lon"])})
-salida["embalses_osm"] = sorted({p[0] for p in polys if p[0]})
+salida["embalses_osm"] = sorted({p[0] for p in polys})
 json.dump(salida, open("drenaje_edar.json","w"), ensure_ascii=False, indent=1)
 print("OK", len(nodes), "nodos;", len(salida["depuradoras_osm"]), "depuradoras OSM")
