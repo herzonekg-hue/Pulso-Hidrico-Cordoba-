@@ -1040,6 +1040,23 @@ body.perfil-tecnico .ciudadano-only { display: none; }
       </div>
 
       <div class="card">
+        <div class="card-title"><span class="icon">💧</span> Estado del embalse en tiempo real — Sierra Boyera E33</div>
+        <div class="sira-table-wrap">
+          <table class="sira-table" id="sira-table-sboyera">
+            <thead><tr>
+              <th>Parámetro</th>
+              <th>Último valor</th>
+              <th>Unidad</th>
+              <th>Referencia</th>
+              <th>Estado</th>
+            </tr></thead>
+            <tbody id="sira-sboyera-tbody"></tbody>
+          </table>
+        </div>
+        <div class="data-ts" id="sira-sboyera-ts">🕐 —</div>
+      </div>
+
+      <div class="card">
         <div class="card-title"><span class="icon">🌿</span> EAA-421 Guadarramilla — vertido difuso</div>
         <div class="sira-table-wrap">
           <table class="sira-table" id="sira-table-eaa">
@@ -1325,6 +1342,41 @@ function openModal(m) {
 }
 function closeModal() { document.getElementById('muni-modal').classList.remove('open'); }
 
+// Semáforo de llenado de embalses (criterio AGS Norte)
+const SEM_LLENADO_REF = 'Semáforo: >90 % verde · 60–90 % azul · 40–60 % amarillo · <40 % rojo';
+function badgeLlenado(p) {
+  if (p == null) return '<span class="param-badge param-gris">— S/D</span>';
+  const s = p > 90 ? ['#34b36b', '#fff', 'Verde · más del 90 %']
+          : p >= 60 ? ['#3b8de0', '#fff', 'Azul · 60–90 %']
+          : p >= 40 ? ['#c9d646', '#3b4200', 'Amarillo · 40–60 %']
+          : ['#e5483a', '#fff', 'Rojo · menos del 40 %'];
+  return `<span class="param-badge" style="background:${s[0]};color:${s[1]}">● ${s[2]}</span>`;
+}
+function filasEmbalse(tbodyId, filas) {
+  const tb = document.getElementById(tbodyId);
+  if (!tb) return;
+  tb.innerHTML = filas.map(f =>
+    `<tr><td>${f[0]}</td><td style="font-family:var(--font-mono)"><strong>${f[1]}</strong></td><td style="color:var(--fg-muted)">${f[2]}</td><td style="color:var(--fg-muted)">${f[3]}</td><td>${f[4]}</td></tr>`).join('');
+}
+function pintarEstadoSierraBoyera(e) {
+  const fm = (v, d) => v == null ? '—' : Number(v).toLocaleString('es-ES', {minimumFractionDigits: d, maximumFractionDigits: d});
+  if (!e || e.volumen == null) {
+    filasEmbalse('sira-sboyera-tbody', []);
+    const tb = document.getElementById('sira-sboyera-tbody');
+    if (tb) tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--fg-muted);padding:18px 12px;font-size:13px">Sin lectura en vivo de Sierra Boyera.</td></tr>';
+    return;
+  }
+  const bajo = (e.nmn != null && e.nivel != null) ? fm(e.nmn - e.nivel, 2) + ' m bajo el NMN' : '—';
+  filasEmbalse('sira-sboyera-tbody', [
+    ['Nivel', fm(e.nivel, 2), 'msnm', e.nmn != null ? 'NMN ' + fm(e.nmn, 2) + ' msnm' : '—', '<span class="param-badge param-gris">' + bajo + '</span>'],
+    ['Volumen embalsado', fm(e.volumen, 2), 'hm³', 'Capacidad ' + fm(e.capacidad, 2) + ' hm³', badgeLlenado(e.pct)],
+    ['Llenado', fm(e.pct, 1), '%', SEM_LLENADO_REF, badgeLlenado(e.pct)],
+  ]);
+  const ts = document.getElementById('sira-sboyera-ts');
+  const f = e.fecha ? new Date(e.fecha) : null;
+  if (ts) ts.textContent = '🕐 ' + (f ? f.toLocaleString('es-ES', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '—') + ' · SAIH Guadalquivir, datos en tiempo real no contrastados. No incluye calidad del agua del embalse.';
+}
+
 function pintarEmbalse(key, e) {
   const fmt = (v, d) => v == null ? '—' : v.toLocaleString('es-ES', {minimumFractionDigits:d, maximumFractionDigits:d});
   const pct = document.getElementById(key + '-pct');
@@ -1372,6 +1424,7 @@ async function intentarCargarEmbalses() {
     const serie = r2.ok ? await r2.json() : {};
     const por = Object.fromEntries(d.embalses.map(e => [e.id, e]));
     if (por.E33) pintarEmbalse('sboyera', por.E33);
+    pintarEstadoSierraBoyera(por.E33);
     if (por['E2-40']) pintarEmbalse('colada', por['E2-40']);
     if (por.E34) pintarEmbalse('pnuevo', por.E34);
     pintarSerie('spark-sboyera', serie.E33, '#1F7A8C');
@@ -1608,14 +1661,14 @@ async function intentarCargarSIRA() {
     const coladaTbody = document.getElementById('sira-colada-tbody');
     const coladaTs    = document.getElementById('sira-colada-ts');
     if (col && col.ok) {
-      const filas = [
-        ['Nivel', fmtC(col.nivel_msnm, 2), 'msnm'],
-        ['Volumen embalsado', fmtC(col.volumen_hm3, 2), 'hm³'],
-        ['Llenado', fmtC(col.pct_capacidad, 1), '%'],
-        ['Caudal de salida al río', fmtC(col.q_salida_m3s, 4), 'm³/s'],
-      ];
-      if (coladaTbody) coladaTbody.innerHTML = filas.map(f =>
-        `<tr><td>${f[0]}</td><td><strong>${f[1]}</strong></td><td>${f[2]}</td><td>—</td><td>—</td></tr>`).join('');
+      const cap = (col.volumen_hm3 != null && col.pct_capacidad) ? col.volumen_hm3 / (col.pct_capacidad / 100) : null;
+      const bSem = badgeLlenado(col.pct_capacidad);
+      filasEmbalse('sira-colada-tbody', [
+        ['Nivel', fmtC(col.nivel_msnm, 2), 'msnm', 'NMN no incluido en la tabla pública de SIRA', bSem],
+        ['Volumen embalsado', fmtC(col.volumen_hm3, 2), 'hm³', cap ? 'Capacidad ' + fmtC(cap, 1) + ' hm³ (deducida de SIRA)' : '—', bSem],
+        ['Llenado', fmtC(col.pct_capacidad, 1), '%', SEM_LLENADO_REF, bSem],
+        ['Caudal de salida al río', fmtC(col.q_salida_m3s, 4), 'm³/s', 'Sin referencia pública', '<span class="param-badge param-gris">Informativo</span>'],
+      ]);
       if (coladaTs) coladaTs.textContent = '🕐 ' + (col.hora_obs || '—') + ' · SIRA Guadiana (CHG). No incluye calidad del agua del embalse.';
     } else {
       if (coladaTbody) coladaTbody.innerHTML = `
