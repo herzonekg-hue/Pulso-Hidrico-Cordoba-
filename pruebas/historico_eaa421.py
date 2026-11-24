@@ -23,6 +23,11 @@ for t in (7, 30, 90, 180, 365, 730):
     print(f"tiempo={t}: tipo={type(d).__name__}", (list(d.keys())[:8] if isinstance(d, dict) else (len(d) if isinstance(d, list) else d)))
     if isinstance(d, dict):
         for k, v in d.items():
+            desc = (type(v).__name__, len(v)) if hasattr(v, "__len__") else type(v).__name__
+            muestra = (v[0] if isinstance(v, list) and v else (list(v.keys())[:10] if isinstance(v, dict) else v))
+            print(f"   {k}: {desc} muestra={str(muestra)[:260]}")
+        for k in ("datos", "datosCR"):
+            v = d.get(k)
             if isinstance(v, list) and v and isinstance(v[0], dict) and "Timestamp" in v[0]:
                 d = v
                 break
