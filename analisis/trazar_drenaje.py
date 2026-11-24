@@ -16,8 +16,8 @@ PUNTOS = [  # nombre, X, Y (ETRS89 UTM30), fuente
  ("Hinojosa del Duque (arroyo de Caganchas)", 313124, 4266038, "Censo CHG 2025"),
  ("Belalcázar (arroyo Malagón)", 311233, 4273225, "Censo CHG 2025"),
 ]
-BBOX = (38.05, -5.40, 38.80, -4.55)
-OVER = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter"]
+BBOX = (38.33, -5.22, 38.66, -4.66)
+OVER = ["https://overpass-api.de/api/interpreter", "https://overpass.private.coffee/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter", "https://overpass.kumi.systems/api/interpreter"]
 def overpass(q):
     for u in OVER*2:
         try:
@@ -25,7 +25,7 @@ def overpass(q):
                     headers={"User-Agent": "AQUASALUD-NORTE/1.0"}), timeout=180)
             return json.load(r)
         except Exception as e:
-            print("overpass fallo", u, e); time.sleep(10)
+            print("overpass fallo", u, e); time.sleep(20)
     raise SystemExit("Overpass no disponible")
 b = "%s,%s,%s,%s" % BBOX
 data = overpass(f'[out:json][timeout:170];(way["waterway"~"^(river|stream|canal|ditch|drain|brook)$"]({b}););out geom tags;')
