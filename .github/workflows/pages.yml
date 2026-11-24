@@ -25,10 +25,12 @@ permissions:
   pages: write
   id-token: write
 
-# Solo un despliegue simultáneo; cancelar el anterior si llega otro.
+# Solo un despliegue simultáneo. No se cancela el que está en curso: cancelarlo
+# (SIRA y embalses terminan casi a la vez) hacía fallar el despliegue de Pages
+# con «Deployment failed, try again later» y la web se quedaba con datos viejos.
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   desplegar:
