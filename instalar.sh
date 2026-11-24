@@ -29,10 +29,14 @@ cp "$ORIGEN/scraper_sinac.py"     "$APP_DIR/"
 cp "$ORIGEN/scraper_aemet.py"     "$APP_DIR/"
 cp "$ORIGEN/scraper_sira.py"      "$APP_DIR/"
 cp "$ORIGEN/scraper_sentinel2.py" "$APP_DIR/"
+cp "$ORIGEN/scraper_embalses.py"  "$APP_DIR/"
 cp "$ORIGEN/alertas.py"           "$APP_DIR/"
 
 # ── Copiar panel web ───────────────────────────────────────────────────────────
 cp "$ORIGEN/index.html" "$WEB_DIR/index.html"
+cp "$ORIGEN/embalses_cordoba.html" "$WEB_DIR/embalses_cordoba.html"
+mkdir -p "$WEB_DIR/data"
+cp -n "$ORIGEN"/data/embalses_serie_prov.json "$ORIGEN"/data/eaa_EAA421_serie.json "$WEB_DIR/data/" 2>/dev/null || true
 
 # Esqueleto vacío de SINAC (27 municipios en GRIS) para que el panel arranque
 if [ -f "$ORIGEN/data/sinac_calidad.json" ] && [ ! -f "$WEB_DIR/data/sinac_calidad.json" ]; then
@@ -74,8 +78,11 @@ cat > "$CRON" <<CRONEOF
 # Sentinel-2 (teledetección La Colada): a las 08:00 — máximo una imagen cada 5 días
 0 8 * * * $USUARIO HIDRICO_SALIDA=$WEB_DIR/data HIDRICO_CONFIG=$CONF $PYTHON $APP_DIR/scraper_sentinel2.py >> $APP_DIR/sentinel2.log 2>&1
 
-# SIRA Guadiana: cada hora
-0 * * * * $USUARIO HIDRICO_SALIDA=$WEB_DIR/data HIDRICO_CONFIG=$CONF $PYTHON $APP_DIR/scraper_sira.py >> $APP_DIR/sira.log 2>&1
+# SIRA Guadiana (La Colada E2-40 y sonda EAA-421): cada 10 minutos
+*/10 * * * * $USUARIO HIDRICO_SALIDA=$WEB_DIR/data HIDRICO_CONFIG=$CONF $PYTHON $APP_DIR/scraper_sira.py >> $APP_DIR/sira.log 2>&1
+
+# Embalses de Córdoba (SAIH Guadalquivir + La Colada): cada 10 minutos
+*/10 * * * * $USUARIO HIDRICO_SALIDA=$WEB_DIR/data HIDRICO_CONFIG=$CONF $PYTHON $APP_DIR/scraper_embalses.py >> $APP_DIR/embalses.log 2>&1
 CRONEOF
 chmod 644 "$CRON"
 
@@ -109,4 +116,5 @@ echo "  SINAC:     $APP_DIR/sinac.log"
 echo "  AEMET:     $APP_DIR/aemet.log"
 echo "  Sentinel2: $APP_DIR/sentinel2.log"
 echo "  SIRA:      $APP_DIR/sira.log"
+echo "  Embalses:  $APP_DIR/embalses.log"
 echo "  Alertas:   $APP_DIR/alertas.log"
