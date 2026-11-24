@@ -53,5 +53,8 @@ jobs:
             echo "Sin cambios en sira.json"
           else
             git commit -m "datos: actualizar SIRA (automático)"
-            git push
+            for i in 1 2 3; do
+              git pull --rebase -q origin main && git push && break
+              sleep 5
+            done
           fi
