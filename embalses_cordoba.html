@@ -28,15 +28,15 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .zh h2{font-size:13px}.zh p{font-size:11px;color:var(--text2);margin-top:2px}
 .zh .n{margin-left:auto;text-align:right}.zh .n b{font-size:21px;font-weight:900;display:block;line-height:1}.zh .n span{font-size:10px;color:var(--text3)}
 .tabla{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden}
-.row{display:grid;grid-template-columns:1fr 62px 84px 84px 90px;gap:8px;align-items:center;padding:9px 13px;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
+.row{display:grid;grid-template-columns:1fr 70px;gap:8px;align-items:center;padding:9px 13px;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
 .row:last-child{border:0}.row.head{background:rgba(255,255,255,.04);font-size:10px;color:var(--text3);text-transform:uppercase;font-weight:700}
 .nom small{display:block;color:var(--text3);font-size:10px;margin-top:1px}
-.pct{text-align:right;font-weight:800;font-size:13px}.vol{text-align:right;color:var(--text2)}
+.pct{text-align:right;font-weight:800;font-size:17px}.vol{text-align:right;color:var(--text2)}
 .bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;border-radius:3px;width:0;transition:width 1s}
 .sb{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:4px}
 .nota{font-size:11px;color:var(--text3);line-height:1.55;padding:2px 2px 14px}
 .nota b{color:var(--text2)}
-@media(max-width:560px){.row{grid-template-columns:1fr 56px 80px}.row>div:nth-child(3),.row>div:nth-child(4){display:none}}
+
 </style>
 </head>
 <body>
@@ -51,16 +51,15 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 <div class="content" id="content"></div>
 <div class="content" style="padding-top:0">
   <div class="nota">
-    <b>De dónde sale cada cifra.</b> Porcentaje, volumen y capacidad de cada embalse proceden tal cual de la tabla pública de niveles del SAIH Guadalquivir (datos en tiempo real, no contrastados según el aviso de la CHG) y, para La Colada, de la estación E2-40 de SIRA (CHG Guadiana). El panel lee el SAIH y SIRA cada 10 minutos. El SAIH no publica la hora de su medida, así que se indica la hora de lectura; SIRA publica en hora UTC y aquí se muestra en hora de España. La suma de la provincia y la agrupación en zonas Norte, Capital y Sur son cálculo de este panel, no un dato oficial. Semáforo propio: verde desde el 60 %, amarillo pistacho del 40 al 60 %, rojo por debajo del 40 %; no es el escenario oficial de sequía. Las variaciones (pp = puntos porcentuales) las calcula este panel con su propio historial; las webs oficiales solo muestran el valor actual.
-    <br><br>Edición recuperada del panel de embalses del 4 de noviembre, ahora con lectura automática. Panel principal: <a href="./" style="color:var(--water)">AQUASALUD NORTE</a>.
+    <b>Fuentes.</b> Porcentaje y volumen: SAIH Guadalquivir (no contrastados) y, para La Colada, estación E2-40 de SIRA. Se lee cada 10 minutos. Las zonas y la suma provincial son cálculo de este panel, no dato oficial. El semáforo es propio, no el escenario oficial de sequía.
   </div>
 </div>
 </div>
 <script>
 const ZONAS = {
-  norte:  {t:'Zona Norte',  ico:'🏔', color:'var(--norte)',   desc:'Guadiato y Los Pedroches. Cuencas del Guadalquivir y del Guadiana'},
-  capital:{t:'Zona Capital',ico:'🏛', color:'var(--capital)', desc:'Córdoba capital y Campiña Norte'},
-  sur:    {t:'Zona Sur',    ico:'🌾', color:'var(--sur)',     desc:'Campiña Sur, Subbética, Genil y Bembézar'}
+  norte:  {t:'Zona Norte',  ico:'🏔', color:'var(--norte)',   desc:'Los Pedroches y Valle del Guadiato'},
+  capital:{t:'Zona Capital',ico:'🏛', color:'var(--capital)', desc:'Córdoba, sierra de Córdoba, Campiña Norte y Montoro'},
+  sur:    {t:'Zona Sur y Oeste',ico:'🌾', color:'var(--sur)', desc:'Subbética, Campiña Sur, Iznájar y sierra de Hornachuelos'}
 };
 // Semáforo: > 90 % verde · 60-90 % azul · 40-60 % amarillo pistacho · < 40 % rojo
 const VERDE='#34b36b', AZUL='#3b8de0', PISTACHO='#c9d646', ROJO='#e5483a';
@@ -101,22 +100,20 @@ function render(){
   const z=ZONAS[ACTUAL], g=LISTA.filter(e=>e.zona===ACTUAL).sort((a,b)=>a.pct-b.pct), s=suma(g);
   let h=LEYENDA+`<div class="zh"><div style="font-size:18px">${z.ico}</div><div><h2 style="color:${z.color}">${z.t} (${g.length})</h2><p>${z.desc}</p></div>
   <div class="n"><b style="color:${col(s.p)}">${fmt(s.p,1)} %</b><span>${fmt(s.v,0)} / ${fmt(s.c,0)} hm³</span></div></div>
-  <div class="tabla"><div class="row head"><div>Embalse</div><div style="text-align:right">Llenado</div><div class="vol">24 h</div><div class="vol">7 días</div><div>Tendencia 7 d</div></div>`;
+  <div class="tabla">`;
   g.forEach(e=>{
-    const d1=delta(e.id,24), d7=delta(e.id,168);
     h+=`<div class="row"><div class="nom">${e.nombre}<small>${fmt(e.volumen,e.volumen>=100?0:1)} / ${fmt(e.capacidad,e.capacidad>=100?0:1)} hm³</small>
     <div class="bar" style="margin-top:5px"><i style="background:${col(e.pct)}" data-w="${Math.min(100,e.pct)}"></i></div></div>
-    <div class="pct" style="color:${col(e.pct)}">${fmt(e.pct,1)} %</div>
-    <div class="vol">${dtxt(d1,0.05)}</div><div class="vol">${dtxt(d7,0.15)}</div><div>${spark(e.id)}</div></div>`;
+    <div class="pct" style="color:${col(e.pct)}">${fmt(e.pct,1)} %</div></div>`;
   });
   h+='</div>';
-  h+=calidad();
-  h+=herramientas();
+  h+=desplegable('Calidad: La Colada y sonda del Viso',calidad())+desplegable('Qué medimos y cada cuánto',herramientas());
   document.getElementById('content').innerHTML=h;
   setTimeout(()=>document.querySelectorAll('.bar i').forEach(i=>i.style.width=i.dataset.w+'%'),60);
   document.querySelectorAll('.tab').forEach(t=>{const a=t.dataset.z===ACTUAL;t.classList.toggle('active',a);t.style.borderBottomColor=a?ZONAS[t.dataset.z].color:'transparent'});
 }
 // La Colada: nivel y calidad del río que la alimenta, en una sola vista (en las webs oficiales están en sistemas distintos)
+function desplegable(t,c){return c?`<details class="zh" style="display:block"><summary style="cursor:pointer;font-size:13px;font-weight:700;color:var(--water)">${t}</summary><div style="margin-top:8px">${c}</div></details>`:''}
 function calidad(){
   if(!SIRA||ACTUAL!=='norte') return '';
   const c=(SIRA.calidad||[]).find(x=>x.cod==='EAA-421'&&x.ok), e=(SIRA.embalses||[]).find(x=>x.cod==='E2-40'&&x.ok);

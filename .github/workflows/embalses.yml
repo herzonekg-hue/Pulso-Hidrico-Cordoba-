@@ -36,7 +36,7 @@ jobs:
         run: pip install requests beautifulsoup4 lxml
 
       - name: Leer SAIH Guadalquivir
-        run: python scraper_embalses.py
+        run: python pruebas/test_zonas.py && python scraper_embalses.py
 
       - name: Guardar
         run: |

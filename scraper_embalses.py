@@ -52,13 +52,25 @@ LA_COLADA = {"id": "E2-40", "nombre": "La Colada", "rio": "Guadamatilla", "cuenc
 # Embalses cordobeses de la tabla del SAIH Guadalquivir (porcentaje de llenado de la provincia).
 # La zona es una agrupación del panel (Norte / Capital / Sur), no una división oficial.
 # Derivación Retortillo (E40) es de Sevilla y no se incluye; La Colada se añade desde SIRA.
+# Zona según el municipio donde está la presa (fuente: MITECO, informes de viabilidad CHG; ver pruebas/test_zonas.py).
+#   norte   = Los Pedroches y Valle del Guadiato
+#   capital = Córdoba capital, sierra de Córdoba, Campiña Norte y Alto Guadalquivir
+#   sur     = Subbética, Campiña Sur, Genil y sierra de Hornachuelos
 PROVINCIA = {
-    "E33": ("Sierra Boyera", "norte"), "E34": ("Puente Nuevo", "norte"),
-    "E35": ("Guadanuño", "norte"), "E38": ("Hornachuelos", "norte"),
-    "E29": ("Guadalmellato", "capital"), "E30": ("San Rafael de Navallana", "capital"),
-    "E32": ("Vadomojón", "capital"), "E28": ("Arenoso", "capital"), "E27": ("Martín Gonzalo", "capital"),
-    "E48": ("Iznájar", "sur"), "E36": ("La Breña II", "sur"), "E37": ("Bembézar", "sur"),
-    "E39": ("Retortillo", "sur"), "E26": ("Yeguas", "sur"),
+    "E33": ("Sierra Boyera", "norte"),            # Bélmez, Peñarroya-Pueblonuevo, Fuente Obejuna
+    "E34": ("Puente Nuevo", "norte"),             # Bélmez, Espiel, Villaviciosa de Córdoba
+    "E35": ("Guadanuño", "capital"),              # Villaviciosa de Córdoba, Obejo
+    "E36": ("La Breña II", "capital"),            # Almodóvar del Río, Villaviciosa de Córdoba, Córdoba
+    "E29": ("Guadalmellato", "capital"),          # Adamuz
+    "E30": ("San Rafael de Navallana", "capital"),  # Alcolea
+    "E28": ("Arenoso", "capital"),                # Montoro
+    "E27": ("Martín Gonzalo", "capital"),         # Montoro, Cardeña
+    "E26": ("Yeguas", "capital"),                 # Montoro (Córdoba), Marmolejo (Jaén)
+    "E32": ("Vadomojón", "sur"),                  # Baena (Córdoba), Alcaudete (Jaén)
+    "E48": ("Iznájar", "sur"),                    # Iznájar, Rute (Córdoba), Cuevas de San Marcos (Málaga)
+    "E37": ("Bembézar", "sur"),                   # Espiel, Hornachuelos
+    "E38": ("Hornachuelos", "sur"),               # Hornachuelos
+    "E39": ("Retortillo", "sur"),                 # Hornachuelos (y Puebla de los Infantes, Sevilla)
 }
 
 
