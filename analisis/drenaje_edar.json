@@ -1,0 +1,914 @@
+{
+ "generado": "2026-11-24T21:53Z",
+ "fuente": "OpenStreetMap (Overpass); sentido de la vía = sentido del flujo",
+ "puntos": [
+  {
+   "nombre": "Dos Torres-Añora (arroyo Milano)",
+   "x": 335198,
+   "y": 4257540,
+   "fuente_coord": "BOE-B-2025-40386",
+   "lat": 38.45094862220687,
+   "lon": -4.8886187800796606,
+   "traza": {
+    "distancia_ajuste_m": 76,
+    "recorrido": [
+     {
+      "cauce": "Arroyo Milano",
+      "tipo": "stream",
+      "km_inicio": 0.01,
+      "lat": 38.4514396,
+      "lon": -4.8892634
+     },
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.06,
+      "lat": 38.4518498,
+      "lon": -4.8889461
+     },
+     {
+      "cauce": "Arroyo Milano",
+      "tipo": "stream",
+      "km_inicio": 0.1,
+      "lat": 38.452083,
+      "lon": -4.8887043
+     },
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 2.17,
+      "lat": 38.465688,
+      "lon": -4.8867074
+     },
+     {
+      "cauce": "Arroyo de la Cigüeñuela",
+      "tipo": "stream",
+      "km_inicio": 4.0,
+      "lat": 38.4791676,
+      "lon": -4.8936547
+     },
+     {
+      "cauce": "Guadalmez",
+      "tipo": "river",
+      "km_inicio": 28.99,
+      "lat": 38.6143062,
+      "lon": -4.8600368
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 60.57,
+      "lat": 38.7674554,
+      "lon": -5.0787572
+     }
+    ],
+    "km_total": 111.0,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": null
+   }
+  },
+  {
+   "nombre": "Villanueva del Duque-Alcaracejos (arroyo de las Cruces)",
+   "x": 326769,
+   "y": 4252155,
+   "fuente_coord": "BOP Córdoba 2016-729",
+   "lat": 38.400850312689805,
+   "lon": -4.983834385029416,
+   "traza": {
+    "distancia_ajuste_m": 2291,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.04,
+      "lat": 38.3823125,
+      "lon": -4.9955009
+     },
+     {
+      "cauce": "Río Guadamatilla",
+      "tipo": "river",
+      "km_inicio": 10.47,
+      "lat": 38.4560862,
+      "lon": -5.0356045
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 46.18,
+      "lat": 38.6876456,
+      "lon": -5.1026024
+     }
+    ],
+    "km_total": 109.1,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de la Colada",
+     "km": 13.3
+    }
+   }
+  },
+  {
+   "nombre": "El Viso-Villaralto (arroyo Arenoso)",
+   "x": 327326,
+   "y": 4261469,
+   "fuente_coord": "Censo CHG 2025",
+   "lat": 38.48484770997666,
+   "lon": -4.979750263250077,
+   "traza": {
+    "distancia_ajuste_m": 18,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.05,
+      "lat": 38.4852492,
+      "lon": -4.9791939
+     },
+     {
+      "cauce": "Arroyo Arenoso",
+      "tipo": "stream",
+      "km_inicio": 0.51,
+      "lat": 38.4885809,
+      "lon": -4.9777342
+     },
+     {
+      "cauce": "Río Guadamatilla",
+      "tipo": "river",
+      "km_inicio": 4.4,
+      "lat": 38.5064955,
+      "lon": -5.0070772
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 33.37,
+      "lat": 38.6876456,
+      "lon": -5.1026024
+     }
+    ],
+    "km_total": 96.3,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de la Colada",
+     "km": 3.44
+    }
+   }
+  },
+  {
+   "nombre": "Pedroche (arroyo Santa María)",
+   "x": 345336,
+   "y": 4255452,
+   "fuente_coord": "Censo CHG 2025",
+   "lat": 38.43395506937041,
+   "lon": -4.7720311450321615,
+   "traza": {
+    "distancia_ajuste_m": 25,
+    "recorrido": [
+     {
+      "cauce": "Arroyo de Santa Maria",
+      "tipo": "stream",
+      "km_inicio": 0.07,
+      "lat": 38.4343509,
+      "lon": -4.7714757
+     },
+     {
+      "cauce": "Arroyo de Santa María",
+      "tipo": "stream",
+      "km_inicio": 16.07,
+      "lat": 38.535669,
+      "lon": -4.7442184
+     },
+     {
+      "cauce": "Guadalmez",
+      "tipo": "river",
+      "km_inicio": 27.7,
+      "lat": 38.5959129,
+      "lon": -4.8176915
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 63.64,
+      "lat": 38.7674554,
+      "lon": -5.0787572
+     }
+    ],
+    "km_total": 114.1,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": null
+   }
+  },
+  {
+   "nombre": "El Guijo (afluente arroyo de La Matanza)",
+   "x": 345522,
+   "y": 4263156,
+   "fuente_coord": "BOE-B-2025-28037",
+   "lat": 38.503383855909334,
+   "lon": -4.7715986461959385,
+   "traza": {
+    "distancia_ajuste_m": 105,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.05,
+      "lat": 38.5039628,
+      "lon": -4.7705897
+     },
+     {
+      "cauce": "Arroyo de Santa Maria",
+      "tipo": "stream",
+      "km_inicio": 3.02,
+      "lat": 38.507279,
+      "lon": -4.7487703
+     },
+     {
+      "cauce": "Arroyo de Santa María",
+      "tipo": "stream",
+      "km_inicio": 8.3,
+      "lat": 38.535669,
+      "lon": -4.7442184
+     },
+     {
+      "cauce": "Guadalmez",
+      "tipo": "river",
+      "km_inicio": 19.93,
+      "lat": 38.5959129,
+      "lon": -4.8176915
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 55.86,
+      "lat": 38.7674554,
+      "lon": -5.0787572
+     }
+    ],
+    "km_total": 106.3,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": null
+   }
+  },
+  {
+   "nombre": "Torrecampo (arroyo Figueral de Sanfría)",
+   "x": 352745,
+   "y": 4259802,
+   "fuente_coord": "BOE-B-2025-46489",
+   "lat": 38.47439387564095,
+   "lon": -4.688092091217597,
+   "traza": {
+    "distancia_ajuste_m": 538,
+    "recorrido": [
+     {
+      "cauce": "Arroyo del Figueral de la Sanfría",
+      "tipo": "stream",
+      "km_inicio": 0.05,
+      "lat": 38.4769393,
+      "lon": -4.6937584
+     }
+    ],
+    "km_total": 4.3,
+    "fin": {
+     "lat": 38.4936839,
+     "lon": -4.7141877
+    },
+    "entra_en_embalse": null
+   }
+  },
+  {
+   "nombre": "Fuente la Lancha (arroyo Almarrán)",
+   "x": 320538,
+   "y": 4255301,
+   "fuente_coord": "BOE-B-2025-32329",
+   "lat": 38.427955408902065,
+   "lon": -5.055952905916274,
+   "traza": {
+    "distancia_ajuste_m": 147,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.04,
+      "lat": 38.4286419,
+      "lon": -5.0578839
+     },
+     {
+      "cauce": "Río Guadamatilla",
+      "tipo": "river",
+      "km_inicio": 1.09,
+      "lat": 38.4334487,
+      "lon": -5.0656667
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 40.72,
+      "lat": 38.6876456,
+      "lon": -5.1026024
+     }
+    ],
+    "km_total": 103.7,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de la Colada",
+     "km": 7.85
+    }
+   }
+  },
+  {
+   "nombre": "Fuente la Lancha emergencia (afl. Lanchar)",
+   "x": 322577,
+   "y": 4254771,
+   "fuente_coord": "BOE-B-2025-32329",
+   "lat": 38.423589350376865,
+   "lon": -5.032473555074351,
+   "traza": {
+    "distancia_ajuste_m": 193,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.03,
+      "lat": 38.423829,
+      "lon": -5.0300984
+     },
+     {
+      "cauce": "Río Guadamatilla",
+      "tipo": "river",
+      "km_inicio": 3.97,
+      "lat": 38.4560862,
+      "lon": -5.0356045
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 39.68,
+      "lat": 38.6876456,
+      "lon": -5.1026024
+     }
+    ],
+    "km_total": 102.6,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de la Colada",
+     "km": 6.8
+    }
+   }
+  },
+  {
+   "nombre": "Hinojosa del Duque (arroyo de Caganchas)",
+   "x": 313124,
+   "y": 4266038,
+   "fuente_coord": "Censo CHG 2025",
+   "lat": 38.523130691451456,
+   "lon": -5.143698143189183,
+   "traza": {
+    "distancia_ajuste_m": 3,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.01,
+      "lat": 38.5231742,
+      "lon": -5.1436195
+     },
+     {
+      "cauce": "Arroyo de Malagón",
+      "tipo": "stream",
+      "km_inicio": 10.44,
+      "lat": 38.5887498,
+      "lon": -5.1676145
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 28.13,
+      "lat": 38.6438581,
+      "lon": -5.2323461
+     }
+    ],
+    "km_total": 112.3,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": null
+   }
+  },
+  {
+   "nombre": "Belalcázar (arroyo Malagón)",
+   "x": 311233,
+   "y": 4273225,
+   "fuente_coord": "Censo CHG 2025",
+   "lat": 38.587454813623545,
+   "lon": -5.167319301439716,
+   "traza": {
+    "distancia_ajuste_m": 30,
+    "recorrido": [
+     {
+      "cauce": "Arroyo de Malagón",
+      "tipo": "stream",
+      "km_inicio": 0.18,
+      "lat": 38.5887498,
+      "lon": -5.1676145
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 17.87,
+      "lat": 38.6438581,
+      "lon": -5.2323461
+     }
+    ],
+    "km_total": 102.0,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": null
+   }
+  }
+ ],
+ "depuradoras_osm": [
+  {
+   "nombre": "(sin nombre)",
+   "operador": "",
+   "lat": 38.1834178,
+   "lon": -5.0453848,
+   "traza": {
+    "distancia_ajuste_m": 662,
+    "recorrido": [
+     {
+      "cauce": "Rio Guadiato",
+      "tipo": "river",
+      "km_inicio": 0.12,
+      "lat": 38.185847,
+      "lon": -5.052426
+     },
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "river",
+      "km_inicio": 16.68,
+      "lat": 38.0858559,
+      "lon": -4.9251637
+     },
+     {
+      "cauce": "Rio Guadiato",
+      "tipo": "river",
+      "km_inicio": 16.78,
+      "lat": 38.0850295,
+      "lon": -4.9250213
+     }
+    ],
+    "km_total": 32.7,
+    "fin": {
+     "lat": 38.003573,
+     "lon": -4.8715339
+    },
+    "entra_en_embalse": null
+   }
+  },
+  {
+   "nombre": "Estación Depuradora de Aguas Residuales de Pozoblanco",
+   "operador": "",
+   "lat": 38.3803661,
+   "lon": -4.8851556,
+   "traza": {
+    "distancia_ajuste_m": 69,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "river",
+      "km_inicio": 0.06,
+      "lat": 38.3799856,
+      "lon": -4.8859889
+     },
+     {
+      "cauce": "Río Guadarramilla",
+      "tipo": "river",
+      "km_inicio": 11.68,
+      "lat": 38.4529319,
+      "lon": -4.9358549
+     },
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "river",
+      "km_inicio": 16.8,
+      "lat": 38.4932906,
+      "lon": -4.9413719
+     },
+     {
+      "cauce": "Río Guadamatilla",
+      "tipo": "river",
+      "km_inicio": 26.93,
+      "lat": 38.5298878,
+      "lon": -5.00367
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 53.21,
+      "lat": 38.6876456,
+      "lon": -5.1026024
+     }
+    ],
+    "km_total": 116.2,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de la Colada",
+     "km": 24.62
+    }
+   }
+  },
+  {
+   "nombre": "(sin nombre)",
+   "operador": "",
+   "lat": 38.2887474,
+   "lon": -5.266255,
+   "traza": {
+    "distancia_ajuste_m": 1079,
+    "recorrido": [
+     {
+      "cauce": "río Guadiato",
+      "tipo": "river",
+      "km_inicio": 0.22,
+      "lat": 38.2789498,
+      "lon": -5.2623355
+     },
+     {
+      "cauce": "Rio Guadiato",
+      "tipo": "river",
+      "km_inicio": 6.3,
+      "lat": 38.2591989,
+      "lon": -5.2033332
+     },
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "river",
+      "km_inicio": 41.03,
+      "lat": 38.0858559,
+      "lon": -4.9251637
+     },
+     {
+      "cauce": "Rio Guadiato",
+      "tipo": "river",
+      "km_inicio": 41.13,
+      "lat": 38.0850295,
+      "lon": -4.9250213
+     }
+    ],
+    "km_total": 57.1,
+    "fin": {
+     "lat": 38.003573,
+     "lon": -4.8715339
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de Sierra Boyera",
+     "km": 0.22
+    }
+   }
+  },
+  {
+   "nombre": "(sin nombre)",
+   "operador": "",
+   "lat": 38.5874315,
+   "lon": -5.1666025,
+   "traza": {
+    "distancia_ajuste_m": 64,
+    "recorrido": [
+     {
+      "cauce": "Arroyo de Malagón",
+      "tipo": "stream",
+      "km_inicio": 0.18,
+      "lat": 38.5887498,
+      "lon": -5.1676145
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 17.87,
+      "lat": 38.6438581,
+      "lon": -5.2323461
+     }
+    ],
+    "km_total": 102.0,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": null
+   }
+  },
+  {
+   "nombre": "(sin nombre)",
+   "operador": "",
+   "lat": 38.7474316,
+   "lon": -4.8805688,
+   "traza": {
+    "distancia_ajuste_m": 2432,
+    "recorrido": [
+     {
+      "cauce": "Río Alcudia",
+      "tipo": "river",
+      "km_inicio": 0.09,
+      "lat": 38.7264388,
+      "lon": -4.8726487
+     },
+     {
+      "cauce": "Guadalmez",
+      "tipo": "river",
+      "km_inicio": 5.51,
+      "lat": 38.7001071,
+      "lon": -4.9086186
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 23.88,
+      "lat": 38.7674554,
+      "lon": -5.0787572
+     }
+    ],
+    "km_total": 74.4,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": null
+   }
+  },
+  {
+   "nombre": "Estación Depuradora de Aguas Residuales de Almadenejos",
+   "operador": "",
+   "lat": 38.739439,
+   "lon": -4.706231,
+   "traza": {
+    "distancia_ajuste_m": 982,
+    "recorrido": [
+     {
+      "cauce": "Río Valdeazogues",
+      "tipo": "river",
+      "km_inicio": 0.08,
+      "lat": 38.7394771,
+      "lon": -4.6947709
+     },
+     {
+      "cauce": "Río Alcudia",
+      "tipo": "river",
+      "km_inicio": 24.39,
+      "lat": 38.7268686,
+      "lon": -4.8669705
+     },
+     {
+      "cauce": "Guadalmez",
+      "tipo": "river",
+      "km_inicio": 30.31,
+      "lat": 38.7001071,
+      "lon": -4.9086186
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 48.69,
+      "lat": 38.7674554,
+      "lon": -5.0787572
+     }
+    ],
+    "km_total": 99.2,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de Castilseras",
+     "km": 12.39
+    }
+   }
+  },
+  {
+   "nombre": "(sin nombre)",
+   "operador": "",
+   "lat": 38.4845909,
+   "lon": -4.9796204,
+   "traza": {
+    "distancia_ajuste_m": 43,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.05,
+      "lat": 38.4852492,
+      "lon": -4.9791939
+     },
+     {
+      "cauce": "Arroyo Arenoso",
+      "tipo": "stream",
+      "km_inicio": 0.51,
+      "lat": 38.4885809,
+      "lon": -4.9777342
+     },
+     {
+      "cauce": "Río Guadamatilla",
+      "tipo": "river",
+      "km_inicio": 4.4,
+      "lat": 38.5064955,
+      "lon": -5.0070772
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 33.37,
+      "lat": 38.6876456,
+      "lon": -5.1026024
+     }
+    ],
+    "km_total": 96.3,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de la Colada",
+     "km": 3.44
+    }
+   }
+  },
+  {
+   "nombre": "(sin nombre)",
+   "operador": "",
+   "lat": 38.7716629,
+   "lon": -4.8232479,
+   "traza": {
+    "distancia_ajuste_m": 2673,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.11,
+      "lat": 38.7941908,
+      "lon": -4.8124088
+     },
+     {
+      "cauce": "Río Valdeazogues",
+      "tipo": "river",
+      "km_inicio": 6.61,
+      "lat": 38.7632262,
+      "lon": -4.7630586
+     },
+     {
+      "cauce": "Río Alcudia",
+      "tipo": "river",
+      "km_inicio": 21.64,
+      "lat": 38.7268686,
+      "lon": -4.8669705
+     },
+     {
+      "cauce": "Guadalmez",
+      "tipo": "river",
+      "km_inicio": 27.56,
+      "lat": 38.7001071,
+      "lon": -4.9086186
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 45.93,
+      "lat": 38.7674554,
+      "lon": -5.0787572
+     }
+    ],
+    "km_total": 96.4,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de Castilseras",
+     "km": 9.64
+    }
+   }
+  },
+  {
+   "nombre": "EDAR Cabaza del Buey",
+   "operador": "",
+   "lat": 38.7322952,
+   "lon": -5.2028592,
+   "traza": {
+    "distancia_ajuste_m": 115,
+    "recorrido": [
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "stream",
+      "km_inicio": 0.04,
+      "lat": 38.7323844,
+      "lon": -5.2014331
+     }
+    ],
+    "km_total": 4.4,
+    "fin": {
+     "lat": 38.7156637,
+     "lon": -5.1707747
+    },
+    "entra_en_embalse": null
+   }
+  },
+  {
+   "nombre": "(sin nombre)",
+   "operador": "Covap",
+   "lat": 38.3575885,
+   "lon": -4.8373476,
+   "traza": {
+    "distancia_ajuste_m": 1138,
+    "recorrido": [
+     {
+      "cauce": "Arroyo del Pilar",
+      "tipo": "stream",
+      "km_inicio": 0.01,
+      "lat": 38.3647078,
+      "lon": -4.8468781
+     },
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "river",
+      "km_inicio": 4.59,
+      "lat": 38.3799856,
+      "lon": -4.8859889
+     },
+     {
+      "cauce": "Río Guadarramilla",
+      "tipo": "river",
+      "km_inicio": 16.2,
+      "lat": 38.4529319,
+      "lon": -4.9358549
+     },
+     {
+      "cauce": "(cauce sin nombre)",
+      "tipo": "river",
+      "km_inicio": 21.33,
+      "lat": 38.4932906,
+      "lon": -4.9413719
+     },
+     {
+      "cauce": "Río Guadamatilla",
+      "tipo": "river",
+      "km_inicio": 31.46,
+      "lat": 38.5298878,
+      "lon": -5.00367
+     },
+     {
+      "cauce": "Río Zújar",
+      "tipo": "river",
+      "km_inicio": 57.74,
+      "lat": 38.6876456,
+      "lon": -5.1026024
+     }
+    ],
+    "km_total": 120.7,
+    "fin": {
+     "lat": 38.912528,
+     "lon": -5.4134448
+    },
+    "entra_en_embalse": {
+     "nombre": "Embalse de la Colada",
+     "km": 29.15
+    }
+   }
+  }
+ ],
+ "embalses_osm": [
+  "Corta Cervantes",
+  "Embalse de Castilseras",
+  "Embalse de Cogollarta",
+  "Embalse de Galapagar",
+  "Embalse de San Pedro",
+  "Embalse de Sierra Boyera",
+  "Embalse de el Entredicho",
+  "Embalse de la Colada",
+  "Laguna del Ochavillo",
+  "Pantano de Valtravieso"
+ ]
+}
