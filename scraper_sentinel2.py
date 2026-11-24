@@ -438,18 +438,18 @@ def interpretar_indices(stats_resp: dict) -> dict:
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
-    if not CONFIG_PATH.exists():
-        log.error("No existe config.json")
-        sys.exit(1)
-    with open(CONFIG_PATH, encoding="utf-8") as f:
-        cfg = json.load(f)
+    # Credenciales: variables de entorno (GitHub Secrets) o, en el servidor AGS, config.json.
+    cfg = {}
+    if CONFIG_PATH.exists():
+        with open(CONFIG_PATH, encoding="utf-8") as f:
+            cfg = json.load(f)
 
-    client_id     = cfg.get("sentinel2_client_id", "").strip()
-    client_secret = cfg.get("sentinel2_client_secret", "").strip()
+    client_id     = (os.environ.get("SENTINEL2_CLIENT_ID") or cfg.get("sentinel2_client_id", "")).strip()
+    client_secret = (os.environ.get("SENTINEL2_CLIENT_SECRET") or cfg.get("sentinel2_client_secret", "")).strip()
     bbox          = cfg.get("sentinel2_bbox_la_colada", BBOX_DEFAULT)
 
     if not client_id or not client_secret:
-        log.error("Faltan sentinel2_client_id / sentinel2_client_secret en config.json")
+        log.error("Faltan credenciales Copernicus: SENTINEL2_CLIENT_ID / SENTINEL2_CLIENT_SECRET (o config.json)")
         sys.exit(1)
 
     # Modo fixture

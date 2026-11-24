@@ -1,0 +1,58 @@
+name: Sentinel-2 La Colada (Copernicus)
+
+# Descarga el índice de turbidez y clorofila de La Colada desde Copernicus Data Space.
+# Necesita dos secretos del repositorio: SENTINEL2_CLIENT_ID y SENTINEL2_CLIENT_SECRET
+# (Settings > Secrets and variables > Actions). Sin ellos el trabajo termina avisando, sin fallar.
+# Sentinel-2 revisita cada 5 días (satélites 2A y 2B juntos), así que una pasada diaria basta.
+
+on:
+  schedule:
+    - cron: "40 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sentinel2
+  cancel-in-progress: false
+
+jobs:
+  sentinel2:
+    runs-on: ubuntu-latest
+    env:
+      SENTINEL2_CLIENT_ID: ${{ secrets.SENTINEL2_CLIENT_ID }}
+      SENTINEL2_CLIENT_SECRET: ${{ secrets.SENTINEL2_CLIENT_SECRET }}
+      HIDRICO_SALIDA: data
+    steps:
+      - uses: actions/checkout@v4
+      - name: Comprobar credenciales
+        id: cred
+        run: |
+          if [ -z "$SENTINEL2_CLIENT_ID" ] || [ -z "$SENTINEL2_CLIENT_SECRET" ]; then
+            echo "::warning::Faltan los secretos SENTINEL2_CLIENT_ID y SENTINEL2_CLIENT_SECRET. No se ejecuta."
+            echo "ok=no" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=si" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/setup-python@v5
+        if: steps.cred.outputs.ok == 'si'
+        with:
+          python-version: "3.11"
+      - name: Ejecutar scraper
+        if: steps.cred.outputs.ok == 'si'
+        run: |
+          pip install requests numpy pillow 2>/dev/null || true
+          python scraper_sentinel2.py
+      - name: Guardar
+        if: steps.cred.outputs.ok == 'si'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/sentinel2.json data/sentinel2_thumb.jpg 2>/dev/null || true
+          if git diff --cached --quiet; then echo "Sin cambios"; exit 0; fi
+          git commit -m "datos: Sentinel-2 La Colada (automático)"
+          for i in 1 2 3; do
+            git pull --rebase -q origin main && git push && break
+            sleep 5
+          done
