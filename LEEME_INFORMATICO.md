@@ -103,7 +103,7 @@ Este archivo **nunca debe publicarse en la web ni subirse a GitHub**. Contiene c
   // Los valores reales los entrega Antonio por canal seguro. NUNCA escribirlos en este archivo ni en GitHub.
   "sentinel2_client_id": "PEDIR_A_ANTONIO",
   "sentinel2_client_secret": "PEDIR_A_ANTONIO",
-  "sentinel2_bbox_la_colada": [-5.1850, 38.3720, -5.1200, 38.4180],
+  "sentinel2_bbox_la_colada": [-5.04, 38.47, -4.96, 38.56],
   "sentinel2_instance_id": "aquasalud-norte"
 }
 ```
