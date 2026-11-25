@@ -108,7 +108,7 @@ def buscar_imagen(bbox: list, token: str) -> dict | None:
         "query": {
             "eo:cloud_cover": {"lt": MAX_NUBOSIDAD}
         },
-        "sortby": ["-datetime"],
+        "sortby": [{"field": "datetime", "direction": "desc"}],
         "limit": 5,
     }).encode("utf-8")
 
@@ -140,6 +140,13 @@ def buscar_imagen(bbox: list, token: str) -> dict | None:
                 props.get("datetime", "?"),
             )
             return best
+    except urllib.error.HTTPError as e:
+        try:
+            cuerpo = e.read().decode("utf-8", "replace")[:400]
+        except Exception:
+            cuerpo = ""
+        log.error("Error en búsqueda catálogo: HTTP %s %s", e.code, cuerpo)
+        return None
     except Exception as e:
         log.error("Error en búsqueda catálogo: %s", e)
         return None
