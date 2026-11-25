@@ -1,6 +1,6 @@
 # AQUASALUD NORTE — Guía de instalación para el informático
 
-**AGS Norte de Córdoba · Versión 15 de noviembre de 2026**
+**AGS Norte de Córdoba · Versión 25 de noviembre de 2026**
 
 Panel web de inteligencia hídrico-sanitaria para los 27 municipios del norte de Córdoba. Muestra en tiempo real calidad del agua de consumo (SINAC), estado de embalses y ríos (SAIH), meteorología (AEMET), teledetección del embalse de La Colada (Sentinel-2) y calidad fisicoquímica (SIRA Guadiana).
 
@@ -99,27 +99,28 @@ Este archivo **nunca debe publicarse en la web ni subirse a GitHub**. Contiene c
   "correo_password": "...",
   "correo_destino": "antonio.gonzalez.caballero.sspa@juntadeandalucia.es",
 
-  // Sentinel-2 — Copernicus Data Space Ecosystem
-  // Cliente OAuth: "aquasalud-norte" — creado en cdse.eu con la cuenta Junta
-  "sentinel2_client_id": "sh-2ca6f517-c07c-437f-80b4-09f912ef1e68",
-  "sentinel2_client_secret": "84O1H4uk7aNB2fDOmD0UwVEnBuBzWlqhbfx6ZDs7w4qiITQgoqJ.",
+  // Sentinel-2 — Copernicus Data Space Ecosystem (cliente OAuth "aquasalud-norte-2")
+  // Los valores reales los entrega Antonio por canal seguro. NUNCA escribirlos en este archivo ni en GitHub.
+  "sentinel2_client_id": "PEDIR_A_ANTONIO",
+  "sentinel2_client_secret": "PEDIR_A_ANTONIO",
   "sentinel2_bbox_la_colada": [-5.1850, 38.3720, -5.1200, 38.4180],
   "sentinel2_instance_id": "aquasalud-norte"
 }
 ```
 
-> **Las claves Sentinel-2 ya están rellenas.** Solo hay que añadir `aemet_api_key` y los datos de notificación.
+> **Las claves (AEMET, Sentinel-2, avisos) las entrega Antonio por canal seguro; no están en el repositorio.** Sin ellas, SAIH, SIRA y embalses funcionan igual; solo AEMET y Sentinel-2 las necesitan.
 
 ---
 
 ## 6. Cron instalado
 
 ```
-*/15 * * * *   SAIH + alertas  (embalses, ríos, avisos de umbral)
-*/15 * * * *   AEMET           (meteorología)
-0 6,18 * * *   SINAC           (calidad agua consumo — dos veces al día)
-0 8   * * *    Sentinel-2      (teledetección La Colada — máx. una imagen cada 5 días)
-0 *   * * *    SIRA Guadiana   (calidad fisicoquímica — cada hora)
+*/10 * * * *   SIRA Guadiana  (La Colada E2-40 y sonda EAA-421)
+*/10 * * * *   Embalses       (SAIH Guadalquivir + La Colada)
+*/15 * * * *   SAIH + AEMET + alertas
+0 6,18 * * *   SINAC          (dos veces al día)
+0 8   * * *    Sentinel-2     (máx. una imagen cada 5 días)
+30 3  * * *    actualizar.sh  (descarga la rama "produccion" y aplica cambios; no toca config.json)
 ```
 
 ---
@@ -200,13 +201,18 @@ cp aquasalud-nueva/index.html   /var/www/html/aquasalud/
 
 ## 11. Repositorio
 
-`https://github.com/herzonekg-hue/Pulso-Hidrico-Cordoba-` (privado)
+`https://github.com/herzonekg-hue/Pulso-Hidrico-Cordoba-` (hoy **público**; está previsto pasarlo a privado cuando el servidor del área esté funcionando).
 
-El repositorio contiene el código fuente pero **nunca** `config.json`, `datos.json`, `serie.json` ni ningún dato de explotación. Solo el informático con acceso al repositorio puede ver el código.
+El repositorio no contiene `config.json` ni claves. **Cuando pase a privado**, el servidor necesitará una *deploy key* de solo lectura para que `actualizar.sh` siga descargando la rama `produccion`:
 
-**Importante:** `config.example.json` en el repositorio tiene las claves Sentinel-2 reales (ya configuradas). No es necesario tocarlas.
+```bash
+ssh-keygen -t ed25519 -f ~/.ssh/aquasalud_deploy -N ""
+# Pegar ~/.ssh/aquasalud_deploy.pub en GitHub > Settings > Deploy keys (sin permiso de escritura)
+git remote set-url origin git@github.com:herzonekg-hue/Pulso-Hidrico-Cordoba-.git
+# y en ~/.ssh/config:  Host github.com / IdentityFile ~/.ssh/aquasalud_deploy
+```
 
----
+Importante: las instrucciones de actualización de la sección 8 y `actualizar.sh` sirven desde la rama `produccion`, no desde `main`.
 
 *AQUASALUD NORTE — AGS Norte de Córdoba — Antonio González Caballero*
 
