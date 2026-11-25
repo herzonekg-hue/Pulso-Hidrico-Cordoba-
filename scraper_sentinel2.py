@@ -108,7 +108,7 @@ def buscar_imagen(bbox: list, token: str) -> dict | None:
         "query": {
             "eo:cloud_cover": {"lt": MAX_NUBOSIDAD}
         },
-        "sortby": ["-datetime"],
+        "sortby": [{"field": "datetime", "direction": "desc"}],
         "limit": 5,
     }).encode("utf-8")
 
@@ -140,6 +140,13 @@ def buscar_imagen(bbox: list, token: str) -> dict | None:
                 props.get("datetime", "?"),
             )
             return best
+    except urllib.error.HTTPError as e:
+        try:
+            cuerpo = e.read().decode("utf-8", "replace")[:400]
+        except Exception:
+            cuerpo = ""
+        log.error("Error en búsqueda catálogo: HTTP %s %s", e.code, cuerpo)
+        return None
     except Exception as e:
         log.error("Error en búsqueda catálogo: %s", e)
         return None
@@ -198,11 +205,12 @@ def solicitar_indices(bbox: list, fecha_imagen: str, token: str) -> dict | None:
 //VERSION=3
 function setup() {
   return {
-    input: [{ bands:["B02","B03","B04","B05","B08","B11","SCL"] }],
+    input: [{ bands:["B02","B03","B04","B05","B08","B11","SCL","dataMask"] }],
     output: [
       { id:"ndwi", bands:1, sampleType:"FLOAT32" },
       { id:"ndti", bands:1, sampleType:"FLOAT32" },
       { id:"chl",  bands:1, sampleType:"FLOAT32" },
+      { id:"dataMask", bands:1 },
     ],
     mosaicking: "SIMPLE"
   };
@@ -211,9 +219,9 @@ function evaluatePixel(s) {
   let ndwi = (s.B03 - s.B08) / (s.B03 + s.B08 + 1e-6);
   let ndti = (s.B04 - s.B03) / (s.B04 + s.B03 + 1e-6);
   let chl  = s.B05 / (s.B04 + 1e-6);
-  // Enmascarar nubes y sombras (SCL 3=cloud_shadow, 8=cloud_medium, 9=cloud_high)
-  if ([3, 8, 9].includes(s.SCL[0])) return { ndwi:[NaN], ndti:[NaN], chl:[NaN] };
-  return { ndwi:[ndwi], ndti:[ndti], chl:[chl] };
+  // Solo agua: SCL 6 = water. Excluye tierra, nubes (8,9) y sombras (3)
+  let valido = (s.dataMask === 1 && s.SCL === 6) ? 1 : 0;  // solo píxeles clasificados como AGUA (SCL=6)
+  return { ndwi:[ndwi], ndti:[ndti], chl:[chl], dataMask:[valido] };
 }
 """
 
@@ -243,8 +251,9 @@ function evaluatePixel(s) {
         "aggregation": {
             "timeRange": {"from": d_ini, "to": d_fin},
             "aggregationInterval": {"of": "P1D"},
-            "resx": 10,
-            "resy": 10,
+            # El bbox va en grados (EPSG:4326): 10 m ≈ 0,000114° de longitud y 0,00009° de latitud a 38° N
+            "resx": 0.000114,
+            "resy": 0.00009,
             "evalscript": evalscript_stat,
         },
         "calculations": {
