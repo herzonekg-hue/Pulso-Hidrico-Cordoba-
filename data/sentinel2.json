@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "generado": "2026-11-25T12:15:29Z",
+    "fuente": "Copernicus/Sentinel-2 L2A — ESA",
+    "imagen_id": "S2A_MSIL2A_20261123T111311_N0513_R137_T30SUH_20261123T160406",
+    "fecha_imagen": "2026-11-23T11:13:11.024000Z",
+    "fecha_legible": "23 nov 2026",
+    "nubosidad_pct": 0.17,
+    "bbox": [
+      -5.185,
+      38.372,
+      -5.12,
+      38.418
+    ],
+    "estado": "ok"
+  },
+  "indices": {
+    "semaforo": "GRIS",
+    "observacion": "Error en Statistical API"
+  }
+}
