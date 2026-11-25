@@ -55,7 +55,8 @@ PROCESS_URL = "https://sh.dataspace.copernicus.eu/api/v1/process"
 
 # BBox por defecto (sobrescribible en config.json)
 # [lon_min, lat_min, lon_max, lat_max] — La Colada, norte de Córdoba
-BBOX_DEFAULT = [-5.1850, 38.3720, -5.1200, 38.4180]
+# Recuadro antiguo [-5.185, 38.372, -5.12, 38.418] NO contenía el embalse (era tierra de cultivo). Provisional hasta ajustar con la imagen.
+BBOX_DEFAULT = [-5.10, 38.44, -4.88, 38.62]
 
 # Días hacia atrás en que buscamos imagen válida
 LOOKBACK_DAYS    = 30
