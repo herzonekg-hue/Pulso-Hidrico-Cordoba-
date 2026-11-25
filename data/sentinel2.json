@@ -1,27 +1,27 @@
 {
   "meta": {
-    "generado": "2026-11-25T12:22:05Z",
+    "generado": "2026-11-25T12:24:12Z",
     "fuente": "Copernicus/Sentinel-2 L2A — ESA",
     "imagen_id": "S2A_MSIL2A_20261123T111311_N0513_R137_T30SUH_20261123T160406",
     "fecha_imagen": "2026-11-23T11:13:11.024000Z",
     "fecha_legible": "23 nov 2026",
     "nubosidad_pct": 0.17,
     "bbox": [
-      -5.1,
-      38.44,
-      -4.88,
-      38.62
+      -5.04,
+      38.47,
+      -4.96,
+      38.56
     ],
     "estado": "ok"
   },
   "indices": {
-    "ndwi_medio": 0.8603,
-    "ndti_medio": -0.3751,
-    "chl_ratio_medio": 120.9647,
+    "ndwi_medio": 0.8754,
+    "ndti_medio": -0.3814,
+    "chl_ratio_medio": 53.3801,
     "estado_agua": "agua_confirmada",
     "estado_turb": "baja",
-    "estado_chl": "alta",
-    "semaforo": "NARANJA",
-    "observacion": "Turbidez o clorofila elevada detectada por satélite"
+    "estado_chl": "informativo",
+    "semaforo": "VERDE",
+    "observacion": "Lámina de agua normal, calidad espectral aceptable"
   }
 }
