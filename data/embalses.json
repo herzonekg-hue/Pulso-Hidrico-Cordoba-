@@ -1,8 +1,8 @@
 {
- "generado": "2026-11-25T10:44:08+00:00",
+ "generado": "2026-11-25T11:45:14+00:00",
  "fuente": "SAIH Guadalquivir (EmbalNiv.aspx) · SIRA Guadiana (La Colada)",
  "aviso": "Datos del SAIH en tiempo real no contrastados (aviso oficial de la CHG).",
- "fecha_saih": "2026-11-25T11:43",
+ "fecha_saih": "2026-11-25T12:44",
  "embalses": [
   {
    "id": "E33",
@@ -12,11 +12,11 @@
    "fuente": "SAIH Guadalquivir",
    "papel": "Embalse de la ETAP de Sierra Boyera (Bélmez): abastecimiento de Los Pedroches y el Alto Guadiato",
    "nmn": 500.0,
-   "nivel": 497.4,
+   "nivel": 497.39,
    "capacidad": 39.476,
-   "volumen": 27.77,
-   "pct": 70.35,
-   "fecha": "2026-11-25T11:43"
+   "volumen": 27.767,
+   "pct": 70.34,
+   "fecha": "2026-11-25T12:44"
   },
   {
    "id": "E2-40",
@@ -24,13 +24,13 @@
    "rio": "Guadamatilla",
    "cuenca": "Guadiana",
    "fuente": "SIRA Guadiana (E2-40)",
-   "capacidad": 58.0,
+   "capacidad": 57.7,
    "papel": "Conectada a la ETAP de Sierra Boyera. Recibe el río Guadarramilla",
-   "volumen": 47.65,
-   "pct": 82.155,
-   "nivel": 471.49,
-   "fecha": "2026-11-25T09:50",
-   "q_salida": 0.0129
+   "volumen": null,
+   "pct": null,
+   "nivel": null,
+   "fecha": null,
+   "sin_dato": "Volumen no disponible: la estación E2-40 de SIRA exige autenticación"
   },
   {
    "id": "E34",
@@ -42,9 +42,9 @@
    "nmn": 445.0,
    "nivel": 440.67,
    "capacidad": 281.259,
-   "volumen": 201.63,
-   "pct": 71.69,
-   "fecha": "2026-11-25T11:43"
+   "volumen": 201.717,
+   "pct": 71.72,
+   "fecha": "2026-11-25T12:44"
   }
  ],
  "provincia": [
@@ -77,7 +77,7 @@
    "nombre": "Guadalmellato",
    "zona": "capital",
    "capacidad": 145.21,
-   "volumen": 87.689,
+   "volumen": 87.686,
    "pct": 60.39
   },
   {
@@ -85,32 +85,32 @@
    "nombre": "San Rafael de Navallana",
    "zona": "capital",
    "capacidad": 160.124,
-   "volumen": 100.007,
-   "pct": 62.46
+   "volumen": 99.987,
+   "pct": 62.44
   },
   {
    "id": "E32",
    "nombre": "Vadomojón",
    "zona": "sur",
    "capacidad": 145.19,
-   "volumen": 109.528,
-   "pct": 75.44
+   "volumen": 109.507,
+   "pct": 75.42
   },
   {
    "id": "E33",
    "nombre": "Sierra Boyera",
    "zona": "norte",
    "capacidad": 39.476,
-   "volumen": 27.77,
-   "pct": 70.35
+   "volumen": 27.767,
+   "pct": 70.34
   },
   {
    "id": "E34",
    "nombre": "Puente Nuevo",
    "zona": "norte",
    "capacidad": 281.259,
-   "volumen": 201.63,
-   "pct": 71.69
+   "volumen": 201.717,
+   "pct": 71.72
   },
   {
    "id": "E35",
@@ -118,14 +118,14 @@
    "zona": "capital",
    "capacidad": 1.637,
    "volumen": 0.959,
-   "pct": 58.58
+   "pct": 58.57
   },
   {
    "id": "E36",
    "nombre": "La Breña II",
    "zona": "capital",
    "capacidad": 823.4,
-   "volumen": 637.611,
+   "volumen": 637.627,
    "pct": 77.44
   },
   {
@@ -141,8 +141,8 @@
    "nombre": "Hornachuelos",
    "zona": "sur",
    "capacidad": 11.771,
-   "volumen": 11.574,
-   "pct": 98.33
+   "volumen": 11.571,
+   "pct": 98.3
   },
   {
    "id": "E39",
@@ -157,16 +157,8 @@
    "nombre": "Iznájar",
    "zona": "sur",
    "capacidad": 920.233,
-   "volumen": 698.438,
+   "volumen": 698.493,
    "pct": 75.9
-  },
-  {
-   "id": "E2-40",
-   "nombre": "La Colada",
-   "zona": "norte",
-   "capacidad": 58.0,
-   "volumen": 47.65,
-   "pct": 82.155
   }
  ]
 }
