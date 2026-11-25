@@ -1,0 +1,258 @@
+{
+ "periodo": [
+  "2024-11-24",
+  "2026-11-24"
+ ],
+ "lecturas": 5699,
+ "tabla_por_lluvia48h": [
+  {
+   "bin": "<1",
+   "n": "3894",
+   "PO_med": "9.97",
+   "NH_med": "0.02",
+   "OX_med": "5.51",
+   "TB_med": "11.42",
+   "CD_med": "1708.82",
+   "NO_med": "6.15"
+  },
+  {
+   "bin": "1-5",
+   "n": "725",
+   "PO_med": "6.64",
+   "NH_med": "0.02",
+   "OX_med": "6.0",
+   "TB_med": "9.56",
+   "CD_med": "1461.82",
+   "NO_med": "7.88"
+  },
+  {
+   "bin": "5-15",
+   "n": "626",
+   "PO_med": "6.05",
+   "NH_med": "0.04",
+   "OX_med": "5.46",
+   "TB_med": "15.5",
+   "CD_med": "1161.74",
+   "NO_med": "8.12"
+  },
+  {
+   "bin": "15-30",
+   "n": "373",
+   "PO_med": "5.43",
+   "NH_med": "0.18",
+   "OX_med": "5.56",
+   "TB_med": "27.89",
+   "CD_med": "909.73",
+   "NO_med": "7.26"
+  },
+  {
+   "bin": ">=30",
+   "n": "81",
+   "PO_med": "5.08",
+   "NH_med": "0.26",
+   "OX_med": "7.68",
+   "TB_med": "75.38",
+   "CD_med": "719.98",
+   "NO_med": "6.74"
+  }
+ ],
+ "correlacion_spearman_diaria": {
+  "PO": {
+   "lag0d": [
+    -0.172,
+    5.9e-06
+   ],
+   "lag1d": [
+    -0.227,
+    1.8e-09
+   ],
+   "lag2d": [
+    -0.256,
+    1e-11
+   ],
+   "lag3d": [
+    -0.26,
+    4.6e-12
+   ],
+   "lag4d": [
+    -0.275,
+    2.4e-13
+   ],
+   "lag5d": [
+    -0.268,
+    1.1e-12
+   ]
+  },
+  "NH": {
+   "lag0d": [
+    0.076,
+    0.044
+   ],
+   "lag1d": [
+    0.088,
+    0.019
+   ],
+   "lag2d": [
+    0.085,
+    0.023
+   ],
+   "lag3d": [
+    0.057,
+    0.13
+   ],
+   "lag4d": [
+    0.043,
+    0.25
+   ],
+   "lag5d": [
+    0.024,
+    0.52
+   ]
+  },
+  "OX": {
+   "lag0d": [
+    0.012,
+    0.76
+   ],
+   "lag1d": [
+    0.014,
+    0.7
+   ],
+   "lag2d": [
+    0.023,
+    0.55
+   ],
+   "lag3d": [
+    0.048,
+    0.2
+   ],
+   "lag4d": [
+    0.105,
+    0.0049
+   ],
+   "lag5d": [
+    0.13,
+    0.00049
+   ]
+  },
+  "TB": {
+   "lag0d": [
+    0.209,
+    2.3e-08
+   ],
+   "lag1d": [
+    0.258,
+    3.7e-12
+   ],
+   "lag2d": [
+    0.221,
+    3.2e-09
+   ],
+   "lag3d": [
+    0.14,
+    0.00019
+   ],
+   "lag4d": [
+    0.08,
+    0.034
+   ],
+   "lag5d": [
+    0.021,
+    0.58
+   ]
+  },
+  "CD": {
+   "lag0d": [
+    -0.391,
+    1.1e-27
+   ],
+   "lag1d": [
+    -0.445,
+    4.3e-36
+   ],
+   "lag2d": [
+    -0.471,
+    8e-41
+   ],
+   "lag3d": [
+    -0.477,
+    6.4e-42
+   ],
+   "lag4d": [
+    -0.457,
+    4.6e-38
+   ],
+   "lag5d": [
+    -0.439,
+    6.7e-35
+   ]
+  },
+  "NO": {
+   "lag0d": [
+    0.172,
+    6.3e-06
+   ],
+   "lag1d": [
+    0.148,
+    0.00012
+   ],
+   "lag2d": [
+    0.171,
+    7.8e-06
+   ],
+   "lag3d": [
+    0.191,
+    5.5e-07
+   ],
+   "lag4d": [
+    0.209,
+    4.1e-08
+   ],
+   "lag5d": [
+    0.208,
+    4.9e-08
+   ]
+  }
+ },
+ "eventos_15mm": {
+  "PO": {
+   "mediana_general": 9.22,
+   "n_eventos": 21,
+   "mediana_max_3d_tras_evento": 8.72
+  },
+  "NH": {
+   "mediana_general": 0.02,
+   "n_eventos": 21,
+   "mediana_max_3d_tras_evento": 0.45
+  },
+  "OX": {
+   "mediana_general": 5.67,
+   "n_eventos": 21,
+   "mediana_max_3d_tras_evento": 6.3
+  },
+  "TB": {
+   "mediana_general": 12.41,
+   "n_eventos": 21,
+   "mediana_max_3d_tras_evento": 76.98
+  },
+  "CD": {
+   "mediana_general": 1638.14,
+   "n_eventos": 21,
+   "mediana_max_3d_tras_evento": 1081.95
+  },
+  "NO": {
+   "mediana_general": 6.76,
+   "n_eventos": 21,
+   "mediana_max_3d_tras_evento": NaN
+  }
+ },
+ "proporcion_lecturas_repetidas": {
+  "PO": 0.401,
+  "NH": 0.698,
+  "OX": 0.192,
+  "TB": 0.177,
+  "CD": 0.127,
+  "NO": 0.283
+ },
+ "fuente_lluvia": "Open-Meteo archive (ERA5-Land, reanálisis ~9 km), media de 2 puntos; no es pluviómetro"
+}
