@@ -323,6 +323,47 @@ def obtener_datos_estacion(cod: str, id_interno: str) -> dict | None:
     return None
 
 
+def registrar_lluvia_y_caudal() -> None:
+    """Guarda cada pasada la lluvia de la estación meteo de Pozoblanco (EM2-05) y el caudal de los aforos CR2-07/CR2-08.
+    Tablas públicas de SIRA (ficha_redes_control, prefijos EM y CR). Serie en data/meteo_caudal_serie.json (ventana ~90 días, hora UTC).
+    Sirve para cruzar lluvia y calidad de la EAA-421 con datos propios y reales."""
+    ruta = SALIDA_DIR / "meteo_caudal_serie.json"
+    try:
+        previo = {}
+        if ruta.exists():
+            try:
+                previo = {r[0]: r for r in json.load(open(ruta, encoding="utf-8")).get("serie", [])}
+            except Exception:
+                previo = {}
+        filas = {}
+        for pref in ("EM", "CR"):
+            r = _post(URL_RESOURCE, {"id": pref, "idEstacion": pref, "type": "ficha_redes_control"})
+            vals = ((r or {}).get("ult_res") or {}).get("valores", []) if isinstance(r, dict) else []
+            for x in vals:
+                if isinstance(x, dict) and x.get("cod_estacion") in ("EM2-05", "CR2-07", "CR2-08"):
+                    filas[x["cod_estacion"]] = x
+        if not filas:
+            return
+        def num(v):
+            try:
+                return float(str(v).replace(",", "."))
+            except Exception:
+                return None
+        em, c7, c8 = filas.get("EM2-05", {}), filas.get("CR2-07", {}), filas.get("CR2-08", {})
+        ts = str(em.get("timestamp") or c7.get("timestamp") or "").replace(" ", "T")[:16]
+        if not ts:
+            return
+        previo[ts + "Z"] = [ts + "Z", num(em.get("PRA")), num(em.get("TA")), num(c7.get("QR1")), num(c8.get("QR1")), num(c7.get("PRA")), num(c8.get("PRA"))]
+        serie = [previo[k] for k in sorted(previo)][-13000:]
+        ruta.parent.mkdir(parents=True, exist_ok=True)
+        with open(ruta, "w", encoding="utf-8") as f:
+            json.dump({"campos": ["ts_utc", "lluvia_Pozoblanco_EM2-05_PRA", "temp_aire_EM2-05", "caudal_CR2-07_m3s", "caudal_CR2-08_m3s", "lluvia_CR2-07_PRA", "lluvia_CR2-08_PRA"],
+                       "nota": "PRA = precipitación acumulada tal como la publica SIRA (periodo de acumulación por confirmar); caudal en m3/s",
+                       "serie": serie}, f, separators=(",", ":"))
+    except Exception as e:
+        log.warning("No se pudo registrar lluvia/caudal: %s", e)
+
+
 def obtener_tabla_embalses() -> dict:
     """Tabla pública de todos los embalses del Guadiana (la misma que muestra la web de SIRA).
     Endpoint: POST /backend/Visor/resourceByID
@@ -541,6 +582,7 @@ def main():
     #    EAA  → POST /calidad  (body confirmado DevTools 20-11-2026)
     #    E/CR → POST /resourceByID (fallback; E2-40 y CR2-08 dan 401 con token público)
     todos_datos: dict[str, dict] = {}
+    registrar_lluvia_y_caudal()
     tabla_embalses = obtener_tabla_embalses()
 
     for cod, meta in ESTACIONES_OBJETIVO.items():
