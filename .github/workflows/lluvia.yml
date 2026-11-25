@@ -14,7 +14,9 @@ jobs:
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
       - run: pip install pandas scipy requests
-      - run: python analisis/lluvia_vs_eaa.py | tee analisis/lluvia_log.txt
+      - run: |
+          set -o pipefail
+          python analisis/lluvia_vs_eaa.py 2>&1 | tee analisis/lluvia_log.txt
       - name: Guardar resultado
         run: |
           git config user.name "github-actions[bot]"

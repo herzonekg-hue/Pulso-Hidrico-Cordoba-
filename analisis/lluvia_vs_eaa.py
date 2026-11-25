@@ -5,6 +5,9 @@ import pandas as pd, numpy as np
 from scipy.stats import spearmanr
 
 df = pd.read_csv("historico/eaa421_historico.csv", parse_dates=["timestamp"]).sort_values("timestamp")
+for c in ["TA","PO","NH","PH","OX","CD","TB","NO"]:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
+df = df.dropna(subset=["timestamp"]).reset_index(drop=True)
 t0, t1 = df.timestamp.min().date(), df.timestamp.max().date()
 pts = [(38.379, -4.849), (38.52, -4.71)]  # Pozoblanco y entorno de El Viso (aprox.)
 series = []
