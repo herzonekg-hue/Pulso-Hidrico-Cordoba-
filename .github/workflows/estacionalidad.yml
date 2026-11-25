@@ -1,0 +1,27 @@
+name: Analisis estacionalidad EAA-421
+on:
+  push:
+    branches: [analisis-lluvia]
+    paths: ["analisis/estacionalidad.py", ".github/workflows/estacionalidad.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  analizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install pandas scipy requests
+      - run: |
+          set -o pipefail
+          python analisis/estacionalidad.py 2>&1 | tee analisis/estacionalidad_log.txt
+      - name: Guardar resultado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add analisis/estacionalidad.json analisis/estacionalidad_log.txt
+          git commit -m "analisis: estacionalidad EAA-421" || exit 0
+          git pull --rebase origin analisis-lluvia || true
+          git push origin analisis-lluvia
