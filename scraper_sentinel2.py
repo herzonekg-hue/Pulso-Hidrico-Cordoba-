@@ -250,8 +250,9 @@ function evaluatePixel(s) {
         "aggregation": {
             "timeRange": {"from": d_ini, "to": d_fin},
             "aggregationInterval": {"of": "P1D"},
-            "resx": 10,
-            "resy": 10,
+            # El bbox va en grados (EPSG:4326): 10 m ≈ 0,000114° de longitud y 0,00009° de latitud a 38° N
+            "resx": 0.000114,
+            "resy": 0.00009,
             "evalscript": evalscript_stat,
         },
         "calculations": {
