@@ -1,27 +1,27 @@
 {
   "meta": {
-    "generado": "2026-11-25T12:20:19Z",
+    "generado": "2026-11-25T12:22:05Z",
     "fuente": "Copernicus/Sentinel-2 L2A — ESA",
     "imagen_id": "S2A_MSIL2A_20261123T111311_N0513_R137_T30SUH_20261123T160406",
     "fecha_imagen": "2026-11-23T11:13:11.024000Z",
     "fecha_legible": "23 nov 2026",
     "nubosidad_pct": 0.17,
     "bbox": [
-      -5.185,
-      38.372,
-      -5.12,
-      38.418
+      -5.1,
+      38.44,
+      -4.88,
+      38.62
     ],
     "estado": "ok"
   },
   "indices": {
-    "ndwi_medio": null,
-    "ndti_medio": null,
-    "chl_ratio_medio": null,
-    "estado_agua": "sin_datos",
-    "estado_turb": "sin_datos",
-    "estado_chl": "sin_datos",
-    "semaforo": "GRIS",
-    "observacion": "Sin datos espectrales disponibles"
+    "ndwi_medio": 0.8603,
+    "ndti_medio": -0.3751,
+    "chl_ratio_medio": 120.9647,
+    "estado_agua": "agua_confirmada",
+    "estado_turb": "baja",
+    "estado_chl": "alta",
+    "semaforo": "NARANJA",
+    "observacion": "Turbidez o clorofila elevada detectada por satélite"
   }
 }
