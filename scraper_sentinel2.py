@@ -220,7 +220,7 @@ function setup() {
 function evaluatePixel(s) {
   let ndwi = (s.B03 - s.B08) / (s.B03 + s.B08 + 1e-6);
   let ndti = (s.B04 - s.B03) / (s.B04 + s.B03 + 1e-6);
-  let chl  = s.B05 / (s.B04 + 1e-6);
+  let chl  = (s.B05 - s.B04) / (s.B05 + s.B04 + 1e-6);  // NDCI
   // Solo agua: SCL 6 = water. Excluye tierra, nubes (8,9) y sombras (3)
   let valido = (s.dataMask === 1 && s.SCL === 6) ? 1 : 0;  // solo píxeles clasificados como AGUA (SCL=6)
   return { ndwi:[ndwi], ndti:[ndti], chl:[chl], dataMask:[valido] };
