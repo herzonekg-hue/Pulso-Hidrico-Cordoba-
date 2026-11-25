@@ -1,0 +1,25 @@
+name: Analisis lluvia vs EAA-421
+on:
+  push:
+    branches: [analisis-lluvia]
+    paths: ["analisis/lluvia_vs_eaa.py", ".github/workflows/lluvia.yml"]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  analizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install pandas scipy requests
+      - run: python analisis/lluvia_vs_eaa.py | tee analisis/lluvia_log.txt
+      - name: Guardar resultado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add analisis/lluvia_vs_eaa.json analisis/lluvia_vs_eaa.md analisis/lluvia_log.txt
+          git commit -m "analisis: lluvia vs EAA-421" || exit 0
+          git pull --rebase origin analisis-lluvia || true
+          git push origin analisis-lluvia
