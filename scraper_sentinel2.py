@@ -55,7 +55,9 @@ PROCESS_URL = "https://sh.dataspace.copernicus.eu/api/v1/process"
 
 # BBox por defecto (sobrescribible en config.json)
 # [lon_min, lat_min, lon_max, lat_max] — La Colada, norte de Córdoba
-BBOX_DEFAULT = [-5.1850, 38.3720, -5.1200, 38.4180]
+# Recuadro antiguo [-5.185, 38.372, -5.12, 38.418] NO contenía el embalse (era tierra de cultivo). El actual envuelve el vaso de La Colada
+# (comprobado sobre la imagen Sentinel-2 del 23/11/2026; zona recreativa en 38,516 N / -4,990 O).
+BBOX_DEFAULT = [-5.04, 38.47, -4.96, 38.56]
 
 # Días hacia atrás en que buscamos imagen válida
 LOOKBACK_DAYS    = 30
@@ -178,7 +180,7 @@ function evaluatePixel(s) {
   // NDTI = (B04 - B03) / (B04 + B03)  — turbidez (Lacaux 2007)
   let ndti = (s.B04 - s.B03) / (s.B04 + s.B03 + 1e-6);
   // Aprox. clorofila: B05/B04
-  let chl  = s.B05 / (s.B04 + 1e-6);
+  let chl  = (s.B05 - s.B04) / (s.B05 + s.B04 + 1e-6);  // NDCI (índice normalizado de clorofila); el cociente B05/B04 se disparaba sobre agua oscura
   // RGB natural (valor 0–255 aprox.)
   let gain = 3.5;
   let r = Math.min(255, s.B04 * 255 * gain);
@@ -218,7 +220,7 @@ function setup() {
 function evaluatePixel(s) {
   let ndwi = (s.B03 - s.B08) / (s.B03 + s.B08 + 1e-6);
   let ndti = (s.B04 - s.B03) / (s.B04 + s.B03 + 1e-6);
-  let chl  = s.B05 / (s.B04 + 1e-6);
+  let chl  = (s.B05 - s.B04) / (s.B05 + s.B04 + 1e-6);  // NDCI
   // Solo agua: SCL 6 = water. Excluye tierra, nubes (8,9) y sombras (3)
   let valido = (s.dataMask === 1 && s.SCL === 6) ? 1 : 0;  // solo píxeles clasificados como AGUA (SCL=6)
   return { ndwi:[ndwi], ndti:[ndti], chl:[chl], dataMask:[valido] };
@@ -259,7 +261,7 @@ function evaluatePixel(s) {
         "calculations": {
             "ndwi": {"histograms": {"default": {"nBins":10, "lowEdge":-1.0, "highEdge":1.0}}},
             "ndti": {"histograms": {"default": {"nBins":10, "lowEdge":-1.0, "highEdge":1.0}}},
-            "chl":  {"histograms": {"default": {"nBins":10, "lowEdge":0.0,  "highEdge":5.0}}},
+            "chl":  {"histograms": {"default": {"nBins":10, "lowEdge":-1.0, "highEdge":1.0}}},
         }
     }).encode("utf-8")
 
@@ -413,19 +415,14 @@ def interpretar_indices(stats_resp: dict) -> dict:
                 else:
                     resultado["estado_turb"] = "baja"
 
-            # Clorofila aproximada (ratio B05/B04: > 1.5 → alerta)
+            # Clorofila: NDCI medio sobre píxeles de agua. Sin umbral calibrado para La Colada: solo informativo.
             if chl_mean is not None:
-                if chl_mean > 2.0:
-                    resultado["estado_chl"] = "alta"
-                elif chl_mean > 1.5:
-                    resultado["estado_chl"] = "moderada"
-                else:
-                    resultado["estado_chl"] = "baja"
+                resultado["estado_chl"] = "informativo"
 
             # Semáforo global
-            if resultado["estado_turb"] == "alta" or resultado["estado_chl"] == "alta":
+            if resultado["estado_turb"] == "alta":
                 resultado["semaforo"]    = "NARANJA"
-                resultado["observacion"] = "Turbidez o clorofila elevada detectada por satélite"
+                resultado["observacion"] = "Turbidez elevada detectada por satélite (NDTI; umbral sin calibrar)"
             elif resultado["estado_agua"] == "seco_o_bajo":
                 resultado["semaforo"]    = "AMARILLO"
                 resultado["observacion"] = "Nivel bajo detectado (NDWI < 0)"
