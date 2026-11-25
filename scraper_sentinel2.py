@@ -219,8 +219,8 @@ function evaluatePixel(s) {
   let ndwi = (s.B03 - s.B08) / (s.B03 + s.B08 + 1e-6);
   let ndti = (s.B04 - s.B03) / (s.B04 + s.B03 + 1e-6);
   let chl  = s.B05 / (s.B04 + 1e-6);
-  // Enmascarar nubes y sombras (SCL 3=cloud_shadow, 8=cloud_medium, 9=cloud_high) con dataMask=0
-  let valido = (s.dataMask === 1 && [3, 8, 9].indexOf(s.SCL) === -1) ? 1 : 0;
+  // Solo agua: SCL 6 = water. Excluye tierra, nubes (8,9) y sombras (3)
+  let valido = (s.dataMask === 1 && s.SCL === 6) ? 1 : 0;  // solo píxeles clasificados como AGUA (SCL=6)
   return { ndwi:[ndwi], ndti:[ndti], chl:[chl], dataMask:[valido] };
 }
 """
