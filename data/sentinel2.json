@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generado": "2026-11-25T12:24:12Z",
+    "generado": "2026-11-25T12:25:39Z",
     "fuente": "Copernicus/Sentinel-2 L2A — ESA",
     "imagen_id": "S2A_MSIL2A_20261123T111311_N0513_R137_T30SUH_20261123T160406",
     "fecha_imagen": "2026-11-23T11:13:11.024000Z",
@@ -17,7 +17,7 @@
   "indices": {
     "ndwi_medio": 0.8754,
     "ndti_medio": -0.3814,
-    "chl_ratio_medio": 53.3801,
+    "chl_ratio_medio": 0.5446,
     "estado_agua": "agua_confirmada",
     "estado_turb": "baja",
     "estado_chl": "informativo",
