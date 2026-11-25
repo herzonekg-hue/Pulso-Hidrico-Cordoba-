@@ -205,11 +205,12 @@ def solicitar_indices(bbox: list, fecha_imagen: str, token: str) -> dict | None:
 //VERSION=3
 function setup() {
   return {
-    input: [{ bands:["B02","B03","B04","B05","B08","B11","SCL"] }],
+    input: [{ bands:["B02","B03","B04","B05","B08","B11","SCL","dataMask"] }],
     output: [
       { id:"ndwi", bands:1, sampleType:"FLOAT32" },
       { id:"ndti", bands:1, sampleType:"FLOAT32" },
       { id:"chl",  bands:1, sampleType:"FLOAT32" },
+      { id:"dataMask", bands:1 },
     ],
     mosaicking: "SIMPLE"
   };
@@ -218,9 +219,9 @@ function evaluatePixel(s) {
   let ndwi = (s.B03 - s.B08) / (s.B03 + s.B08 + 1e-6);
   let ndti = (s.B04 - s.B03) / (s.B04 + s.B03 + 1e-6);
   let chl  = s.B05 / (s.B04 + 1e-6);
-  // Enmascarar nubes y sombras (SCL 3=cloud_shadow, 8=cloud_medium, 9=cloud_high)
-  if ([3, 8, 9].includes(s.SCL[0])) return { ndwi:[NaN], ndti:[NaN], chl:[NaN] };
-  return { ndwi:[ndwi], ndti:[ndti], chl:[chl] };
+  // Enmascarar nubes y sombras (SCL 3=cloud_shadow, 8=cloud_medium, 9=cloud_high) con dataMask=0
+  let valido = (s.dataMask === 1 && [3, 8, 9].indexOf(s.SCL) === -1) ? 1 : 0;
+  return { ndwi:[ndwi], ndti:[ndti], chl:[chl], dataMask:[valido] };
 }
 """
 
