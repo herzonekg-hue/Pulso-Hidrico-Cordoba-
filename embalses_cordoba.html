@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Embalses de Córdoba · % de llenado</title>
 <style>
-:root{--bg:#07111c;--s1:#0d1f30;--water:#2ec4b6;--warn:#f4a261;--crit:#e76f51;--med:#60a5fa;--ok:#3db87a;
---text:#e4f0fa;--text2:#7aaac8;--text3:#5a8199;--border:rgba(46,196,182,.12);
---norte:#3db87a;--capital:#60a5fa;--sur:#f4a261}
+:root{--bg:#f6f3ec;--s1:#ffffff;--water:#0e7a70;--warn:#b85a14;--crit:#b3301f;--med:#1f6fb5;--ok:#2a8f5c;
+--text:#1c2a26;--text2:#3f5650;--text3:#5d6e68;--border:rgba(0,0,0,.14);
+--norte:#2a8f5c;--capital:#1f6fb5;--sur:#b85a14}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-.hero{background:linear-gradient(135deg,#071a2a,#0a2a3a 60%,#0a3a2a);padding:14px 18px;display:flex;align-items:center;gap:12px;position:relative}
+.hero{background:linear-gradient(135deg,#dcefe8,#e9f3ef 60%,#f6f3ec);padding:14px 18px;display:flex;align-items:center;gap:12px;position:relative}
 .hero::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--norte),var(--capital),var(--sur))}
 .hero h1{font-size:15px;font-weight:800}
 .hero p{font-size:11px;color:var(--text3);margin-top:2px}
@@ -21,7 +21,7 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .dot{width:8px;height:8px;border-radius:50%;background:var(--text3)}.dot.ok{background:var(--water)}.dot.err{background:var(--crit)}
 .tabs{display:flex;border-bottom:1px solid var(--border)}
 .tab{flex:1;padding:11px 4px;font:700 12px inherit;font-family:inherit;color:var(--text3);background:none;border:0;border-bottom:3px solid transparent;cursor:pointer}
-.tab.active{color:var(--text);background:rgba(255,255,255,.03)}
+.tab.active{color:var(--text);background:rgba(0,0,0,.05)}
 .wrap{max-width:860px;margin:0 auto}
 .content{padding:12px 14px;display:flex;flex-direction:column;gap:10px}
 .zh{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:11px 14px;display:flex;align-items:center;gap:10px}
@@ -29,10 +29,10 @@ body{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background
 .zh .n{margin-left:auto;text-align:right}.zh .n b{font-size:21px;font-weight:900;display:block;line-height:1}.zh .n span{font-size:10px;color:var(--text3)}
 .tabla{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden}
 .row{display:grid;grid-template-columns:1fr 70px;gap:8px;align-items:center;padding:9px 13px;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px}
-.row:last-child{border:0}.row.head{background:rgba(255,255,255,.04);font-size:10px;color:var(--text3);text-transform:uppercase;font-weight:700}
+.row:last-child{border:0}.row.head{background:rgba(0,0,0,.05);font-size:10px;color:var(--text3);text-transform:uppercase;font-weight:700}
 .nom small{display:block;color:var(--text3);font-size:10px;margin-top:1px}
 .pct{text-align:right;font-weight:800;font-size:17px}.vol{text-align:right;color:var(--text2)}
-.bar{height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;border-radius:3px;width:0;transition:width 1s}
+.bar{height:6px;background:rgba(0,0,0,.1);border-radius:3px;overflow:hidden}.bar i{display:block;height:100%;border-radius:3px;width:0;transition:width 1s}
 .sb{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:4px}
 .nota{font-size:11px;color:var(--text3);line-height:1.55;padding:2px 2px 14px}
 .nota b{color:var(--text2)}
@@ -119,11 +119,11 @@ function calidad(){
   const c=(SIRA.calidad||[]).find(x=>x.cod==='EAA-421'&&x.ok), e=(SIRA.embalses||[]).find(x=>x.cod==='E2-40'&&x.ok);
   if(!c&&!e) return '';
   const dt=c?utc(c.hora_obs):null, de=e?utc(e.hora_obs):null;
-  const caja=(t,v,u)=>`<div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--text3)">${t}</div><div style="font-size:17px;font-weight:800">${v}<span style="font-size:10px;color:var(--text3)"> ${u}</span></div></div>`;
+  const caja=(t,v,u)=>`<div style="background:rgba(0,0,0,.045);border-radius:8px;padding:8px;text-align:center"><div style="font-size:10px;color:var(--text3)">${t}</div><div style="font-size:17px;font-weight:800">${v}<span style="font-size:10px;color:var(--text3)"> ${u}</span></div></div>`;
   let h='<div class="zh" style="display:block"><h2 style="color:var(--water)">La Colada (E2-40) y la sonda del Viso (EAA-421) · SIRA Guadiana</h2>';
   const lc=LISTA.find(x=>x.id==='E2-40');
   if(lc){const tr=lc.pct>90?'más del 90 %':lc.pct>=60?'tramo 60-90 %':lc.pct>=40?'tramo 40-60 %':'menos del 40 %';
-    h+=`<div style="display:flex;align-items:center;gap:10px;margin:6px 0 8px"><span style="background:${col(lc.pct)};color:#06121c;font-weight:800;padding:4px 10px;border-radius:14px;font-size:13px">${fmt(lc.pct,1)} %</span><span style="font-size:12px;color:var(--text2)">Estado en tiempo real: ${tr} · ${fmt(lc.volumen,1)} de ${fmt(lc.capacidad,1)} hm³</span></div>`;}
+    h+=`<div style="display:flex;align-items:center;gap:10px;margin:6px 0 8px"><span style="background:${col(lc.pct)};color:#ffffff;font-weight:800;padding:4px 10px;border-radius:14px;font-size:13px">${fmt(lc.pct,1)} %</span><span style="font-size:12px;color:var(--text2)">Estado en tiempo real: ${tr} · ${fmt(lc.volumen,1)} de ${fmt(lc.capacidad,1)} hm³</span></div>`;}
   if(e) h+=`<p style="margin:3px 0 8px"><b>La Colada (estación E2-40 de SIRA)</b>, se mide cada 10 min: nivel ${fmt(e.nivel_msnm,2)} msnm · ${fmt(e.volumen_hm3,2)} hm³ · salida ${fmt(e.q_salida_m3s,4)} m³/s · medido ${hora(de)} (${hace(de)})</p>`;
   if(c){
     h+=`<p style="margin:3px 0 8px"><b>Sonda del Viso (EAA-421)</b>, Guadarramilla en El Viso, aguas arriba del embalse, se mide cada 15 min · medido ${hora(dt)} (${hace(dt)})</p>
@@ -150,10 +150,10 @@ function cruce(c){
   const marca=ult[1]>=al?'<b style="color:'+ROJO+'">por encima del umbral de alerta del panel ('+fmt(al,1)+' mg/L)</b>; la unidad del parámetro PO (fosfato o fósforo) está pendiente de verificar':'por debajo del umbral de alerta del panel';
   return `<p style="margin:10px 0 4px;font-size:12px"><b>Cruce fosfatos ↔ La Colada</b> (serie 15 min de la sonda, ${f.length} lecturas)</p>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px">
-  <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;font-size:11px">Fosfatos Δ 24 h<br><b style="font-size:15px">${sg(dd(p24))}</b></div>
-  <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;font-size:11px">Fosfatos Δ 7 d<br><b style="font-size:15px">${sg(dd(p7))}</b></div>
-  <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;font-size:11px">Máx. fosfatos 24 h<br><b style="font-size:15px">${fmt(max24,2)} mg/L</b></div>
-  <div style="background:rgba(255,255,255,.04);border-radius:8px;padding:8px;font-size:11px">La Colada Δ 24 h / 7 d<br><b style="font-size:15px">${col_?fmt(col_.pp,2)+' pp':'—'} / ${col7?fmt(col7.pp,2)+' pp':'—'}</b></div></div>
+  <div style="background:rgba(0,0,0,.045);border-radius:8px;padding:8px;font-size:11px">Fosfatos Δ 24 h<br><b style="font-size:15px">${sg(dd(p24))}</b></div>
+  <div style="background:rgba(0,0,0,.045);border-radius:8px;padding:8px;font-size:11px">Fosfatos Δ 7 d<br><b style="font-size:15px">${sg(dd(p7))}</b></div>
+  <div style="background:rgba(0,0,0,.045);border-radius:8px;padding:8px;font-size:11px">Máx. fosfatos 24 h<br><b style="font-size:15px">${fmt(max24,2)} mg/L</b></div>
+  <div style="background:rgba(0,0,0,.045);border-radius:8px;padding:8px;font-size:11px">La Colada Δ 24 h / 7 d<br><b style="font-size:15px">${col_?fmt(col_.pp,2)+' pp':'—'} / ${col7?fmt(col7.pp,2)+' pp':'—'}</b></div></div>
   <p style="margin-top:6px;font-size:11px;color:var(--text2)">Último fosfato: ${fmt(ult[1],2)} mg/L, ${marca}. La sonda mide río aguas arriba, no dentro del embalse: es un indicador de aporte, no de calidad del agua embalsada. El nivel de La Colada acumula histórico desde el despliegue; la variación aparece cuando hay lectura de hace 24 h / 7 d.</p>`;
 }
 
