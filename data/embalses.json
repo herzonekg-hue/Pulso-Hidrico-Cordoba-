@@ -1,8 +1,8 @@
 {
- "generado": "2026-11-26T09:54:18+00:00",
+ "generado": "2026-11-26T10:58:34+00:00",
  "fuente": "SAIH Guadalquivir (EmbalNiv.aspx) · SIRA Guadiana (La Colada)",
  "aviso": "Datos del SAIH en tiempo real no contrastados (aviso oficial de la CHG).",
- "fecha_saih": "2026-11-26T10:53",
+ "fecha_saih": "2026-11-26T11:57",
  "embalses": [
   {
    "id": "E33",
@@ -14,9 +14,9 @@
    "nmn": 500.0,
    "nivel": 497.38,
    "capacidad": 39.476,
-   "volumen": 27.729,
-   "pct": 70.24,
-   "fecha": "2026-11-26T10:53"
+   "volumen": 27.726,
+   "pct": 70.23,
+   "fecha": "2026-11-26T11:57"
   },
   {
    "id": "E2-40",
@@ -29,7 +29,7 @@
    "volumen": 47.65,
    "pct": 82.155,
    "nivel": 471.49,
-   "fecha": "2026-11-26T08:40",
+   "fecha": "2026-11-26T09:50",
    "q_salida": 0.0129
   },
   {
@@ -42,9 +42,9 @@
    "nmn": 445.0,
    "nivel": 440.67,
    "capacidad": 281.259,
-   "volumen": 201.697,
+   "volumen": 201.702,
    "pct": 71.71,
-   "fecha": "2026-11-26T10:53"
+   "fecha": "2026-11-26T11:57"
   }
  ],
  "provincia": [
@@ -53,7 +53,7 @@
    "nombre": "Yeguas",
    "zona": "capital",
    "capacidad": 228.704,
-   "volumen": 173.405,
+   "volumen": 173.404,
    "pct": 75.82
   },
   {
@@ -61,7 +61,7 @@
    "nombre": "Martín Gonzalo",
    "zona": "capital",
    "capacidad": 20.491,
-   "volumen": 11.725,
+   "volumen": 11.724,
    "pct": 57.22
   },
   {
@@ -69,8 +69,8 @@
    "nombre": "Arenoso",
    "zona": "capital",
    "capacidad": 166.967,
-   "volumen": 115.087,
-   "pct": 68.93
+   "volumen": 115.081,
+   "pct": 68.92
   },
   {
    "id": "E29",
@@ -85,7 +85,7 @@
    "nombre": "San Rafael de Navallana",
    "zona": "capital",
    "capacidad": 160.124,
-   "volumen": 100.006,
+   "volumen": 100.005,
    "pct": 62.46
   },
   {
@@ -93,7 +93,7 @@
    "nombre": "Vadomojón",
    "zona": "sur",
    "capacidad": 145.19,
-   "volumen": 109.579,
+   "volumen": 109.572,
    "pct": 75.47
   },
   {
@@ -101,15 +101,15 @@
    "nombre": "Sierra Boyera",
    "zona": "norte",
    "capacidad": 39.476,
-   "volumen": 27.729,
-   "pct": 70.24
+   "volumen": 27.726,
+   "pct": 70.23
   },
   {
    "id": "E34",
    "nombre": "Puente Nuevo",
    "zona": "norte",
    "capacidad": 281.259,
-   "volumen": 201.697,
+   "volumen": 201.702,
    "pct": 71.71
   },
   {
@@ -118,14 +118,14 @@
    "zona": "capital",
    "capacidad": 1.637,
    "volumen": 0.958,
-   "pct": 58.54
+   "pct": 58.52
   },
   {
    "id": "E36",
    "nombre": "La Breña II",
    "zona": "capital",
    "capacidad": 823.4,
-   "volumen": 637.469,
+   "volumen": 637.44,
    "pct": 77.42
   },
   {
@@ -141,24 +141,24 @@
    "nombre": "Hornachuelos",
    "zona": "sur",
    "capacidad": 11.771,
-   "volumen": 11.524,
-   "pct": 97.9
+   "volumen": 11.521,
+   "pct": 97.88
   },
   {
    "id": "E39",
    "nombre": "Retortillo",
    "zona": "sur",
    "capacidad": 61.142,
-   "volumen": 46.563,
-   "pct": 76.15
+   "volumen": 46.564,
+   "pct": 76.16
   },
   {
    "id": "E48",
    "nombre": "Iznájar",
    "zona": "sur",
    "capacidad": 920.233,
-   "volumen": 698.865,
-   "pct": 75.94
+   "volumen": 699.02,
+   "pct": 75.96
   },
   {
    "id": "E2-40",
